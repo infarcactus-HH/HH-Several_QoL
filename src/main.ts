@@ -7,23 +7,15 @@ import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyongPopups";
 
 class Userscript {
-  private hhPlusPlusConfig: any;
 
   constructor() {
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       $(document).one("hh++-bdsm:loaded", () => {
-        this.initializeHHPlusPlus();
         this.run();
       });
       return;
     }
-    this.initializeHHPlusPlus();
     this.run();
-  }
-
-  private initializeHHPlusPlus() {
-    const { hhPlusPlusConfig } = unsafeWindow;
-    this.hhPlusPlusConfig = hhPlusPlusConfig;
   }
 
   run() {
@@ -35,15 +27,15 @@ class Userscript {
         new GirlsToWiki(),
         new TighterPoP(),
     ]
-    this.hhPlusPlusConfig.registerGroup({
+    unsafeWindow.hhPlusPlusConfig.registerGroup({
         key: "severalQoL",
         name: "Several QoL"
     })
     allModules.forEach(module => {
-        this.hhPlusPlusConfig.registerModule(module)
+        unsafeWindow.hhPlusPlusConfig.registerModule(module)
     })
-    this.hhPlusPlusConfig.loadConfig()
-    this.hhPlusPlusConfig.runModules()
+    unsafeWindow.hhPlusPlusConfig.loadConfig()
+    unsafeWindow.hhPlusPlusConfig.runModules()
   }
 }
 
