@@ -1,13 +1,13 @@
 import { HHModule } from "../types/HH++";
+const configSchema = {
+  baseKey: "labyTeamPreset",
+  label: "<span tooltip='Add a button to register laby team presets, and to apply it'>Laby Team Preset</span>",
+  default: true,
+} as const;
 
 export default class LabyTeamPresets extends HHModule {
   private savedTeamPresetKey = "SeveralQoL_LabyTeamPreset";
   constructor() {
-    const configSchema = {
-      baseKey: "labyTeamPreset",
-      label: "Laby Team Preset",
-      default: true,
-    };
     super(configSchema);
   }
   shouldRun() {
