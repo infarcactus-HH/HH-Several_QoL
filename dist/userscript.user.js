@@ -1,13 +1,21 @@
 // ==UserScript==
 // @name         Several QoL
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  A userscript for QoL for the Haremverse
 // @author       infarcactus
+// @license      GPLv3
 // @match        https://*.haremheroes.com/*
 // @match        https://*.hentaiheroes.com/*
-// @match        https://www.mangarpg.com/*
+// @match        https://*.gayharem.com/*
+// @match        https://*.comixharem.com/*
+// @match        https://*.hornyheroes.com/*
+// @match        https://*.pornstarharem.com/*
 // @match        https://*.transpornstarharem.com/*
+// @match        https://*.gaypornstarharem.com/*
+// @match        https://www.mangarpg.com/*
+// @updateURL    https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
+// @downloadURL  https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @grant        GM.addStyle
 // @grant        GM.openInTab
 // @grant        unsafeWindow
