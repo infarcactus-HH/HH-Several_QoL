@@ -4,7 +4,7 @@ export default class NoAnnoyingPopups extends HHModule {
   constructor() {
     const configSchema = {
       baseKey: "noAnnoyingPopups",
-      label: "Removes entirely popup to pay for paths etc",
+      label: "Removes popup appearing automaticly to pay for paths etc",
       default: false,
     };
     super(configSchema);

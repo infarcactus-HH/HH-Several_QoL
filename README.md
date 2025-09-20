@@ -12,5 +12,5 @@ Needs HH++ bdsm
 ## Main Features
 - Popup++ (stacked popups and when you click on it makes it disappear)
 - Laby team presets
-- Removes annoying popups for paths etc
+- Removes annoying popups appearing automaticly
 - Add a way to go from a girl info bubble name or portait to the wiki
