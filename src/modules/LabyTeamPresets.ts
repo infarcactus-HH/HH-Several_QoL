@@ -19,14 +19,6 @@ export default class LabyTeamPresets extends HHModule {
     }
     this.hasRun = true;
     const $centralPannel = $(".boss-bang-panel");
-    const $FillPresetBtn = $(
-      `<button class="green_button_L" tooltip="Use previously saved preset" ${!localStorage.getItem(this.savedTeamPresetKey) ? "disabled" : ""}>Fill Preset</button>`
-    );
-    $FillPresetBtn.on("click", () => {
-      this.loadSavedPreset();
-    });
-    $centralPannel.append($FillPresetBtn);
-
     const $savePresetBtn = $(
       `<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`
     );
@@ -34,12 +26,20 @@ export default class LabyTeamPresets extends HHModule {
       this.saveCurrentPreset();
       $FillPresetBtn.removeAttr("disabled");
     });
+    $centralPannel.append($savePresetBtn);
+    
+    const $FillPresetBtn = $(
+      `<button class="green_button_L" tooltip="Use previously saved preset & leave page" ${!localStorage.getItem(this.savedTeamPresetKey) ? "disabled" : ""}>Fill Preset</button>`
+    );
+    $FillPresetBtn.on("click", () => {
+      this.loadSavedPreset();
+    });
     const HHPlusPlus = unsafeWindow.HHPlusPlus;
     HHPlusPlus.Helpers.doWhenSelectorAvailable(
       ".change-team-panel .player-team .average-lvl",
       () => {
         const $averageLvl = $(".change-team-panel .player-team .average-lvl");
-        $averageLvl.replaceWith($savePresetBtn);
+        $averageLvl.replaceWith($FillPresetBtn);
       }
     );
   }
