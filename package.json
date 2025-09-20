@@ -1,0 +1,23 @@
+{
+  "name": "several-qol",
+  "author": "infarcactus",
+  "version": "1.0.0",
+  "description": "A userscript for QoL for the Haremverse",
+  "main": "dist/userscript.user.js",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "watch": "node esbuild.config.js --watch",
+    "dev": "pnpm run watch"
+  },
+  "keywords": [
+    "userscript",
+    "typescript",
+    "webpack"
+  ],
+  "license": "GPLv3",
+  "devDependencies": {
+    "@types/jquery": "^3.5.0",
+    "esbuild": "^0.25.10",
+    "typescript": "^4.0.0"
+  }
+}
