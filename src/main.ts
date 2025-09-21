@@ -29,7 +29,7 @@ class Userscript {
     ]
     unsafeWindow.hhPlusPlusConfig.registerGroup({
         key: "severalQoL",
-        name: "Several QoL"
+        name: "<span tooltip='by infarctus'>Several QoL</span>"
     })
     allModules.forEach(module => {
         unsafeWindow.hhPlusPlusConfig.registerModule(module)
