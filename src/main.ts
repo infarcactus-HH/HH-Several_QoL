@@ -4,7 +4,7 @@ import GirlsToWiki from "./modules/GirlsToWiki";
 import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
 import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
-import NoAnnoyingPopups from "./modules/NoAnnoyongPopups";
+import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 
 class Userscript {
 
