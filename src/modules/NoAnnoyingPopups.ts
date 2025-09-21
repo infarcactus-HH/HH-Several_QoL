@@ -4,7 +4,7 @@ export default class NoAnnoyingPopups extends HHModule {
   constructor() {
     const configSchema = {
       baseKey: "noAnnoyingPopups",
-      label: "Removes popup appearing automaticly to pay for shops, paths etc",
+      label: "Removes annoying popup appearing automaticly for shops, paths, news",
       default: false,
     };
     super(configSchema);
@@ -16,6 +16,6 @@ export default class NoAnnoyingPopups extends HHModule {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
-    document.cookie = "disabledPopups=PassReminder,Bundles; path=/";
+    document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
   }
 }
