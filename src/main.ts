@@ -5,6 +5,7 @@ import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
 import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
+import WhaleBossTournament from "./modules/WhaleBossTournament";
 
 class Userscript {
 
@@ -26,6 +27,7 @@ class Userscript {
         new NoOnlyRealMoneyOptions(),
         new GirlsToWiki(),
         new TighterPoP(),
+        new WhaleBossTournament(),
     ]
     unsafeWindow.hhPlusPlusConfig.registerGroup({
         key: "severalQoL",
