@@ -16,6 +16,7 @@ export default class NoAnnoyingPopups extends HHModule {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
+    this.hasRun = true;
     document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
   }
 }

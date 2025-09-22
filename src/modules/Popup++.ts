@@ -13,6 +13,10 @@ export default class PopupPlusPlus extends HHModule {
     return true;
   }
   run() {
+    if (this.hasRun || !this.shouldRun()) {
+        return;
+    }
+    this.hasRun = true;
     GM.addStyle("#toast-popups {display:inherit!important;}");
     let lastPoints : any= {}
     let timeOut: NodeJS.Timeout | null = null;
