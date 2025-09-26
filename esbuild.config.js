@@ -45,10 +45,6 @@ const userscriptPlugin = {
         // Read the generated file
         let content = fs.readFileSync(outputFile, 'utf8');
         
-        // Clean up the output format for userscript
-        content = content
-        .replace("/* Built with esbuild */\n","")
-        
         // Add header if not already present
         if (!content.startsWith('// ==UserScript==')) {
           const newContent = userscriptHeader + '\n\n' + content;
@@ -75,9 +71,6 @@ async function build() {
       minify: !isWatch, // Don't minify in watch mode for easier debugging
       sourcemap: isWatch ? 'inline' : false,
       external: ['jquery'], // jQuery is available globally as $
-      banner: {
-        js: '/* Built with esbuild */'
-      },
       plugins: [userscriptPlugin],
       define: {
         // Replace any build-time constants
@@ -93,6 +86,7 @@ async function build() {
       // Optimization settings
       drop: isWatch ? [] : ['debugger'], // Keep debugger in watch mode
       dropLabels: isWatch ? [] : ['DEV'], // Keep DEV labeled code in watch mode
+      
     };
 
     if (isWatch) {

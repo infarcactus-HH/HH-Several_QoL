@@ -25,7 +25,7 @@ export default class PopupPlusPlus extends HHModule {
         if(this.LastPoints == undefined){
             this.LastPoints={}
         }
-        if (!t.objective_points || t.battle_result){
+        if (!t.objective_points /*|| t.battle_result*/ ){
             return;
         }
         if(!t.objective_points){
