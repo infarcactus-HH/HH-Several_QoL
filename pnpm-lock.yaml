@@ -11,6 +11,9 @@ importers:
       '@types/jquery':
         specifier: ^3.5.0
         version: 3.5.33
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.5.2
       esbuild:
         specifier: ^0.25.10
         version: 0.25.10
@@ -179,6 +182,9 @@ packages:
   '@types/jquery@3.5.33':
     resolution: {integrity: sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g==}
 
+  '@types/node@24.5.2':
+    resolution: {integrity: sha512-FYxk1I7wPv3K2XBaoyH2cTnocQEu8AOZ60hPbsyukMPLv5/5qr7V1i8PLHdl6Zf87I+xZXFvPCXYjiTFq+YSDQ==}
+
   '@types/sizzle@2.3.10':
     resolution: {integrity: sha512-TC0dmN0K8YcWEAEfiPi5gJP14eJe30TTGjkvek3iM/1NdHHsdCA/Td6GvNndMOo/iSnIsZ4HuuhrYPDAmbxzww==}
 
@@ -191,6 +197,9 @@ packages:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+
+  undici-types@7.12.0:
+    resolution: {integrity: sha512-goOacqME2GYyOZZfb5Lgtu+1IDmAlAEu5xnD3+xTzS10hT0vzpf0SPjkXwAw9Jm+4n/mQGDP3LO8CPbYROeBfQ==}
 
 snapshots:
 
@@ -276,6 +285,10 @@ snapshots:
     dependencies:
       '@types/sizzle': 2.3.10
 
+  '@types/node@24.5.2':
+    dependencies:
+      undici-types: 7.12.0
+
   '@types/sizzle@2.3.10': {}
 
   esbuild@0.25.10:
@@ -308,3 +321,5 @@ snapshots:
       '@esbuild/win32-x64': 0.25.10
 
   typescript@4.9.5: {}
+
+  undici-types@7.12.0: {}
