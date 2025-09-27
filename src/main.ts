@@ -6,13 +6,24 @@ import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
+import { HHModule_ConfigSchema } from "./types/basemodule";
 
 class Userscript {
-
   constructor() {
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
-      $(document).one("hh++-bdsm:loaded", () => {
-        this.run();
+      Promise.race([
+        new Promise((resolve) => {
+          $(document).one("hh++-bdsm:loaded", () =>
+            resolve("hh++-bdsm:loaded")
+          );
+        }),
+        new Promise((resolve) => setTimeout(() => resolve("timeout"), 200)),
+      ]).then((result) => {
+        if (result === "hh++-bdsm:loaded") {
+          this.run();
+        } else {
+          this.runWithoutBdsm();
+        }
       });
       return;
     }
@@ -20,24 +31,53 @@ class Userscript {
   }
 
   run() {
-    const allModules : HHModule<any>[] = [
-        new PopupPlusPlus(),
-        new LabyTeamPresets(),
-        new NoAnnoyingPopups(),
-        new NoOnlyRealMoneyOptions(),
-        new GirlsToWiki(),
-        new TighterPoP(),
-        new WhaleBossTournament(),
-    ]
+    const allModules: HHModule<any>[] = [
+      new PopupPlusPlus(),
+      new LabyTeamPresets(),
+      new NoAnnoyingPopups(),
+      new NoOnlyRealMoneyOptions(),
+      new GirlsToWiki(),
+      new TighterPoP(),
+      new WhaleBossTournament(),
+    ];
     unsafeWindow.hhPlusPlusConfig.registerGroup({
-        key: "severalQoL",
-        name: "<span tooltip='by infarctus'>Several QoL</span>"
-    })
-    allModules.forEach(module => {
-        unsafeWindow.hhPlusPlusConfig.registerModule(module)
-    })
-    unsafeWindow.hhPlusPlusConfig.loadConfig()
-    unsafeWindow.hhPlusPlusConfig.runModules()
+      key: "severalQoL",
+      name: "<span tooltip='by infarctus'>Several QoL</span>",
+    });
+    allModules.forEach((module) => {
+      unsafeWindow.hhPlusPlusConfig.registerModule(module);
+    });
+    unsafeWindow.hhPlusPlusConfig.loadConfig();
+    unsafeWindow.hhPlusPlusConfig.runModules();
+  }
+  runWithoutBdsm() {
+    const allModules: HHModule<any>[] = [
+      new PopupPlusPlus(),
+      new LabyTeamPresets(),
+      new NoAnnoyingPopups(),
+      new NoOnlyRealMoneyOptions(),
+      new GirlsToWiki(),
+      new TighterPoP(),
+      new WhaleBossTournament(),
+    ];
+    allModules.forEach((module) => {
+      try {
+        const schema = module.configSchema as HHModule_ConfigSchema;
+        if (module.shouldRun()) {
+          if (schema.subSettings) {
+            const subSettings = schema.subSettings.reduce((acc, setting) => {
+              acc[setting.key] = true;
+              return acc;
+            }, {} as Record<string, any>);
+            module.run(subSettings);
+          } else {
+            module.run(undefined);
+          }
+        }
+      } catch (e) {
+        console.error("Error running module", module, e);
+      }
+    });
   }
 }
 

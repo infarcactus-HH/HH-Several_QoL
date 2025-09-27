@@ -1,4 +1,5 @@
 import { HHModule } from "../types/HH++";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 const configSchema = {
     baseKey : "whaleBossTournament",
@@ -18,7 +19,7 @@ export default class WhaleBossTournament extends HHModule<typeof configSchema> {
             return;
         }
         this.hasRun = true;
-        unsafeWindow.HHPlusPlus.Helpers.doWhenSelectorAvailable(".world-boss .title", () => {
+        HHPlusPlusReplacer.doWhenSelectorAvailable(".world-boss .title", () => {
             $(".world-boss .title").text("Whale Boss Tournament");
         })
     }

@@ -1,4 +1,5 @@
 import { HHModule } from "../types/HH++";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 const configSchema = {
   baseKey: "labyTeamPreset",
   label: "<span tooltip='Add a button to register laby team presets, and to apply it'>Laby Team Preset</span>",
@@ -34,8 +35,7 @@ export default class LabyTeamPresets extends HHModule {
     $FillPresetBtn.on("click", () => {
       this.loadSavedPreset();
     });
-    const HHPlusPlus = unsafeWindow.HHPlusPlus;
-    HHPlusPlus.Helpers.doWhenSelectorAvailable(
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".change-team-panel .player-team .average-lvl",
       () => {
         const $averageLvl = $(".change-team-panel .player-team .average-lvl");
