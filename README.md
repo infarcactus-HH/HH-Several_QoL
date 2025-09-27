@@ -7,7 +7,7 @@ Install from here : https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/he
 
 You need [TamperMonkey](https://www.tampermonkey.net) or a similar browser extension.  
 
-Needs HH++ bdsm
+HH++ bdsm **strongly** recommended, but works 100% without and every feature is set as true
 
 ## Main Features
 - Popup++ (stacked popups and when you click on it makes it disappear)
