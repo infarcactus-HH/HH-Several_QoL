@@ -17,7 +17,7 @@ class Userscript {
             resolve("hh++-bdsm:loaded")
           );
         }),
-        new Promise((resolve) => setTimeout(() => resolve("timeout"), 200)),
+        new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
       ]).then((result) => {
         if (result === "hh++-bdsm:loaded") {
           this.run();
