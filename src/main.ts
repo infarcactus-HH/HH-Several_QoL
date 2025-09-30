@@ -1,4 +1,5 @@
 import type { HHModule } from "./types/HH++";
+import { HHModule_ConfigSchema } from "./types/basemodule";
 import PopupPlusPlus from "./modules/Popup++";
 import GirlsToWiki from "./modules/GirlsToWiki";
 import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
@@ -6,7 +7,6 @@ import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
-import { HHModule_ConfigSchema } from "./types/basemodule";
 
 class Userscript {
   constructor() {
@@ -30,37 +30,28 @@ class Userscript {
     this.run();
   }
 
+  allModules: HHModule<any>[] = [
+    new PopupPlusPlus(),
+    new LabyTeamPresets(),
+    new NoAnnoyingPopups(),
+    new NoOnlyRealMoneyOptions(),
+    new GirlsToWiki(),
+    new TighterPoP(),
+    new WhaleBossTournament(),
+  ];
   run() {
-    const allModules: HHModule<any>[] = [
-      new PopupPlusPlus(),
-      new LabyTeamPresets(),
-      new NoAnnoyingPopups(),
-      new NoOnlyRealMoneyOptions(),
-      new GirlsToWiki(),
-      new TighterPoP(),
-      new WhaleBossTournament(),
-    ];
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
       name: "<span tooltip='by infarctus'>Several QoL</span>",
     });
-    allModules.forEach((module) => {
+    this.allModules.forEach((module) => {
       unsafeWindow.hhPlusPlusConfig.registerModule(module);
     });
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
   runWithoutBdsm() {
-    const allModules: HHModule<any>[] = [
-      new PopupPlusPlus(),
-      new LabyTeamPresets(),
-      new NoAnnoyingPopups(),
-      new NoOnlyRealMoneyOptions(),
-      new GirlsToWiki(),
-      new TighterPoP(),
-      new WhaleBossTournament(),
-    ];
-    allModules.forEach((module) => {
+    this.allModules.forEach((module) => {
       try {
         const schema = module.configSchema as HHModule_ConfigSchema;
         if (module.shouldRun()) {
