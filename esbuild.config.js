@@ -27,6 +27,7 @@ const userscriptHeader = `// ==UserScript==
 // @updateURL    https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @downloadURL  https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @grant        GM.addStyle
+// @grant        GM_addStyle
 // @grant        GM.openInTab
 // @grant        unsafeWindow
 // @run-at       document-end

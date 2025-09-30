@@ -7,4 +7,6 @@ declare namespace GM {
 
 declare let shared: any;
 
+declare function GM_addStyle(css: string): HTMLStyleElement;
+
 declare function number_format_lang(num: number): string;
