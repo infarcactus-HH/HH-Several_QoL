@@ -1,5 +1,4 @@
-import type { HHModule } from "./types/HH++";
-import { HHModule_ConfigSchema } from "./types/basemodule";
+import type { HHModule, HHModule_ConfigSchema } from "./types/HH++";
 import PopupPlusPlus from "./modules/Popup++";
 import GirlsToWiki from "./modules/GirlsToWiki";
 import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
