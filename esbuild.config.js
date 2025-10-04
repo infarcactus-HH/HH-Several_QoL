@@ -23,7 +23,7 @@ const userscriptHeader = `// ==UserScript==
 // @match        https://*.pornstarharem.com/*
 // @match        https://*.transpornstarharem.com/*
 // @match        https://*.gaypornstarharem.com/*
-// @match        https://www.mangarpg.com/*
+// @match        https://*.mangarpg.com/*
 // @updateURL    https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @downloadURL  https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @grant        GM.addStyle
