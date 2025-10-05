@@ -114,7 +114,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     criteria: string,
     assignedGirls: Set<number>
   ): number[] {
-    const availableGirls = Object.values(pop_hero_girls)
+    const availableGirls = Object.values(pop_hero_girls);
 
     if (availableGirls.length === 0) {
       console.error(
@@ -203,7 +203,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     }
   }
 
-  selectNextPoP($currentPoPRecordSelected : JQuery<HTMLElement>) {
+  selectNextPoP($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
     if ($currentPoPRecordSelected.next().length !== 0) {
       $currentPoPRecordSelected.next().trigger("click");
@@ -363,7 +363,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     shared.general.hh_ajax(n, (_response: any) => {
       shared.animations.loadingAnimation.stop();
-      this.selectNextPoP($(".pop-record.selected"))
+      this.selectNextPoP($(".pop-record.selected"));
     });
   }
 
