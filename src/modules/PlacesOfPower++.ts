@@ -46,16 +46,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Add girls that are currently assigned in the game
     Object.values(pop_hero_girls).forEach((girl) => {
-      if (girl.id_places_of_power !== null) {
+      if (girl.id_places_of_power !== null || girl.id_places_of_power === popId) {
         assignedGirls.add(girl.id_girl);
-      }
-    });
-
-    // Add girls that we've already assigned to other PoP presets
-    Object.entries(this.popPresets).forEach(([presetPopId, girlIds]) => {
-      // Don't count girls from this PoP's own preset (we're rebuilding it)
-      if (parseInt(presetPopId) !== popId) {
-        girlIds.forEach((girlId) => assignedGirls.add(girlId));
       }
     });
 
