@@ -7,6 +7,7 @@ import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
+import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
 
 class Userscript {
   constructor() {
@@ -39,6 +40,7 @@ class Userscript {
     new TighterPoP(),
     new WhaleBossTournament(),
     new PlacesOfPowerPlusPlus(),
+    new NoReloadFromClaimingDailyChests(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
