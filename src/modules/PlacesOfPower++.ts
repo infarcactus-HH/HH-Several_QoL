@@ -329,6 +329,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         return;
       }
     }
+    // You're sure it will proceed from here
     selectedGirls.forEach((girlId) => this.girlBackToPool.delete(girlId));
 
     $(".startPoPButton").css("display", "none");
@@ -361,6 +362,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       "pop-record.selected .pop-active-timer",
       () => {}
     );
+    pop_data[parseInt(popKey)].status = "in_progress";
     shared.general.hh_ajax(n, (_response: any) => {
       shared.animations.loadingAnimation.stop();
       this.selectNextPoP($(".pop-record.selected"));
