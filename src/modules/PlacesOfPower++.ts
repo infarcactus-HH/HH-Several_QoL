@@ -15,7 +15,6 @@ const configSchema = {
 
 export default class PlacesOfPowerPlusPlus extends HHModule {
   //private _selectedPopKey: string = "";
-  private hasBuiltCustomPoPGirlsList: boolean = false;
   private popPresets: Record<number, number[]> = {}; // id_places_of_power -> array of girl IDs
 
   constructor() {
@@ -39,32 +38,29 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   /**
-   * Build girl assignments for all PoPs that are finished or can start
+   * Build girl assignment for a single PoP only
    */
-  buildPopGirlAssignments() {
-    if (this.hasBuiltCustomPoPGirlsList) return;
-
-    // Track which girls are already assigned
+  buildSinglePopAssignment(popId: number) {
+    // Track which girls are already assigned (either in game or in our presets)
     const assignedGirls = new Set<number>();
 
-    // Update pop_hero_girls with current assignments
+    // Add girls that are currently assigned in the game
     Object.values(pop_hero_girls).forEach((girl) => {
       if (girl.id_places_of_power !== null) {
         assignedGirls.add(girl.id_girl);
       }
     });
 
-    // Process each PoP
-    Object.values(pop_data).forEach((popData) => {
-      if (
-        popData.status === "pending_reward" ||
-        popData.status === "can_start"
-      ) {
-        this.assignGirlsToPoP(popData.id_places_of_power, assignedGirls);
+    // Add girls that we've already assigned to other PoP presets
+    Object.entries(this.popPresets).forEach(([presetPopId, girlIds]) => {
+      // Don't count girls from this PoP's own preset (we're rebuilding it)
+      if (parseInt(presetPopId) !== popId) {
+        girlIds.forEach((girlId) => assignedGirls.add(girlId));
       }
     });
 
-    this.hasBuiltCustomPoPGirlsList = true;
+    // Assign girls to this specific PoP
+    this.assignGirlsToPoP(popId, assignedGirls);
   }
 
   /**
@@ -76,8 +72,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     if (!popData) return;
 
-    console.log(`[PoP ${popId}] Assigning girls - Status: ${popData.status}`);
-
     const criteria = popData.criteria;
     const targetPower = popData.max_team_power;
 
@@ -86,9 +80,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       this.popPresets[popId] && this.popPresets[popId].length > 0;
 
     if (hasPreset && popData.status === "pending_reward") {
-      console.log(
-        `[PoP ${popId}] Reusing existing preset with ${this.popPresets[popId].length} girls`
-      );
       // Try to reuse the preset, but only keep girls that are assigned to THIS PoP
       const presetGirls = this.popPresets[popId].filter((girlId) => {
         const girl = Object.values(pop_hero_girls).find(
@@ -106,15 +97,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       if (totalPower >= targetPower) {
         // Preset is still valid, mark girls as assigned
         presetGirls.forEach((girlId) => assignedGirls.add(girlId));
-        console.log(
-          `[PoP ${popId}] Preset is valid (power: ${totalPower}/${targetPower})`
-        );
         return;
       } else {
-        // Preset is not enough, add more girls
-        console.log(
-          `[PoP ${popId}] Preset insufficient (power: ${totalPower}/${targetPower}), filling...`
-        );
         this.fillFromPreset(
           popId,
           presetGirls,
@@ -124,10 +108,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         );
       }
     } else {
-      // Create new assignment
-      console.log(
-        `[PoP ${popId}] Creating new assignment (hasPreset: ${hasPreset})`
-      );
       const selectedGirls = this.selectOptimalGirls(
         popId,
         targetPower,
@@ -167,19 +147,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     criteria: string,
     assignedGirls: Set<number>
   ) {
-    console.log(
-      `[PoP ${popId}] Filling from preset with ${presetGirls.length} girls`
-    );
 
     // Mark preset girls as assigned first
     presetGirls.forEach((girlId) => assignedGirls.add(girlId));
 
     let currentPower = this.calculatePresetPower(presetGirls, criteria);
     let remainingPower = targetPower - currentPower;
-
-    console.log(
-      `[PoP ${popId}] Current power: ${currentPower}, Target: ${targetPower}, Remaining: ${remainingPower}`
-    );
 
     // Get available girls not in preset and not assigned to other PoPs
     const availableGirls = Object.values(pop_hero_girls).filter(
@@ -189,20 +162,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         (girl.id_places_of_power === null || girl.id_places_of_power === popId)
     );
 
-    console.log(
-      `[PoP ${popId}] Available girls for filling: ${availableGirls.length}`
-    );
-
     // Add girls to fill remaining power
     const additionalGirls = this.selectGirlsForRemainingPower(
       availableGirls,
       remainingPower,
       criteria
-    );
-
-    console.log(
-      `[PoP ${popId}] Adding ${additionalGirls.length} additional girls:`,
-      additionalGirls
     );
 
     // Update preset with additional girls and mark as assigned
@@ -212,9 +176,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const finalPower = this.calculatePresetPower(
       this.popPresets[popId],
       criteria
-    );
-    console.log(
-      `[PoP ${popId}] Final power: ${finalPower}, Total girls: ${this.popPresets[popId].length}`
     );
   }
 
@@ -227,23 +188,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     criteria: string,
     assignedGirls: Set<number>
   ): number[] {
-    console.log(
-      `[PoP ${popId}] Selecting optimal girls - Target power: ${targetPower}, Criteria: ${criteria}`
-    );
 
     const availableGirls = Object.values(pop_hero_girls).filter(
       (girl) =>
-        girl.id_places_of_power === null || girl.id_places_of_power === popId
-    );
-
-    console.log(
-      `[PoP ${popId}] Total girls in roster: ${
-        Object.values(pop_hero_girls).length
-      }`
-    );
-    console.log(`[PoP ${popId}] Already assigned girls: ${assignedGirls.size}`);
-    console.log(
-      `[PoP ${popId}] Available girls for selection: ${availableGirls.length}`
+        !assignedGirls.has(girl.id_girl) &&
+        (girl.id_places_of_power === null || girl.id_places_of_power === popId)
     );
 
     if (availableGirls.length === 0) {
@@ -257,11 +206,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       availableGirls,
       targetPower,
       criteria
-    );
-
-    console.log(
-      `[PoP ${popId}] Selected ${selectedGirls.length} girls:`,
-      selectedGirls
     );
 
     return selectedGirls;
@@ -337,6 +281,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $(".claimPoPButton").css("display", "none");
       $(".startPoPButton").css("display", "");
       pop_data[parseInt(popKey)].status = "can_start";
+      $(".pop-record.selected .collect_notif").remove();
     } else {
       const $currentPoPRecord = $(".pop-record.selected");
       $currentPoPRecord.next().trigger("click");
@@ -355,7 +300,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       const $claimedRewardsContainerItems = $(".pop-claimed-rewards-items");
       if (!$claimedRewardsContainerItems.length) return;
       if (response.rewards.data.rewards) {
-        console.log(response.rewards.data.rewards);
         const rewardElement = shared.reward.newReward.multipleSlot(
           response.rewards.data.rewards
         );
@@ -397,41 +341,55 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const currentPoPData = pop_data[parseInt(popKey)];
     if (currentPoPData.status !== "can_start") return;
 
-    $(".startPoPButton").css("display", "none");
-    $(".claimPoPButton").css("display", "");
-
     // Use the preset that was already calculated
     const popId = currentPoPData.id_places_of_power;
 
-    // Ensure assignments are built
-    if (!this.hasBuiltCustomPoPGirlsList) {
-      console.warn(
-        `[PoP ${popId}] Girl assignments not built yet, building now...`
-      );
-      this.buildPopGirlAssignments();
-    }
+    // Build assignment for this specific PoP only
+    console.log(`[PoP ${popId}] Building girl assignment for this PoP...`);
+    this.buildSinglePopAssignment(popId);
 
     const selectedGirls = this.popPresets[popId] || [];
 
     if (selectedGirls.length === 0) {
-      console.error(
-        `[PoP ${popId}] No girls selected for PoP. Preset:`,
-        this.popPresets[popId]
-      );
-      console.error(
-        `[PoP ${popId}] Available presets:`,
-        Object.keys(this.popPresets)
-      );
       alert(
         `No girls were assigned to this PoP. This might happen if all your girls are already assigned to other PoPs.`
       );
+      shared.animations.loadingAnimation.stop()
       return;
     }
 
-    console.log(
-      `[PoP ${popId}] Starting PoP with ${selectedGirls.length} girls:`,
-      selectedGirls
-    );
+    // Check if the team is maxed (capped)
+    const criteriaKey = this.convertCriteriaKey(currentPoPData.criteria);
+    let totalPower = 0;
+    for (const girlId of selectedGirls) {
+      const girl = Object.values(pop_hero_girls).find(
+        (g) => g.id_girl === girlId
+      );
+      if (girl) {
+        totalPower += girl[criteriaKey];
+      }
+    }
+
+    // If not capped, ask for confirmation
+    if (totalPower < currentPoPData.max_team_power) {
+      const shouldContinue = confirm(
+        `Warning: This PoP is not fully maxed!\n\n` +
+        `Current Power: ${Math.floor(totalPower)}\n` +
+        `Max Power: ${currentPoPData.max_team_power}\n\n` +
+        `This will take longer than 6 hours to complete.\n` +
+        `Do you want to continue?`
+      );
+      if (!shouldContinue) {
+        // Revert UI changes
+        $(".startPoPButton").css("display", "");
+        $(".claimPoPButton").css("display", "none");
+        shared.animations.loadingAnimation.stop();
+        return;
+      }
+    }
+
+    $(".startPoPButton").css("display", "none");
+    $(".claimPoPButton").css("display", "");
 
     // Here you would send the actual request to start the PoP with the selected girls
     // Example structure:
@@ -480,15 +438,21 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       "src",
       currentPoPData.girl
         ? currentPoPData.girl.avatar
-        : "https://hh.hh-content.com/pictures/girls/1/avb0-1200x.webp?a=1"
+        : IMAGES_URL + "/pictures/girls/1/avb0-1200x.webp?a=1"
     );
     $popDetailsLeft.append($girlImageHolder);
+
+    const $navigationButtons = $('<div class="pop-navigation-buttons-original blue_button_L">Visit Original</div>');
+    $navigationButtons.on("click", () => {
+      shared.general.navigate("/activities.html?tab=pop&index=")
+    });
+    $popDetailsLeft.append($navigationButtons);
 
     // Details (title, rewards, buttons) on the right
     const $popDetailsRight = $("<div class='pop-details-right'></div>");
     $popDetails.prepend($popDetailsRight);
 
-    const $title = $(`<div class="pop-title">${currentPoPData.title}</div>`);
+    const $title = $(`<a tooltip="Visit this PoP original page" class="pop-title" href="${shared.general.getDocumentHref("/activities.html?tab=pop&index=" + currentPoPData.id_places_of_power)}">${currentPoPData.title}</div>`);
     $popDetailsRight.append($title);
 
     // Create rewards container
@@ -541,7 +505,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   shouldRun() {
-    return location.pathname.includes("/activities.html");
+    return location.pathname.includes("/activities.html") && !location.search.includes("?tab=pop&index=");
   }
   run() {
     if (this.hasRun || !this.shouldRun()) {
@@ -552,7 +516,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
     $PopSwitcher.attr("tooltip", "By infarctus");
     $PopSwitcher.on("click", () => {
-      this.buildPopGirlAssignments();
       this.buildCustomPopInfo();
     });
     this.injectCustomStyles();
@@ -572,9 +535,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popRecordsContainer = $('<div class="pop-records-container"></div>');
 
     // Iterate through pop_data records
-    let firstKey = "";
     Object.entries(pop_data).forEach(([key, popRecord]) => {
-      const $popRecord = $('<div class="pop-record"></div>');
+      const $popRecord = $(`<div class="pop-record"></div>`);
       $popRecord.attr("data-pop-id", key);
       // Set background image inline (can't be done in CSS)
       $popRecord.css("background-image", `url(${popRecord.image})`);
@@ -610,6 +572,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         );
         $timer.append(timerElement);
         $popRecord.append($timer);
+      }
+      if(popRecord.status === "pending_reward"){
+        const $claimNotif = $(`<div class="collect_notif"></div>`);
+        $popRecord.append($claimNotif);
       }
 
       $popRecordsContainer.append($popRecord);
@@ -649,6 +615,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         overflow: clip;
         display: block;
       }
+      /* Visit Original button */
+      .pop-navigation-buttons-original {
+        top: 0px;
+        position: absolute;
+        padding: 2px 4px;
+        font-size: 10px;
+      }
 
       /* Info panel - right side of details area */
       .pop-details-right {
@@ -663,6 +636,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 5px;
+        color: white;
       }
 
       /* Rewards display container */
@@ -761,6 +735,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         padding: 1px 3px;
         border-radius: 1px;
         font-size: 8px;
+      }
+      
+      /* Claim treasure on finished PoP (bottom right of thumbnail) */
+      .collect_notif {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
       }
     `);
   }
