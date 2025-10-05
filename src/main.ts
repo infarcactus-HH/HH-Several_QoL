@@ -6,6 +6,7 @@ import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
+import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 
 class Userscript {
   constructor() {
@@ -37,6 +38,7 @@ class Userscript {
     new GirlsToWiki(),
     new TighterPoP(),
     new WhaleBossTournament(),
+    new PlacesOfPowerPlusPlus(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({

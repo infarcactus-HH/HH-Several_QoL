@@ -6,6 +6,8 @@ declare namespace GM {
 }
 
 declare let shared: any;
+declare const GT: any;
+
 
 declare function GM_addStyle(css: string): HTMLStyleElement;
 
