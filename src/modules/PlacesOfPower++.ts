@@ -203,6 +203,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     }
   }
 
+  selectNextPoP($currentPoPRecordSelected : JQuery<HTMLElement>) {
+    if ($currentPoPRecordSelected.length === 0) return;
+    if ($currentPoPRecordSelected.next().length !== 0) {
+      $currentPoPRecordSelected.next().trigger("click");
+    } else {
+      $(".pop-record").first().trigger("click");
+    }
+  }
+
   sendClaimRequest(popKey: string) {
     this.readdGirlsFromCurrentPoP(popKey);
     shared.animations.loadingAnimation.start();
@@ -214,9 +223,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       pop_data[parseInt(popKey)].status = "can_start";
       $(".pop-record.selected .collect_notif").remove();
     } else {
-      const $currentPoPRecord = $(".pop-record.selected");
-      $currentPoPRecord.next().trigger("click");
-      $currentPoPRecord.remove();
+      const $currentPoPRecordSelected = $(".pop-record.selected");
+      this.selectNextPoP($currentPoPRecordSelected);
+      $currentPoPRecordSelected.remove();
     }
     const n = {
       namespace: "h\\PlacesOfPower",
@@ -354,6 +363,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     shared.general.hh_ajax(n, (_response: any) => {
       shared.animations.loadingAnimation.stop();
+      this.selectNextPoP($(".pop-record.selected"))
     });
   }
 
