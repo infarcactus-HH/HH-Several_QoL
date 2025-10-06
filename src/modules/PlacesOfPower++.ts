@@ -26,7 +26,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
    * Convert criteria from pop_data format (carac_1) to pop_hero_girls format (carac1)
    */
   private convertCriteriaKey(
-    criteria: string
+    criteria: PlacesOfPowerData["criteria"]
   ): keyof Pick<
     global_pop_hero_girls_incomplete,
     "carac1" | "carac2" | "carac3"
@@ -39,38 +39,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   /**
-   * Build girl assignment for a single PoP only
+   * Assign girls to a specific PoP
    */
-  buildSinglePopAssignment(popId: number) {
-    // Track which girls are already assigned (either in game or in our presets)
-    const assignedGirls = new Set<number>();
-
-    // Add girls that are currently assigned in the game
-    Object.values(pop_hero_girls).forEach((girl) => {
-      if (
-        girl.id_places_of_power !== null &&
-        !this.girlBackToPool.has(girl.id_places_of_power)
-      ) {
-        assignedGirls.add(girl.id_girl);
-      }
-    });
-
-    // Add girls that are already in other PoP presets
-    //Object.entries(this.popPresets).forEach(([presetPopId, girlIds]) => {
-    //  // Don't count girls from this PoP's own preset (we're rebuilding it)
-    //  if (parseInt(presetPopId) !== popId) {
-    //    girlIds.forEach((girlId) => assignedGirls.add(girlId));
-    //  }
-    //});
-
-    // Assign girls to this specific PoP
-    this.assignGirlsToPoP(popId, assignedGirls);
-  }
-
-  /**
-   * Assign girls to a specific PoP, reusing preset if available
-   */
-  assignGirlsToPoP(popId: number, assignedGirls: Set<number>) {
+  assignGirlsToPoP(popId: number) {
     const popData = Object.values(pop_data).find(
       (p) => p.id_places_of_power === popId
     );
@@ -82,8 +53,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const selectedGirls = this.selectOptimalGirls(
       popId,
       targetPower,
-      criteria,
-      assignedGirls
+      criteria
     );
     this.popPresets[popId] = selectedGirls;
   }
@@ -91,7 +61,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   /**
    * Calculate total power of a preset
    */
-  calculatePresetPower(girlIds: number[], criteria: string): number {
+  calculatePresetPower(girlIds: number[], criteria: PlacesOfPowerData["criteria"]): number {
     let totalPower = 0;
     const criteriaKey = this.convertCriteriaKey(criteria);
     for (const girlId of girlIds) {
@@ -111,24 +81,54 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   selectOptimalGirls(
     popId: number,
     targetPower: number,
-    criteria: string,
-    assignedGirls: Set<number>
+    criteria: PlacesOfPowerData["criteria"]
   ): number[] {
-    const availableGirls = Object.values(pop_hero_girls);
+    const allGirls = Object.values(pop_hero_girls);
 
-    if (availableGirls.length === 0) {
+    if (allGirls.length === 0) {
       console.error(
         `[PoP ${popId}] No available girls! All girls might be assigned to other PoPs.`
       );
       return [];
     }
 
+    // Prioritize girls from girlBackToPool (just freed from claimed PoPs)
+    const priorityGirls: global_pop_hero_girls_incomplete[] = [];
+    const otherGirls: global_pop_hero_girls_incomplete[] = [];
+    
+    for (const girl of allGirls) {
+      if (this.girlBackToPool.has(girl.id_girl)) {
+        priorityGirls.push(girl);
+      } else {
+        otherGirls.push(girl);
+      }
+    }
+
+    // Try to fill with priority girls first
     const selectedGirls = this.selectGirlsForRemainingPower(
-      availableGirls,
+      priorityGirls,
       targetPower,
       criteria
     );
 
+    // If we still need more power, add other girls
+    const criteriaKey = this.convertCriteriaKey(criteria);
+    let currentPower = 0;
+    for (const girlId of selectedGirls) {
+      const girl = allGirls.find((g) => g.id_girl === girlId);
+      if (girl) {
+        currentPower += girl[criteriaKey];
+      }
+    }
+
+    if (currentPower < targetPower) {
+      const additionalGirls = this.selectGirlsForRemainingPower(
+        otherGirls,
+        targetPower - currentPower,
+        criteria
+      );
+      selectedGirls.push(...additionalGirls);
+    }
     return selectedGirls;
   }
 
@@ -138,7 +138,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   selectGirlsForRemainingPower(
     availableGirls: global_pop_hero_girls_incomplete[],
     remainingPower: number,
-    criteria: string
+    criteria: PlacesOfPowerData["criteria"]
   ): number[] {
     const selectedGirls: number[] = [];
     const criteriaKey = this.convertCriteriaKey(criteria);
@@ -286,7 +286,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Build assignment for this specific PoP only
     console.log(`[PoP ${popId}] Building girl assignment for this PoP...`);
-    this.buildSinglePopAssignment(popId);
+    this.assignGirlsToPoP(popId);
 
     const selectedGirls = this.popPresets[popId] || [];
 
