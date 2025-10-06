@@ -3,7 +3,7 @@ export interface global_pop_hero_girls_incomplete {
   carac1: number;
   carac2: number;
   carac3: number;
-  id_places_of_power: number|null;
+  id_places_of_power: number | null;
 }
 
 export interface PoPGirlData {
@@ -15,18 +15,16 @@ export interface PoPGirlData {
   carac_1_initial: number;
   carac_2_initial: number;
   carac_3_initial: number;
-  id_girl : number;
+  id_girl: number;
   name: string;
   rarity: string;
 }
-
 
 export interface PlacesOfPowerReward {
   loot: boolean;
   name?: string;
   rewards: Array<any>; // Maybe to do unsure if I actually will do it
 }
-
 
 export interface PlacesOfPowerData {
   base_power: number;
@@ -61,4 +59,16 @@ export interface PlacesOfPowerData {
   time_to_finish: number; // 0 when PoP is claimable or can be started
   title: string;
   type: "standard" | "temp";
+}
+export interface popupForQueue {
+  $dom_element: JQuery<HTMLElement>; // unsure if really needed but prolly yes
+  init: (t: boolean) => void; // called first, no idea what the boolean is for
+  onOpen: () => void; // called after init
+  addEventListeners: () => void; // called right after open
+  popup_name: string;
+  close_on_esc: boolean; // wether it should close when pressing escape or not
+  type: "toast" | "common" | "sliding" | "notification";
+  onClose: () => void; // called when closing
+  removeEventListeners: () => void; // called right after closing
+  destroy: () => void; // useful when you want to put a red cross to close the popup, only called manually
 }
