@@ -8,6 +8,7 @@ import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
+import PoVInfo from "./modules/PoVInfo";
 
 class Userscript {
   constructor() {
@@ -41,6 +42,7 @@ class Userscript {
     new WhaleBossTournament(),
     new PlacesOfPowerPlusPlus(),
     new NoReloadFromClaimingDailyChests(),
+    new PoVInfo(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
