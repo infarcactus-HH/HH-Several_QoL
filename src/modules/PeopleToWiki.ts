@@ -48,6 +48,7 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
     }
   }
   applyInfoBubbleToWiki() {
+    const self = this;
     $(".new_girl_info .girl_name_wrap > h5[style!='cursor: pointer;']").each(
       function () {
         const $this = $(this);
@@ -55,9 +56,9 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
         $this.on("click.InfoBubbleToWiki", function () {
           const girlName = $this.attr("hh_title");
           if (!girlName) return;
-          const formattedGirlName = girlName.replace(/ /g, "-");
+          const formattedName = girlName.replace(/ /g, "-");
           GM.openInTab(
-            `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedGirlName}`,
+            self.getWikiPageForCurrentGame(formattedName),
             { active: true }
           );
         });
@@ -65,6 +66,7 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
     );
   }
   applyImageToWiki() {
+    const self = this;
     $(
       ".slot_girl_shards > [data-new-girl-tooltip][style!='cursor: pointer;']"
     ).each(function () {
@@ -76,9 +78,9 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
         $this.css("cursor", "pointer");
         $this.on("click.ImgToWiki", function (e) {
           e.stopPropagation();
-          const formattedGirlName = match[1].replace(/ /g, "-");
+          const formattedName = match[1].replace(/ /g, "-");
           GM.openInTab(
-            `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedGirlName}`,
+            self.getWikiPageForCurrentGame(formattedName),
             { active: true }
           );
         });
@@ -93,6 +95,8 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
       return `https://harem-battle.club/wiki/Gay-Harem/GH:${formattedName}`;
     } else if (location.host.includes("gaypornstarharem")) {
       return `https://harem-battle.club/wiki/Gay-Pornstar-Harem/GPSH:${formattedName}`;
+    } else {
+      throw new Error("Unsupported game for wiki link");
     }
   }
 }
