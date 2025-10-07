@@ -1,6 +1,6 @@
 import type { HHModule, HHModule_ConfigSchema } from "./types/HH++";
 import PopupPlusPlus from "./modules/Popup++";
-import GirlsToWiki from "./modules/GirlsToWiki";
+import People from "./modules/PeopleToWiki";
 import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
 import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
@@ -37,7 +37,7 @@ class Userscript {
     new LabyTeamPresets(),
     new NoAnnoyingPopups(),
     new NoOnlyRealMoneyOptions(),
-    new GirlsToWiki(),
+    new People(),
     new TighterPoP(),
     new WhaleBossTournament(),
     new PlacesOfPowerPlusPlus(),
