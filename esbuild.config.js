@@ -59,6 +59,86 @@ const userscriptPlugin = {
   }
 };
 
+// Plugin to load CSS files as text strings (minified)
+const cssTextPlugin = {
+  name: 'css-text',
+  setup(build) {
+    build.onLoad({ filter: /\.css$/ }, async (args) => {
+      console.log('📦 Loading CSS file:', args.path);
+      const css = fs.readFileSync(args.path, 'utf8');
+      
+      // Minify CSS: remove comments, extra whitespace, and line breaks
+      const minified = css
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+        .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with single space
+        .replace(/\s*([{}:;,])\s*/g, '$1') // Remove spaces around CSS syntax characters
+        .trim();
+      
+      console.log('📦 CSS minified:', css.length, '→', minified.length, 'bytes');
+      
+      return {
+        contents: `export default ${JSON.stringify(minified)}`,
+        loader: 'js',
+      };
+    });
+  },
+};
+
+// Plugin to minify HTML in template strings and collapse multi-line string concatenations
+const minifyHTMLPlugin = {
+  name: 'minify-html',
+  setup(build) {
+    build.onLoad({ filter: /\.ts$/ }, async (args) => {
+      const fs = require('fs');
+      let contents = fs.readFileSync(args.path, 'utf8');
+      
+      // Minify HTML in template strings (both backticks and regular strings starting with <)
+      // This matches $(`...HTML...`) and $('...HTML...') and $("...HTML...")
+      contents = contents.replace(/\$\(`([^`]*<[^`]*)`\)/g, (match, html) => {
+        const minified = html
+          .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with single space
+          .replace(/>\s+</g, '><') // Remove spaces between tags
+          .trim();
+        return `$(\`${minified}\`)`;
+      });
+      
+      contents = contents.replace(/\$\('([^']*<[^']*)'\)/g, (match, html) => {
+        const minified = html
+          .replace(/\s+/g, ' ')
+          .replace(/>\s+</g, '><')
+          .trim();
+        return `$('${minified}')`;
+      });
+      
+      contents = contents.replace(/\$\("([^"]*<[^"]*)"\)/g, (match, html) => {
+        const minified = html
+          .replace(/\s+/g, ' ')
+          .replace(/>\s+</g, '><')
+          .trim();
+        return `$("${minified}")`;
+      });
+      
+      // Collapse multi-line string concatenations with \n
+      // Match patterns like: `text\n\n` + `more text\n` + ...
+      // Also handle: "text\n\n" + "more text\n" + ...
+      contents = contents.replace(/(`[^`]*`\s*\+\s*)+`[^`]*`/g, (match) => {
+        // Extract all the individual string parts
+        const parts = match.match(/`([^`]*)`/g);
+        if (!parts) return match;
+        
+        // Combine all parts into one string, preserving \n but removing extra whitespace
+        const combined = parts.map(p => p.slice(1, -1)).join('');
+        return `\`${combined}\``;
+      });
+      
+      return {
+        contents,
+        loader: 'ts',
+      };
+    });
+  },
+};
+
 async function build() {
   const isWatch = process.argv.includes('--watch');
   
@@ -67,12 +147,12 @@ async function build() {
       entryPoints: ['src/main.ts'],
       bundle: true,
       outfile: 'dist/userscript.user.js',
-      format: 'iife', // Immediately Invoked Function Expression - clean for userscripts
+      format: 'iife', // Immediately Invoked Function Expression
       target: 'es2021',
       minify: !isWatch, // Don't minify in watch mode for easier debugging
-      sourcemap: isWatch ? 'inline' : false,
+      sourcemap: false,
       external: ['jquery'], // jQuery is available globally as $
-      plugins: [userscriptPlugin],
+      plugins: [minifyHTMLPlugin, cssTextPlugin, userscriptPlugin],
       define: {
         // Replace any build-time constants
         'process.env.NODE_ENV': isWatch ? '"development"' : '"production"'

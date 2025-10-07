@@ -40,30 +40,8 @@ export default class PoVInfo extends HHModule {
     `);
 
     // Add custom styles
-    GM.addStyle(`
-    .popup_wrapper > #popup_PoVInfo {
-        width: 1020px;
-        height: 550px;
-        top: 0.62rem;
-        left: 0.62rem;
-    }
-    #popup_PoVInfo close {
-        width: 2.4rem;
-        height: 2.2rem;
-        background-image: url(/images/clubs/ic_xCross.png);
-        opacity: 1;
-    }
-    .PoVInfo-container {
-        width: 100%;
-        height: 100%;
-        box-shadow: none;
-        border: 2px solid #ff9900;
-        align-content: center;
-    }
-    .PoVInfo-container img {
-        height: -webkit-fill-available;
-    }
-    `);
+    const css = require("./css/PoVInfo.css").default;
+    GM.addStyle(css);
 
     const PoVPopup = {
       type: "common" as const,
