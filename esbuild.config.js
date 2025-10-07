@@ -29,6 +29,9 @@ const userscriptHeader = `// ==UserScript==
 // @grant        GM.addStyle
 // @grant        GM_addStyle
 // @grant        GM.openInTab
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @grant        unsafeWindow
 // @run-at       document-end
 // ==/UserScript==`;
