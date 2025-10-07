@@ -7,6 +7,14 @@ const configSchema = {
   default: true,
 } as const;
 
+declare let daily_goals_member_progression: {
+  tier: number;
+  potions_amount: number;
+  taken_rewards_array: Array<string>;
+  date_for: string; //"2025-10-06",
+  next_rewards_in: number;
+};
+
 export default class NoReloadFromClaimingDailyChests extends HHModule {
   constructor() {
     super(configSchema);
@@ -31,6 +39,7 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
     });
   }
   applyNoReloadFix() {
+    const self = this;
     $(".progress-bar-claim-reward")
       .off("click")
       .on("click", function (e) {
@@ -38,18 +47,32 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
         e.preventDefault();
         // OG function modified
         $(this).prop("disabled", true);
+        const tier = $(this).attr("tier");
+        if (!tier) {
+          return;
+        }
         const t = {
           action: "claim_daily_goal_tier_reward",
-          tier: $(this).attr("tier"),
+          tier: tier,
         };
-        shared.general.hh_ajax(t, function (t : any) {
+        daily_goals_member_progression.taken_rewards_array.push(tier);
+        shared.general.hh_ajax(t, (t: any) => {
           const n = t.rewards;
-            shared.reward_popup.Reward.handlePopup(n);
+          shared.reward_popup.Reward.handlePopup(n);
+          self.checkIfAllChestsClaimed();
         });
       });
     $(".progress-bar-claim-reward").attr(
       "tooltip",
       "Several QoL: Claim without reload"
     );
+  }
+
+  checkIfAllChestsClaimed() {
+    if (
+      daily_goals_member_progression.taken_rewards_array.length >= daily_goals_member_progression.tier
+    ) {
+      $(`[data-tab="daily_goals"] > .collect_notif`).remove();
+    }
   }
 }
