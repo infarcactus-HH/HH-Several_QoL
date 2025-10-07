@@ -7,7 +7,7 @@ export interface global_pop_hero_girls_incomplete {
 }
 
 export interface PoPGirlData {
-  assigned: 1 | -1;
+  assigned: number | -1;
   avatar: string;
   carac_1: number;
   carac_2: number;

@@ -16,12 +16,20 @@ declare global {
         general: any;
         reward_popup: any;
         reward: any;
-        animations: any;
+        animations: {
+            loadingAnimation: {
+                start: () => void;
+                stop: () => void;
+                isLoading: boolean;
+            }
+        };
         timer: any;
+        Hero: any;
     };
     
     const GT: any;
     const IMAGES_URL: string;
+    const HH_UNIVERSE: string;
 
     function GM_addStyle(css: string): HTMLStyleElement;
     function number_format_lang(num: number): string;
