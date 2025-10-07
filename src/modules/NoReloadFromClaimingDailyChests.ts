@@ -70,7 +70,7 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
 
   checkIfAllChestsClaimed() {
     if (
-      daily_goals_member_progression.taken_rewards_array.length >= daily_goals_member_progression.tier
+      daily_goals_member_progression.taken_rewards_array.length >= (daily_goals_member_progression.tier + 1)
     ) {
       $(`[data-tab="daily_goals"] > .collect_notif`).remove();
     }
