@@ -18,7 +18,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   private isUpdatingGirls: boolean = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
 
-  // Map criteria to class numbers for O(1) lookup
   private readonly criteriaToClassMap: Record<PlacesOfPowerData["criteria"], 1 | 2 | 3> = {
     "carac_1": 1,
     "carac_2": 2,
