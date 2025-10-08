@@ -33,7 +33,9 @@ export default class PoVInfo extends HHModule {
     <div class="popup_background clickable"></div>
     <div id="popup_PoVInfo" class="popup">
         <div class="PoVInfo-container container-special-bg">
-            <img src="https://cdn.discordapp.com/attachments/1088116609094266922/1424849916831731842/dAPpwNB.png?ex=68e57264&is=68e420e4&hm=5da6549c6a8edfa33e17cc798c3dde3580727344a54f609d89e4e556a4d3c2fd&" alt="PoVInfo" />
+            <span class="PoVInfo-title">Path of Valor Info</span>
+            <p>PoV cycle through those goals in order</p>
+            <img src="https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/refs/heads/main/images/PoVInfo.png" alt="PoVInfo" />
         </div>
         <close class="closable"></close>
     </div>
