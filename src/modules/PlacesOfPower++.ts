@@ -168,8 +168,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   sendClaimRequest(popKey: string) {
-    this.readdGirlsFromCurrentPoP(popKey);
     shared.animations.loadingAnimation.start();
+    this.readdGirlsFromCurrentPoP(popKey);
     const currentPoPData = pop_data[parseInt(popKey)];
     $(".claimPoPButton").prop("disabled", true);
     if (currentPoPData.ends_in === null || currentPoPData.ends_in !== 0) {
@@ -300,12 +300,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $timer.append(timerElement);
     $(".pop-record.selected").append($timer);
-    shared.timer.activateTimers(
-      "pop-record.selected .pop-active-timer",
-      () => {}
-    );
     pop_data[parseInt(popKey)].status = "in_progress";
+    
     shared.general.hh_ajax(n, (_response: any) => {
+      shared.timer.activateTimers(
+        "pop-record.selected .pop-active-timer",
+        () => {}
+      );
       shared.animations.loadingAnimation.stop();
       this.selectNextPoP($(".pop-record.selected"));
     });
