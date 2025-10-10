@@ -200,6 +200,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         );
         $claimedRewardsContainerItems.append(rewardElement);
       }
+      this.selectNextPoP($(".pop-record.selected"));
       shared.animations.loadingAnimation.stop();
     });
   }
