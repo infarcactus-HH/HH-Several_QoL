@@ -27,6 +27,37 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   constructor() {
     super(configSchema);
   }
+  shouldRun() {
+    return (
+      location.pathname.includes("/activities.html") &&
+      !location.search.includes("?tab=pop&index=")
+    );
+  }
+  run() {
+    if (this.hasRun || !this.shouldRun()) {
+      return;
+    }
+    this.hasRun = true;
+    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
+    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
+    $PopSwitcher.attr("tooltip", "By infarctus");
+    $PopSwitcher.on("click", async () => {
+      // Wait for girls to finish updating before building UI
+      if(this.isUpdatingGirls){
+        shared.animations.loadingAnimation.start();
+        while (this.isUpdatingGirls) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        shared.animations.loadingAnimation.stop();
+      }
+      this.buildCustomPopInfo();
+    });
+    this.injectCustomStyles();
+    this.girlsHandler()
+      .then(() => {
+        this.whichGirlsInPoP();
+      });
+  }
 
   /**
    * Convert criteria from pop_data format (carac_1) to pop_hero_girls format (carac1)
@@ -408,37 +439,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     }
   }
 
-  shouldRun() {
-    return (
-      location.pathname.includes("/activities.html") &&
-      !location.search.includes("?tab=pop&index=")
-    );
-  }
-  run() {
-    if (this.hasRun || !this.shouldRun()) {
-      return;
-    }
-    this.hasRun = true;
-    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
-    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
-    $PopSwitcher.attr("tooltip", "By infarctus");
-    $PopSwitcher.on("click", async () => {
-      // Wait for girls to finish updating before building UI
-      if(this.isUpdatingGirls){
-        shared.animations.loadingAnimation.start();
-        while (this.isUpdatingGirls) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        shared.animations.loadingAnimation.stop();
-      }
-      this.buildCustomPopInfo();
-    });
-    this.injectCustomStyles();
-    this.girlsHandler()
-      .then(() => {
-        this.whichGirlsInPoP();
-      });
-  }
+  
 
   buildCustomPopInfo() {
     const $popInfo = $("#pop_info");
