@@ -72,3 +72,17 @@ export interface popupForQueue {
   removeEventListeners: () => void; // called right after closing
   destroy: () => void; // useful when you want to put a red cross to close the popup, only called manually
 }
+
+
+export interface MERankingHeroData {
+  potions: number;
+  rank: number;
+  rewards: Array<any>;
+}
+
+export interface MERankingLeaderboardEntryIncomplete {
+  id_member: number;
+  potions: number;
+  rank: number;
+  rewards: Array<any>;
+}
