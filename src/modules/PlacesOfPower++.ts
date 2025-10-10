@@ -158,10 +158,18 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     delete this.currentPoPGirls[popId];
   }
 
-  selectNextPoP($currentPoPRecordSelected: JQuery<HTMLElement>) {
+  selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
     if ($currentPoPRecordSelected.next().length !== 0) {
       $currentPoPRecordSelected.next().trigger("click");
+    } else {
+      $(".pop-record").first().trigger("click");
+    }
+  }
+  selectNextPoPFromClaim($currentPoPRecordSelected: JQuery<HTMLElement>) {
+    if ($currentPoPRecordSelected.length === 0) return;
+    if( $(".pop-record > .collect_notif").length !== 0) {
+      $(".pop-record > .collect_notif").first().parent().trigger("click");
     } else {
       $(".pop-record").first().trigger("click");
     }
@@ -179,7 +187,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $(".pop-record.selected .collect_notif").remove();
     } else {
       const $currentPoPRecordSelected = $(".pop-record.selected");
-      this.selectNextPoP($currentPoPRecordSelected);
+      this.selectNextPoPFromFill($currentPoPRecordSelected);
       $currentPoPRecordSelected.remove();
     }
     const n = {
@@ -200,7 +208,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         );
         $claimedRewardsContainerItems.append(rewardElement);
       }
-      this.selectNextPoP($(".pop-record.selected"));
+      this.selectNextPoPFromFill($(".pop-record.selected"));
       shared.animations.loadingAnimation.stop();
     });
   }
@@ -308,8 +316,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         "pop-record.selected .pop-active-timer",
         () => {}
       );
+      this.selectNextPoPFromFill($(".pop-record.selected"));
       shared.animations.loadingAnimation.stop();
-      this.selectNextPoP($(".pop-record.selected"));
     });
   }
 
