@@ -87,61 +87,6 @@ const cssTextPlugin = {
   },
 };
 
-// Plugin to minify HTML in template strings and collapse multi-line string concatenations
-const minifyHTMLPlugin = {
-  name: 'minify-html',
-  setup(build) {
-    build.onLoad({ filter: /\.ts$/ }, async (args) => {
-      const fs = require('fs');
-      let contents = fs.readFileSync(args.path, 'utf8');
-      
-      // Minify HTML in template strings (both backticks and regular strings starting with <)
-      // This matches $(`...HTML...`) and $('...HTML...') and $("...HTML...")
-      contents = contents.replace(/\$\(`([^`]*<[^`]*)`\)/g, (match, html) => {
-        const minified = html
-          .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with single space
-          .replace(/>\s+</g, '><') // Remove spaces between tags
-          .trim();
-        return `$(\`${minified}\`)`;
-      });
-      
-      contents = contents.replace(/\$\('([^']*<[^']*)'\)/g, (match, html) => {
-        const minified = html
-          .replace(/\s+/g, ' ')
-          .replace(/>\s+</g, '><')
-          .trim();
-        return `$('${minified}')`;
-      });
-      
-      contents = contents.replace(/\$\("([^"]*<[^"]*)"\)/g, (match, html) => {
-        const minified = html
-          .replace(/\s+/g, ' ')
-          .replace(/>\s+</g, '><')
-          .trim();
-        return `$("${minified}")`;
-      });
-      
-      // Collapse multi-line string concatenations with \n
-      // Match patterns like: `text\n\n` + `more text\n` + ...
-      // Also handle: "text\n\n" + "more text\n" + ...
-      contents = contents.replace(/(`[^`]*`\s*\+\s*)+`[^`]*`/g, (match) => {
-        // Extract all the individual string parts
-        const parts = match.match(/`([^`]*)`/g);
-        if (!parts) return match;
-        
-        // Combine all parts into one string, preserving \n but removing extra whitespace
-        const combined = parts.map(p => p.slice(1, -1)).join('');
-        return `\`${combined}\``;
-      });
-      
-      return {
-        contents,
-        loader: 'ts',
-      };
-    });
-  },
-};
-
 async function build() {
   const isWatch = process.argv.includes('--watch');
   
@@ -155,7 +100,7 @@ async function build() {
       minify: !isWatch, // Don't minify in watch mode for easier debugging
       sourcemap: false,
       external: ['jquery'], // jQuery is available globally as $
-      plugins: [minifyHTMLPlugin, cssTextPlugin, userscriptPlugin],
+      plugins: [cssTextPlugin, userscriptPlugin],
       define: {
         // Replace any build-time constants
         'process.env.NODE_ENV': isWatch ? '"development"' : '"production"'
