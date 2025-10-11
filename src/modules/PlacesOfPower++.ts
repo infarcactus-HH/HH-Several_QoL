@@ -131,7 +131,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
-      if (t.prop("disabled")) return;
+      if (t.has("disabled")) return;
       let n = t.attr("price");
       shared.general.hc_confirm(n, () => {
         t.prop("disabled", !0),
@@ -177,7 +177,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $popKobanFillAllButton.on("click", function () {
       //base game function except for the update of pop_data
       let t = $(this);
-      if (t.prop("disabled")) return;
+      if (t.has("disabled")) return;
       let n = t.attr("price");
       shared.general.hc_confirm(n, () => {
         t.prop("disabled", !0),
