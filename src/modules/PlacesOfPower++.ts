@@ -133,7 +133,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       let t = $(this);
       if (t.has("disabled")) return;
       let n = t.attr("price");
-      shared.general.hc_confirm(n, () => {
+      shared.general.hc_confirm(n!, () => {
         t.prop("disabled", !0),
           shared.general.hh_ajax(
             {
@@ -179,7 +179,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       let t = $(this);
       if (t.has("disabled")) return;
       let n = t.attr("price");
-      shared.general.hc_confirm(n, () => {
+      shared.general.hc_confirm(n!, () => {
         t.prop("disabled", !0),
           shared.general.hh_ajax(
             {
