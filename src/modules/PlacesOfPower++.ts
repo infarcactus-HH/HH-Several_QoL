@@ -705,7 +705,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Add the container to the top of popInfo
     $popInfo.append($popRecordsContainer);
     //Select first PoP by default
-    if ($(".pop-record").find(".collect_notif")) {
+    if ($(".pop-record").find(".collect_notif").length !== 0) {
       $(".pop-record").find(".collect_notif").first().parent().trigger("click");
     } else {
       $(".pop-record").first().trigger("click");
