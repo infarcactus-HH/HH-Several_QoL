@@ -23,7 +23,16 @@ declare global {
                 isLoading: boolean;
             }
         };
-        timer: any;
+        timer: {
+            buildTimer: any;
+            activateTimers: (className: string, callback: (timer: {
+                $dom_element: JQuery<HTMLElement>; // self
+                next_tick : number; // ??
+                onComplete : () => void; // the callback
+                time_remaining : 0; // should always be 0 here
+                timeout_id : number; // unknown
+            }) => void) => void;
+        };
         Hero: any;
     };
     

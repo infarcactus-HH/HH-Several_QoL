@@ -17,6 +17,7 @@ const configSchema = {
 export default class PlacesOfPowerPlusPlus extends HHModule {
   private isUpdatingGirls: boolean = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
+  private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
 
   private readonly criteriaToClassMap: Record<PlacesOfPowerData["criteria"], 1 | 2 | 3> = {
     "carac_1": 1,
@@ -191,19 +192,46 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
-    if ($currentPoPRecordSelected.next().length !== 0) {
-      $currentPoPRecordSelected.next().trigger("click");
+    // Try to find the next PoP after the current one that does NOT have status 'pending_reward'
+    let $next = $currentPoPRecordSelected.nextAll().filter(function() {
+      const popId = $(this).data("pop-id");
+      return pop_data[popId] && pop_data[popId].status !== "pending_reward";
+    }).first();
+    if ($next.length) {
+      $next.trigger("click");
+      return;
+    }
+    // If none found after, try from the start (excluding those with pending_reward)
+    $next = $(".pop-record").filter(function() {
+      const popId = $(this).data("pop-id");
+      return pop_data[popId] && pop_data[popId].status !== "pending_reward";
+    }).first();
+    if ($next.length) {
+      $next.trigger("click");
     } else {
+      for (const popEntry of Object.values(pop_data)){
+        if(popEntry.status !== "pending_reward"){
+          $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
+          return;
+        }
+      }
+      // fallback: select the first
       $(".pop-record").first().trigger("click");
     }
   }
-  selectNextPoPFromClaim($currentPoPRecordSelected: JQuery<HTMLElement>) {
-    if ($currentPoPRecordSelected.length === 0) return;
-    if( $(".pop-record > .collect_notif").length !== 0) {
-      $(".pop-record > .collect_notif").first().parent().trigger("click");
-    } else {
-      $(".pop-record").first().trigger("click");
+  selectNextPoPFromClaim() {
+    const $currentPoPRecordSelected = $(".pop-record.selected");
+    if($currentPoPRecordSelected.nextAll().find(".collect_notif").length !== 0){ // find those after in priority
+      $currentPoPRecordSelected.nextAll().find(".collect_notif").first().parent().trigger("click");
+      return;
     }
+    for(const popEntry of Object.values(pop_data)){ // then search all
+      if(popEntry.status === "pending_reward"){
+        $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
+        return;
+      }
+    }
+    $(".pop-record").first().trigger("click"); // default to first
   }
 
   sendClaimRequest(popKey: string) {
@@ -230,6 +258,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       action: "claim",
       id_place_of_power: currentPoPData.id_places_of_power,
     };
+    delete this.currentPoPGirls[currentPoPData.id_places_of_power];
     shared.general.hh_ajax(n, (response: any) => {
       const $claimedRewardsContainerItems = $(".pop-claimed-rewards-items");
       if (!$claimedRewardsContainerItems.length) return;
@@ -239,12 +268,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         );
         $claimedRewardsContainerItems.append(rewardElement);
       }
-      this.selectNextPoPFromFill($(".pop-record.selected"));
+      this.selectNextPoPFromClaim();
       shared.animations.loadingAnimation.stop();
     });
   }
 
-  calculateTimeToFinish(
+  calculateTimeToFinishSeconds(
     popData: PlacesOfPowerData,
     selectedGirls: number[]
   ): number {
@@ -300,10 +329,21 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       }
     }
 
+    if(totalPower / currentPoPData.max_team_power < this.minPercentToStartPoP/100){
+      alert("Not enough power to start this PoP.");
+      delete this.currentPoPGirls[popId];
+      shared.animations.loadingAnimation.stop();
+      return;
+    }
+
     // If not capped, ask for confirmation
     if (totalPower < currentPoPData.max_team_power) {
       const shouldContinue = confirm(
-        `Warning: This PoP is not fully maxed!\n\nCurrent Power: ${Math.floor(totalPower)}\nMax Power: ${currentPoPData.max_team_power}\n\nThis will take longer than 6 hours to complete.\nDo you want to continue?`
+        `Warning: This PoP is not fully maxed!\n\n`+
+        `Current Power: ${Math.floor(totalPower)}\n`+
+        `Max Power: ${currentPoPData.max_team_power}\n\n`+
+        `This will take ${this.calculateTimeToFinishSeconds(currentPoPData, selectedGirls)/60/60} hours to complete.`+
+        `\nDo you want to continue?`
       );
       if (!shouldContinue) {
         delete this.currentPoPGirls[popId];
@@ -333,7 +373,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $timer = $('<div class="pop-timer"></div>');
 
     const timerElement = shared.timer.buildTimer(
-      this.calculateTimeToFinish(currentPoPData, selectedGirls),
+      this.calculateTimeToFinishSeconds(currentPoPData, selectedGirls),
       "",
       "pop-active-timer",
       false
@@ -507,7 +547,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     //Select first PoP by default
     $(".pop-record").first().trigger("click");
 
-    shared.timer.activateTimers("pop-active-timer", () => {});
+    shared.timer.activateTimers("pop-active-timer", (timer) => {
+      const $popRecord = timer.$dom_element.parent().parent().parent();
+      if($popRecord.hasClass("selected")){
+        $(".claimPoPButton").prop("disabled", false);
+      }
+      const popId = $popRecord.data("pop-id");
+      pop_data[popId].status = "pending_reward";
+      $popRecord.append('<div class="collect_notif"></div>');
+    });
   }
   injectCustomStyles() {
     // Lazy load CSS only when needed
@@ -621,14 +669,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   whichGirlsInPoP(){
-    for(const popEntry of Object.values(pop_data)){
-      let girlsInThisPop: number[] = [];
-      popEntry.girls.forEach(girl => {
-        if(girl.assigned === popEntry.id_places_of_power){
-          girlsInThisPop.push(girl.id_girl);
+    for(const girlEntry of Object.values(pop_hero_girls)){
+      if(girlEntry.id_places_of_power != null){
+        if(!this.currentPoPGirls[girlEntry.id_places_of_power]){
+          this.currentPoPGirls[girlEntry.id_places_of_power] = [];
         }
-      })
-      this.currentPoPGirls[popEntry.id_places_of_power] = girlsInThisPop;
+        this.currentPoPGirls[girlEntry.id_places_of_power].push(girlEntry.id_girl);
+      }
     }
     this.isUpdatingGirls = false;
   }
