@@ -13,8 +13,8 @@ declare const hh_prices_auto_claim: number;
 
 const configSchema = {
   baseKey: "placesOfPowerPlusPlus",
-  label: "Places of Power++ (Beta)",
-  default: false,
+  label: "Places of Power++",
+  default: true,
 } as const;
 
 export default class PlacesOfPowerPlusPlus extends HHModule {
