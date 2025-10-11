@@ -195,7 +195,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Try to find the next PoP after the current one that does NOT have status 'pending_reward'
     let $next = $currentPoPRecordSelected.nextAll().filter(function() {
       const popId = $(this).data("pop-id");
-      return pop_data[popId] && pop_data[popId].status !== "pending_reward";
+      return pop_data[popId] && pop_data[popId].status !== "in_progress";
     }).first();
     if ($next.length) {
       $next.trigger("click");
@@ -204,13 +204,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // If none found after, try from the start (excluding those with pending_reward)
     $next = $(".pop-record").filter(function() {
       const popId = $(this).data("pop-id");
-      return pop_data[popId] && pop_data[popId].status !== "pending_reward";
+      return pop_data[popId] && pop_data[popId].status !== "in_progress";
     }).first();
     if ($next.length) {
       $next.trigger("click");
     } else {
       for (const popEntry of Object.values(pop_data)){
-        if(popEntry.status !== "pending_reward"){
+        if(popEntry.status !== "in_progress"){
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
         }
