@@ -39,6 +39,7 @@ declare global {
     const GT: any;
     const IMAGES_URL: string;
     const HH_UNIVERSE: string;
+    const server_now_ts: number;
 
     function GM_addStyle(css: string): HTMLStyleElement;
     function number_format_lang(num: number): string;
@@ -47,4 +48,3 @@ declare global {
     function GM_deleteValue(key: string): void;
 }
 
-export {};

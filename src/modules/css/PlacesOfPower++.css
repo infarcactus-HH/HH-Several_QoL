@@ -36,6 +36,7 @@
   max-width: 320px;
   width: 320px;
   left: 340px;
+  top: 35px;
 }
 
 /* PoP title text */
@@ -159,4 +160,30 @@
   position: absolute;
   bottom: 3px;
   right: 3px;
+}
+
+.pop-koban-buttons-container {
+  position: absolute;
+  left: 340px;
+  width: 320px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.pop-koban-buttons-container > .pop-koban-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 160px;
+  padding: 0 10px;
+  margin-top: 0;
+}
+
+.pop-koban-button > .action-cost {
+  display: flex;
+  align-items: end;
+  margin-left: auto;
 }

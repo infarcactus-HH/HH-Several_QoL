@@ -1,6 +1,7 @@
 import {
   global_pop_hero_girls_incomplete,
   PlacesOfPowerData,
+  PlacesOfPowerReward,
 } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { GirlsStorageHandler } from "../utils/StorageHandler";
@@ -19,10 +20,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
 
-  private readonly criteriaToClassMap: Record<PlacesOfPowerData["criteria"], 1 | 2 | 3> = {
-    "carac_1": 1,
-    "carac_2": 2,
-    "carac_3": 3,
+  private readonly criteriaToClassMap: Record<
+    PlacesOfPowerData["criteria"],
+    1 | 2 | 3
+  > = {
+    carac_1: 1,
+    carac_2: 2,
+    carac_3: 3,
   };
 
   constructor() {
@@ -44,20 +48,147 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $PopSwitcher.attr("tooltip", "By infarctus");
     $PopSwitcher.on("click", async () => {
       // Wait for girls to finish updating before building UI
-      if(this.isUpdatingGirls){
+      if (this.isUpdatingGirls) {
         shared.animations.loadingAnimation.start();
         while (this.isUpdatingGirls) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
         shared.animations.loadingAnimation.stop();
       }
       this.buildCustomPopInfo();
     });
     this.injectCustomStyles();
-    this.girlsHandler()
-      .then(() => {
-        this.whichGirlsInPoP();
+    this.girlsHandler().then(() => {
+      this.whichGirlsInPoP();
+    });
+  }
+
+  updateHHPlusPlusPoPTrackedTime(popDuration: number) {
+    const localStorageKey = "HHPlusPlusTrackedTimes";
+    if (!localStorage.getItem(localStorageKey)) {
+      console.log("No HHPlusPlusTrackedTimes found in localStorage");
+      return;
+    }
+    const trackedTimes: Record<string, any> = JSON.parse(
+      localStorage.getItem(localStorageKey) || "{}"
+    );
+    if (!trackedTimes.pop || !trackedTimes.popDuration) {
+      console.log("No trackedTimes.pop or trackedTimes.popDuration found");
+      return;
+    }
+    for(const entryPoP of Object.values(pop_data)) {
+      if(entryPoP.status === "pending_reward"){ 
+        console.log("There is a PoP to claim, not updating tracked time");
+        return;
+      } // do not update if there is a PoP to claim
+    }
+    const nowTs = Math.floor(Date.now() / 1e3); 
+    if(nowTs < trackedTimes.pop + trackedTimes.popDuration){
+      console.log("Existing PoP tracked time is still valid, not updating");
+      return;
+    }
+    trackedTimes.pop = nowTs + popDuration;
+    trackedTimes.popDuration = popDuration;
+    localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
+    console.log("Updated HHPlusPlusTrackedTimes with new PoP end time", trackedTimes);
+  }
+
+  createOrUpdateKobanButtons() {
+    let popToClaim = false;
+    let popToFill = false;
+    for (const popEntry of Object.values(pop_data)) {
+      if (popEntry.status === "pending_reward") {
+        popToClaim = true;
+      }
+      if (popEntry.status === "can_start") {
+        popToFill = true;
+      }
+      if (popToClaim && popToFill) break;
+    }
+    if ($(".pop-koban-buttons-container").length) {
+      $(".pop-koban-buttons-container").remove();
+    }
+    const $popKobanButtonContainer = $(
+      `<div class="pop-koban-buttons-container"></div>`
+    );
+    const $popKobanClaimAllButton = $(
+      `<div class="pop-koban-button orange_button_L" price="1" ${
+        popToClaim ? "" : "disabled"
+      }>
+        <div class="action-label">Claim All</div>
+        <div class="action-cost">
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>
+            1
+          </div>
+        </div>
+      </div>`
+    );
+    $popKobanClaimAllButton.on("click", function () {
+      let t = $(this);
+      if(t.prop("disabled")) return;
+      let n = t.attr("price");
+      shared.general.hc_confirm(n, () => {
+        t.prop("disabled", !0),
+          shared.general.hh_ajax(
+            {
+              action: "pop_claim_all",
+            },
+            (response: any) => {
+              // not complete
+              t.prop("disabled", !1);
+              let e = response.rewards;
+              //shared.reward_popup.Reward.handlePopup(e);
+              const rewardElement = shared.reward.newReward.multipleSlot(
+                response.rewards.data.rewards
+              );
+              const $claimedRewardsContainerItems = $(
+                ".pop-claimed-rewards-items"
+              );
+              $claimedRewardsContainerItems.append(rewardElement);
+              for (const popEntry of Object.values(pop_data)) {
+                if (popEntry.status === "pending_reward") {
+                  popEntry.status = "can_start";
+                }
+              }
+            }
+          );
       });
+    });
+    $popKobanButtonContainer.append($popKobanClaimAllButton);
+    const $popKobanFillAllButton = $(
+      `<div class="pop-koban-button orange_button_L" price="1" ${
+        popToFill ? "" : "disabled"
+      }>
+        <div class="action-label">Fill All</div>
+        <div class="action-cost">
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>
+            1
+          </div>
+        </div>
+      </div>`
+    );
+    $popKobanFillAllButton.on("click", function () {
+      //base game function except for the update of pop_data
+      let t = $(this);
+      if(t.prop("disabled")) return;
+      let n = t.attr("price");
+      shared.general.hc_confirm(n, () => {
+        t.prop("disabled", !0),
+          shared.general.hh_ajax(
+            {
+              action: "pop_auto_start_all",
+            },
+            function () {
+              t.prop("disabled", !1);
+              location.reload();
+            }
+          );
+      });
+    });
+    $popKobanButtonContainer.append($popKobanFillAllButton);
+    $(".pop-details-container").append($popKobanButtonContainer);
   }
 
   /**
@@ -88,11 +219,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const criteria = popData.criteria;
     const targetPower = popData.max_team_power;
 
-    const selectedGirls = this.selectOptimalGirls(
-      popId,
-      targetPower,
-      criteria
-    );
+    const selectedGirls = this.selectOptimalGirls(popId, targetPower, criteria);
     return selectedGirls;
   }
 
@@ -105,16 +232,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     criteria: PlacesOfPowerData["criteria"]
   ): number[] {
     const criteriaKey = this.convertCriteriaKey(criteria);
-    
+
     const classNumber = this.criteriaToClassMap[criteria];
-    
+
     // Get pre-sorted list of girl IDs for this class (already sorted by power, descending)
-    const sortedGirlIds = GirlsStorageHandler.getEnumGirlsOrderedByClass(classNumber);
-    
+    const sortedGirlIds =
+      GirlsStorageHandler.getEnumGirlsOrderedByClass(classNumber);
+
     if (sortedGirlIds.length === 0) {
-      console.error(
-        `[PoP ${popId}] No girls available in storage!`
-      );
+      console.error(`[PoP ${popId}] No girls available in storage!`);
       return [];
     }
 
@@ -122,7 +248,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const assignedGirls = new Set<number>();
     for (const [otherPopId, girlIds] of Object.entries(this.currentPoPGirls)) {
       if (parseInt(otherPopId) !== popId) {
-        girlIds.forEach(id => assignedGirls.add(id));
+        girlIds.forEach((id) => assignedGirls.add(id));
       }
     }
 
@@ -145,7 +271,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       if (girlPower <= remainingPower) {
         remainingPower -= girlPower;
         selectedGirls.push(girlId);
-        
+
         // If we've hit the target exactly, stop
         if (remainingPower === 0) {
           break;
@@ -154,29 +280,29 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       // If we need to overshoot, find the best candidate (minimum overshoot)
       else if (selectedGirls.length === 0 || remainingPower > 0) {
         // Look ahead to find the girl with minimum overshoot
-        let bestGirlId = girlId;        
+        let bestGirlId = girlId;
         const currentIndex = sortedGirlIds.indexOf(girlId);
         for (let i = currentIndex + 1; i < sortedGirlIds.length; i++) {
           const nextGirlId = sortedGirlIds[i];
-          
+
           // Skip if already assigned
           if (assignedGirls.has(nextGirlId)) continue;
-          
+
           const nextGirl = pop_hero_girls[nextGirlId];
           if (!nextGirl) continue;
-          
+
           const nextPower = nextGirl[criteriaKey];
-          
+
           // If we find one that fits perfectly or undershoots, use it immediately
           if (nextPower <= remainingPower) {
-            if(nextPower === remainingPower) {
+            if (nextPower === remainingPower) {
               bestGirlId = nextGirlId;
             }
             break;
           }
           bestGirlId = nextGirlId;
         }
-        
+
         selectedGirls.push(bestGirlId);
         break;
       }
@@ -193,24 +319,29 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
     // Try to find the next PoP after the current one that does NOT have status 'pending_reward'
-    let $next = $currentPoPRecordSelected.nextAll().filter(function() {
-      const popId = $(this).data("pop-id");
-      return pop_data[popId] && pop_data[popId].status !== "in_progress";
-    }).first();
+    let $next = $currentPoPRecordSelected
+      .nextAll()
+      .filter(function () {
+        const popId = $(this).data("pop-id");
+        return pop_data[popId] && pop_data[popId].status !== "in_progress";
+      })
+      .first();
     if ($next.length) {
       $next.trigger("click");
       return;
     }
     // If none found after, try from the start (excluding those with pending_reward)
-    $next = $(".pop-record").filter(function() {
-      const popId = $(this).data("pop-id");
-      return pop_data[popId] && pop_data[popId].status !== "in_progress";
-    }).first();
+    $next = $(".pop-record")
+      .filter(function () {
+        const popId = $(this).data("pop-id");
+        return pop_data[popId] && pop_data[popId].status !== "in_progress";
+      })
+      .first();
     if ($next.length) {
       $next.trigger("click");
     } else {
-      for (const popEntry of Object.values(pop_data)){
-        if(popEntry.status !== "in_progress"){
+      for (const popEntry of Object.values(pop_data)) {
+        if (popEntry.status !== "in_progress") {
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
         }
@@ -221,12 +352,21 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
   selectNextPoPFromClaim() {
     const $currentPoPRecordSelected = $(".pop-record.selected");
-    if($currentPoPRecordSelected.nextAll().find(".collect_notif").length !== 0){ // find those after in priority
-      $currentPoPRecordSelected.nextAll().find(".collect_notif").first().parent().trigger("click");
+    if (
+      $currentPoPRecordSelected.nextAll().find(".collect_notif").length !== 0
+    ) {
+      // find those after in priority
+      $currentPoPRecordSelected
+        .nextAll()
+        .find(".collect_notif")
+        .first()
+        .parent()
+        .trigger("click");
       return;
     }
-    for(const popEntry of Object.values(pop_data)){ // then search all
-      if(popEntry.status === "pending_reward"){
+    for (const popEntry of Object.values(pop_data)) {
+      // then search all
+      if (popEntry.status === "pending_reward") {
         $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
         return;
       }
@@ -307,7 +447,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Build assignment for this specific PoP only
     console.log(`[PoP ${popId}] Building girl assignment for this PoP...`);
-    const selectedGirls = this.assignGirlsToPoP(popId)  || [];
+    const selectedGirls = this.assignGirlsToPoP(popId) || [];
     this.currentPoPGirls[popId] = selectedGirls;
 
     if (selectedGirls.length === 0) {
@@ -329,21 +469,29 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       }
     }
 
-    if(totalPower / currentPoPData.max_team_power < this.minPercentToStartPoP/100){
+    if (
+      totalPower / currentPoPData.max_team_power <
+      this.minPercentToStartPoP / 100
+    ) {
       alert("Not enough power to start this PoP.");
       delete this.currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
       return;
     }
 
+    const timeToFinishSeconds = this.calculateTimeToFinishSeconds(
+      currentPoPData,
+      selectedGirls
+    );
+
     // If not capped, ask for confirmation
     if (totalPower < currentPoPData.max_team_power) {
       const shouldContinue = confirm(
-        `Warning: This PoP is not fully maxed!\n\n`+
-        `Current Power: ${Math.floor(totalPower)}\n`+
-        `Max Power: ${currentPoPData.max_team_power}\n\n`+
-        `This will take ${this.calculateTimeToFinishSeconds(currentPoPData, selectedGirls)/60/60} hours to complete.`+
-        `\nDo you want to continue?`
+        `Warning: This PoP is not fully maxed!\n\n` +
+          `Current Power: ${Math.floor(totalPower)}\n` +
+          `Max Power: ${currentPoPData.max_team_power}\n\n` +
+          `This will take ${(timeToFinishSeconds / 60 / 60).toFixed(2)} hours to complete.` +
+          `\nDo you want to continue?`
       );
       if (!shouldContinue) {
         delete this.currentPoPGirls[popId];
@@ -373,7 +521,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $timer = $('<div class="pop-timer"></div>');
 
     const timerElement = shared.timer.buildTimer(
-      this.calculateTimeToFinishSeconds(currentPoPData, selectedGirls),
+      timeToFinishSeconds,
       "",
       "pop-active-timer",
       false
@@ -381,13 +529,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $timer.append(timerElement);
     $(".pop-record.selected").append($timer);
     pop_data[parseInt(popKey)].status = "in_progress";
-    
+
     shared.general.hh_ajax(n, (_response: any) => {
       shared.timer.activateTimers(
         "pop-record.selected .pop-active-timer",
         () => {}
       );
       this.selectNextPoPFromFill($(".pop-record.selected"));
+      this.updateHHPlusPlusPoPTrackedTime(timeToFinishSeconds);
       shared.animations.loadingAnimation.stop();
     });
   }
@@ -477,9 +626,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       );
       $claimedRewardsContainer.append($claimedRewardsContainerItems);
     }
+    this.createOrUpdateKobanButtons();
   }
-
-  
 
   buildCustomPopInfo() {
     const $popInfo = $("#pop_info");
@@ -549,7 +697,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     shared.timer.activateTimers("pop-active-timer", (timer) => {
       const $popRecord = timer.$dom_element.parent().parent().parent();
-      if($popRecord.hasClass("selected")){
+      if ($popRecord.hasClass("selected")) {
         $(".claimPoPButton").prop("disabled", false);
       }
       const popId = $popRecord.data("pop-id");
@@ -563,31 +711,33 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     GM.addStyle(css);
   }
 
-
   /**
    * Binary search to find insertion index for a girl based on her power
    * Returns the index where the girl should be inserted (descending order)
    */
   private binarySearchInsertIndex(
-    orderedIds: number[], 
-    girlPower: number, 
-    caracKey: keyof Pick<global_pop_hero_girls_incomplete, "carac1" | "carac2" | "carac3">
+    orderedIds: number[],
+    girlPower: number,
+    caracKey: keyof Pick<
+      global_pop_hero_girls_incomplete,
+      "carac1" | "carac2" | "carac3"
+    >
   ): number {
     let left = 0;
     let right = orderedIds.length;
-    
+
     while (left < right) {
       const mid = Math.floor((left + right) / 2);
       const midGirl = pop_hero_girls[orderedIds[mid]];
-      
+
       if (!midGirl) {
         // If girl not found, move to next position
         left = mid + 1;
         continue;
       }
-      
+
       const midPower = midGirl[caracKey];
-      
+
       // Descending order: insert before if new girl has higher power
       if (girlPower > midPower) {
         right = mid;
@@ -595,86 +745,109 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         left = mid + 1;
       }
     }
-    
+
     return left;
   }
 
   async girlsHandler() {
     const numberOfGirlsStored = GirlsStorageHandler.getStoredGirlsNumber();
     const currentNumberOfGirls = Object.keys(pop_hero_girls).length;
-    
-    if((currentNumberOfGirls - numberOfGirlsStored) < 5) {
+
+    if (currentNumberOfGirls - numberOfGirlsStored < 5) {
       return; // Don't update every time
     }
     this.isUpdatingGirls = true;
-    
+
     const allGirls = Object.values(pop_hero_girls);
-    
+
     // Full sort for initial setup (0-100 girls)
-    if (numberOfGirlsStored <= 100 ) {
-      console.log(`[PoP++] Performing full sort for ${currentNumberOfGirls} girls`);
-      
+    if (numberOfGirlsStored <= 100) {
+      console.log(
+        `[PoP++] Performing full sort for ${currentNumberOfGirls} girls`
+      );
+
       // Sort girls by carac1 (class 1) and store their IDs in order
       const girlsByCarac1 = [...allGirls].sort((a, b) => b.carac1 - a.carac1);
-      const orderedIdsCarac1 = girlsByCarac1.map(g => g.id_girl);
+      const orderedIdsCarac1 = girlsByCarac1.map((g) => g.id_girl);
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
-      
+
       // Sort girls by carac2 (class 2) and store their IDs in order
       const girlsByCarac2 = [...allGirls].sort((a, b) => b.carac2 - a.carac2);
-      const orderedIdsCarac2 = girlsByCarac2.map(g => g.id_girl);
+      const orderedIdsCarac2 = girlsByCarac2.map((g) => g.id_girl);
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
-      
+
       // Sort girls by carac3 (class 3) and store their IDs in order
       const girlsByCarac3 = [...allGirls].sort((a, b) => b.carac3 - a.carac3);
-      const orderedIdsCarac3 = girlsByCarac3.map(g => g.id_girl);
+      const orderedIdsCarac3 = girlsByCarac3.map((g) => g.id_girl);
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
-      
+
       GirlsStorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
       console.log(`[PoP++] Full sort completed`);
-    } 
+    }
     // Binary search insertion for incremental updates if there's >100 girls stored
     else {
       // Get existing sorted lists (already arrays)
-      const orderedIdsCarac1 = GirlsStorageHandler.getEnumGirlsOrderedByClass(1);
-      const orderedIdsCarac2 = GirlsStorageHandler.getEnumGirlsOrderedByClass(2);
-      const orderedIdsCarac3 = GirlsStorageHandler.getEnumGirlsOrderedByClass(3);
-      
+      const orderedIdsCarac1 =
+        GirlsStorageHandler.getEnumGirlsOrderedByClass(1);
+      const orderedIdsCarac2 =
+        GirlsStorageHandler.getEnumGirlsOrderedByClass(2);
+      const orderedIdsCarac3 =
+        GirlsStorageHandler.getEnumGirlsOrderedByClass(3);
+
       // Find new girls (not in stored lists)
       const existingIds = new Set(orderedIdsCarac1); // Any list works, they all have the same IDs
-      const newGirls = allGirls.filter(girl => !existingIds.has(girl.id_girl));
-      
+      const newGirls = allGirls.filter(
+        (girl) => !existingIds.has(girl.id_girl)
+      );
+
       // Insert each new girl into sorted position using binary search
       for (const newGirl of newGirls) {
         // Insert into carac1 list
-        const index1 = this.binarySearchInsertIndex(orderedIdsCarac1, newGirl.carac1, "carac1");
+        const index1 = this.binarySearchInsertIndex(
+          orderedIdsCarac1,
+          newGirl.carac1,
+          "carac1"
+        );
         orderedIdsCarac1.splice(index1, 0, newGirl.id_girl);
-        
+
         // Insert into carac2 list
-        const index2 = this.binarySearchInsertIndex(orderedIdsCarac2, newGirl.carac2, "carac2");
+        const index2 = this.binarySearchInsertIndex(
+          orderedIdsCarac2,
+          newGirl.carac2,
+          "carac2"
+        );
         orderedIdsCarac2.splice(index2, 0, newGirl.id_girl);
-        
+
         // Insert into carac3 list
-        const index3 = this.binarySearchInsertIndex(orderedIdsCarac3, newGirl.carac3, "carac3");
+        const index3 = this.binarySearchInsertIndex(
+          orderedIdsCarac3,
+          newGirl.carac3,
+          "carac3"
+        );
         orderedIdsCarac3.splice(index3, 0, newGirl.id_girl);
       }
-      
+
       // Store updated lists (already arrays, no conversion needed)
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
       GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
-      
+
       GirlsStorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
-      console.log(`[PoP++] Binary search insertion completed for ${newGirls.length} new girls`);
+      console.log(
+        `[PoP++] Binary search insertion completed for ${newGirls.length} new girls`
+      );
     }
   }
 
-  whichGirlsInPoP(){
-    for(const girlEntry of Object.values(pop_hero_girls)){
-      if(girlEntry.id_places_of_power != null){
-        if(!this.currentPoPGirls[girlEntry.id_places_of_power]){
+  whichGirlsInPoP() {
+    for (const girlEntry of Object.values(pop_hero_girls)) {
+      if (girlEntry.id_places_of_power != null) {
+        if (!this.currentPoPGirls[girlEntry.id_places_of_power]) {
           this.currentPoPGirls[girlEntry.id_places_of_power] = [];
         }
-        this.currentPoPGirls[girlEntry.id_places_of_power].push(girlEntry.id_girl);
+        this.currentPoPGirls[girlEntry.id_places_of_power].push(
+          girlEntry.id_girl
+        );
       }
     }
     this.isUpdatingGirls = false;
