@@ -1,5 +1,5 @@
 
-export class GirlsStorageHandler {
+export class StorageHandler {
     static getStoredGirlsNumber(): number {
         return GM_getValue(HH_UNIVERSE+'StoredGirls', 0);
     }
@@ -17,5 +17,11 @@ export class GirlsStorageHandler {
     }
     static getLastSortOfGirls(): number {
         return GM_getValue(HH_UNIVERSE+'PoPLastSortOfGirls', 0);
+    }
+    static setLeaguePLayerRecord(data: Array<{bestPlace: number, timesReached: number, checkExpiresAt: number}>): void {
+        GM_setValue(HH_UNIVERSE+'LeaguePlayerRecord', data);
+    }
+    static getLeaguePlayerRecord(): Array<{bestPlace: number, timesReached: number, checkExpiresAt: number}> {
+        return GM_getValue(HH_UNIVERSE+'LeaguePlayerRecord', {});
     }
 }

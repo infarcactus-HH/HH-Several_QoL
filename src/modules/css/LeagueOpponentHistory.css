@@ -1,0 +1,25 @@
+.several-qol-top1 {
+  background-color: var(--var-color-mythic);
+  background-size: cover;
+  text-align: center;
+}
+.several-qol-top4 {
+  background: var(--legendary-bg);
+  background-size: cover;
+  text-align: center;
+}
+.several-qol-top15 {
+  background: var(--var-color-epic);
+  background-size: cover;
+  text-align: center;
+}
+.several-qol-top30 {
+  background: var(--var-color-rare);
+  background-size: cover;
+  text-align: center;
+}
+.several-qol-top30plus {
+  background: var(--var-color-common);
+  background-size: cover;
+  text-align: center;
+}

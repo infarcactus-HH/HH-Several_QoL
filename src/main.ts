@@ -10,6 +10,7 @@ import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
 import PoVInfo from "./modules/PoVInfo";
 import MERankingInfo from "./modules/MERankingInfo";
+import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
 
 class Userscript {
   constructor() {
@@ -45,6 +46,7 @@ class Userscript {
     new NoReloadFromClaimingDailyChests(),
     new PoVInfo(),
     new MERankingInfo(),
+    new LeagueOpponentHistory(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({

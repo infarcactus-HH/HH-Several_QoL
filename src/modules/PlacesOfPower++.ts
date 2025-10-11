@@ -4,7 +4,7 @@ import {
   PlacesOfPowerReward,
 } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
-import { GirlsStorageHandler } from "../utils/StorageHandler";
+import { StorageHandler } from "../utils/StorageHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -242,7 +242,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Get pre-sorted list of girl IDs for this class (already sorted by power, descending)
     const sortedGirlIds =
-      GirlsStorageHandler.getEnumGirlsOrderedByClass(classNumber);
+      StorageHandler.getEnumGirlsOrderedByClass(classNumber);
 
     if (sortedGirlIds.length === 0) {
       console.error(`[PoP ${popId}] No girls available in storage!`);
@@ -766,7 +766,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   async girlsHandler() {
-    const numberOfGirlsStored = GirlsStorageHandler.getStoredGirlsNumber();
+    const numberOfGirlsStored = StorageHandler.getStoredGirlsNumber();
     const currentNumberOfGirls = Object.keys(pop_hero_girls).length;
 
     if (currentNumberOfGirls - numberOfGirlsStored < 5) {
@@ -779,37 +779,37 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Full sort for initial setup (0-100 girls)
     if (
       numberOfGirlsStored <= 100 ||
-      numberOfGirlsStored < GirlsStorageHandler.getLastSortOfGirls() - 20
+      numberOfGirlsStored < StorageHandler.getLastSortOfGirls() - 20
     ) {
-      GirlsStorageHandler.setLastSortOfGirls(currentNumberOfGirls);
+      StorageHandler.setLastSortOfGirls(currentNumberOfGirls);
 
       // Sort girls by carac1 (class 1) and store their IDs in order
       const girlsByCarac1 = [...allGirls].sort((a, b) => b.carac1 - a.carac1);
       const orderedIdsCarac1 = girlsByCarac1.map((g) => g.id_girl);
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
 
       // Sort girls by carac2 (class 2) and store their IDs in order
       const girlsByCarac2 = [...allGirls].sort((a, b) => b.carac2 - a.carac2);
       const orderedIdsCarac2 = girlsByCarac2.map((g) => g.id_girl);
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
 
       // Sort girls by carac3 (class 3) and store their IDs in order
       const girlsByCarac3 = [...allGirls].sort((a, b) => b.carac3 - a.carac3);
       const orderedIdsCarac3 = girlsByCarac3.map((g) => g.id_girl);
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
 
-      GirlsStorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
+      StorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
       console.log(`[PoP++] Full sort completed`);
     }
     // Binary search insertion for incremental updates if there's >100 girls stored
     else {
       // Get existing sorted lists (already arrays)
       const orderedIdsCarac1 =
-        GirlsStorageHandler.getEnumGirlsOrderedByClass(1);
+        StorageHandler.getEnumGirlsOrderedByClass(1);
       const orderedIdsCarac2 =
-        GirlsStorageHandler.getEnumGirlsOrderedByClass(2);
+        StorageHandler.getEnumGirlsOrderedByClass(2);
       const orderedIdsCarac3 =
-        GirlsStorageHandler.getEnumGirlsOrderedByClass(3);
+        StorageHandler.getEnumGirlsOrderedByClass(3);
 
       // Find new girls (not in stored lists)
       const existingIds = new Set(orderedIdsCarac1); // Any list works, they all have the same IDs
@@ -845,11 +845,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       }
 
       // Store updated lists (already arrays, no conversion needed)
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
-      GirlsStorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
+      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
 
-      GirlsStorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
+      StorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
       console.log(
         `[PoP++] Binary search insertion completed for ${newGirls.length} new girls`
       );

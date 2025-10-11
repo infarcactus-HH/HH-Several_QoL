@@ -87,3 +87,11 @@ export interface MERankingLeaderboardEntryIncomplete {
   rank: number;
   rewards: Array<any>;
 }
+
+
+export interface LeagueOpponentIncomplete { // very very incomplete x)
+  place: number;
+  player: {
+    id_fighter: number;
+  }
+}
