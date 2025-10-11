@@ -11,6 +11,7 @@ export declare global {
         hh_ajax: (options: {[key: string]: any}, callback: (response : any) => void) => void; // jQuery ajax wrapper for HH games
         navigate(url: string): void; // navigate to a new page
         getDocumentHref(url: string): string; // get the full URL for a relative URL (useful for completing sessIds)
+        objectivePopup : any;
     };
     reward_popup: any;
     reward: any;
