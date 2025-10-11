@@ -61,18 +61,19 @@ export interface PlacesOfPowerData {
   type: "standard" | "temp";
 }
 export interface popupForQueue {
-  $dom_element: JQuery<HTMLElement>; // unsure if really needed but prolly yes
-  init: (t: boolean) => void; // called first, no idea what the boolean is for
-  onOpen: () => void; // called after init
-  addEventListeners: () => void; // called right after open
-  popup_name: string;
-  close_on_esc: boolean; // wether it should close when pressing escape or not
-  type: "toast" | "common" | "sliding" | "notification";
-  onClose: () => void; // called when closing
-  removeEventListeners: () => void; // called right after closing
-  destroy: () => void; // useful when you want to put a red cross to close the popup, only called manually
+  popup: {
+    $dom_element: JQuery<HTMLElement>; // unsure if really needed but prolly yes
+    init: (t: boolean) => void; // called first, no idea what the boolean is for
+    onOpen: () => void; // called after init
+    addEventListeners: () => void; // called right after open
+    popup_name: string;
+    close_on_esc: boolean; // wether it should close when pressing escape or not
+    type: "toast" | "common" | "sliding" | "notification";
+    onClose: () => void; // called when closing
+    removeEventListeners: () => void; // called right after closing
+    destroy: () => void; // useful when you want to put a red cross to close the popup, only called manually
+  };
 }
-
 
 export interface MERankingHeroData {
   potions: number;
