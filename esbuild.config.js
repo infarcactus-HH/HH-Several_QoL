@@ -15,7 +15,7 @@ const userscriptHeader = `// ==UserScript==
 // @description  ${packageJson.description}
 // @author       ${packageJson.author}
 // @license      ${packageJson.license}
-// @match        https://*.haremheroes.com/*
+// @match        https://nutaku.haremheroes.com/*
 // @match        https://*.hentaiheroes.com/*
 // @match        https://*.gayharem.com/*
 // @match        https://*.comixharem.com/*
