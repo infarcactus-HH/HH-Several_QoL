@@ -57,7 +57,7 @@ export default class MERankingInfo extends HHModule {
     );
   }
 
-  createTooltipTableRankingContent() : string {
+  createTooltipTableRankingContent(): string {
     if (!this.heroData || !this.leaderboardData) {
       return "";
     }
@@ -91,19 +91,14 @@ export default class MERankingInfo extends HHModule {
       if (leaderboardEntry) {
         const potionDiff = currentPotions - leaderboardEntry.potions;
         if (potionDiff === 0) {
-          const heroId = playerEntry!.id_member;
+          const heroId = playerEntry ? playerEntry.id_member : Infinity;
           const entryId = leaderboardEntry.id_member;
-          if (typeof heroId === "number" && typeof entryId === "number") {
-            if (heroId < entryId) {
-              diffText = "+0 (above)";
-              diffColor = "green";
-            } else if (heroId > entryId) {
-              diffText = "+0 (below)";
-              diffColor = "red";
-            } else {
-              diffText = "= (tie)";
-              diffColor = "orange";
-            }
+          if (heroId < entryId) {
+            diffText = "+0 (above)";
+            diffColor = "green";
+          } else if (heroId > entryId) {
+            diffText = "+0 (below)";
+            diffColor = "red";
           } else {
             diffText = "= (tie)";
             diffColor = "orange";
