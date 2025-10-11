@@ -8,6 +8,8 @@ import { GirlsStorageHandler } from "../utils/StorageHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
+declare const hh_prices_auto_start : number;
+declare const hh_prices_auto_claim : number;
 
 const configSchema = {
   baseKey: "placesOfPowerPlusPlus",
@@ -115,14 +117,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       `<div class="pop-koban-buttons-container"></div>`
     );
     const $popKobanClaimAllButton = $(
-      `<div class="pop-koban-button orange_button_L" price="1" ${
+      `<div class="pop-koban-button orange_button_L" price="${hh_prices_auto_claim}" ${
         popToClaim ? "" : "disabled"
       }>
         <div class="action-label">Claim All</div>
         <div class="action-cost">
           <div class="hc-cost">
             <span class="hard_currency_icn"></span>
-            1
+            ${hh_prices_auto_claim}
           </div>
         </div>
       </div>`
@@ -160,14 +162,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
     $popKobanButtonContainer.append($popKobanClaimAllButton);
     const $popKobanFillAllButton = $(
-      `<div class="pop-koban-button orange_button_L" price="1" ${
+      `<div class="pop-koban-button orange_button_L" price="${hh_prices_auto_start}" ${
         popToFill ? "" : "disabled"
       }>
         <div class="action-label">Fill All</div>
         <div class="action-cost">
           <div class="hc-cost">
             <span class="hard_currency_icn"></span>
-            1
+            ${hh_prices_auto_start}
           </div>
         </div>
       </div>`
