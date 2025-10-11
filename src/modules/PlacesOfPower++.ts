@@ -117,7 +117,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       `<div class="pop-koban-buttons-container"></div>`
     );
     const $popKobanClaimAllButton = $(
-      `<div class="pop-koban-button orange_button_L" price="${hh_prices_auto_claim}" ${
+      `<btn class="pop-koban-button orange_button_L" price="${hh_prices_auto_claim}" ${
         popToClaim ? "" : "disabled"
       }>
         <div class="action-label">Claim All</div>
@@ -162,7 +162,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
     $popKobanButtonContainer.append($popKobanClaimAllButton);
     const $popKobanFillAllButton = $(
-      `<div class="pop-koban-button orange_button_L" price="${hh_prices_auto_start}" ${
+      `<btn class="pop-koban-button orange_button_L" price="${hh_prices_auto_start}" ${
         popToFill ? "" : "disabled"
       }>
         <div class="action-label">Fill All</div>
