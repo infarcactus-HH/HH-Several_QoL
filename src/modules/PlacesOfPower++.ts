@@ -76,21 +76,24 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
       return;
     }
-    for(const entryPoP of Object.values(pop_data)) {
-      if(entryPoP.status === "pending_reward"){ 
+    for (const entryPoP of Object.values(pop_data)) {
+      if (entryPoP.status === "pending_reward") {
         console.log("There is a PoP to claim, not updating tracked time");
         return;
       } // do not update if there is a PoP to claim
     }
-    const nowTs = Math.floor(Date.now() / 1e3); 
-    if(nowTs < trackedTimes.pop + trackedTimes.popDuration){
+    const nowTs = Math.floor(Date.now() / 1e3);
+    if (nowTs < trackedTimes.pop + trackedTimes.popDuration) {
       console.log("Existing PoP tracked time is still valid, not updating");
       return;
     }
     trackedTimes.pop = nowTs + popDuration;
     trackedTimes.popDuration = popDuration;
     localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
-    console.log("Updated HHPlusPlusTrackedTimes with new PoP end time", trackedTimes);
+    console.log(
+      "Updated HHPlusPlusTrackedTimes with new PoP end time",
+      trackedTimes
+    );
   }
 
   createOrUpdateKobanButtons() {
@@ -126,7 +129,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
-      if(t.prop("disabled")) return;
+      if (t.prop("disabled")) return;
       let n = t.attr("price");
       shared.general.hc_confirm(n, () => {
         t.prop("disabled", !0),
@@ -172,7 +175,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $popKobanFillAllButton.on("click", function () {
       //base game function except for the update of pop_data
       let t = $(this);
-      if(t.prop("disabled")) return;
+      if (t.prop("disabled")) return;
       let n = t.attr("price");
       shared.general.hc_confirm(n, () => {
         t.prop("disabled", !0),
@@ -490,7 +493,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         `Warning: This PoP is not fully maxed!\n\n` +
           `Current Power: ${Math.floor(totalPower)}\n` +
           `Max Power: ${currentPoPData.max_team_power}\n\n` +
-          `This will take ${(timeToFinishSeconds / 60 / 60).toFixed(2)} hours to complete.` +
+          `This will take ${(timeToFinishSeconds / 60 / 60).toFixed(
+            2
+          )} hours to complete.` +
           `\nDo you want to continue?`
       );
       if (!shouldContinue) {
