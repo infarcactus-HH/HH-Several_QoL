@@ -12,4 +12,10 @@ export class GirlsStorageHandler {
     static getEnumGirlsOrderedByClass(classType: 1 | 2 | 3): number[] {
         return GM_getValue(HH_UNIVERSE+'EnumGirlsOrderedByClass_'+classType, []);
     }
+    static setLastSortOfGirls(nbGirls : number){
+        GM_setValue(HH_UNIVERSE+'PoPLastSortOfGirls', nbGirls);
+    }
+    static getLastSortOfGirls(): number {
+        return GM_getValue(HH_UNIVERSE+'PoPLastSortOfGirls', 0);
+    }
 }

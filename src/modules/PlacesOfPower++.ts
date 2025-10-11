@@ -8,8 +8,8 @@ import { GirlsStorageHandler } from "../utils/StorageHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
-declare const hh_prices_auto_start : number;
-declare const hh_prices_auto_claim : number;
+declare const hh_prices_auto_start: number;
+declare const hh_prices_auto_claim: number;
 
 const configSchema = {
   baseKey: "placesOfPowerPlusPlus",
@@ -323,7 +323,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
-    // Try to find the next PoP after the current one that does NOT have status 'pending_reward'
     let $next = $currentPoPRecordSelected
       .nextAll()
       .filter(function () {
@@ -369,11 +368,16 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         .trigger("click");
       return;
     }
-    for (const popEntry of Object.values(pop_data)) {
-      // then search all
-      if (popEntry.status === "pending_reward") {
-        $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
-        return;
+    const $nextWithNotif = $(".pop-record").find(".collect_notif").first();
+    if ($nextWithNotif.length) {
+      $nextWithNotif.parent().trigger("click");
+      return;
+    } else {
+      for (const popEntry of Object.values(pop_data)) {
+        if (popEntry.status === "can_start") {
+          $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
+          return;
+        }
       }
     }
     $(".pop-record").first().trigger("click"); // default to first
@@ -392,6 +396,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     } else {
       const $currentPoPRecordSelected = $(".pop-record.selected");
       this.selectNextPoPFromFill($currentPoPRecordSelected);
+      delete pop_data[parseInt(popKey)];
       $currentPoPRecordSelected.remove();
     }
     const n = {
@@ -700,7 +705,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Add the container to the top of popInfo
     $popInfo.append($popRecordsContainer);
     //Select first PoP by default
-    $(".pop-record").first().trigger("click");
+    if ($(".pop-record").find(".collect_notif")) {
+      $(".pop-record").find(".collect_notif").first().parent().trigger("click");
+    } else {
+      $(".pop-record").first().trigger("click");
+    }
 
     shared.timer.activateTimers("pop-active-timer", (timer) => {
       const $popRecord = timer.$dom_element.parent().parent().parent();
@@ -768,10 +777,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const allGirls = Object.values(pop_hero_girls);
 
     // Full sort for initial setup (0-100 girls)
-    if (numberOfGirlsStored <= 100) {
-      console.log(
-        `[PoP++] Performing full sort for ${currentNumberOfGirls} girls`
-      );
+    if (
+      numberOfGirlsStored <= 100 ||
+      numberOfGirlsStored < GirlsStorageHandler.getLastSortOfGirls() - 20
+    ) {
+      GirlsStorageHandler.setLastSortOfGirls(currentNumberOfGirls);
 
       // Sort girls by carac1 (class 1) and store their IDs in order
       const girlsByCarac1 = [...allGirls].sort((a, b) => b.carac1 - a.carac1);
