@@ -117,7 +117,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       `<div class="pop-koban-buttons-container"></div>`
     );
     const $popKobanClaimAllButton = $(
-      `<btn class="pop-koban-button orange_button_L" price="${hh_prices_auto_claim}" ${
+      `<btn class="pop-koban-button pop-claim-all orange_button_L" price="${hh_prices_auto_claim}" ${
         popToClaim ? "" : "disabled"
       }>
         <div class="action-label">Claim All</div>
@@ -131,7 +131,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
-      if (t.has("disabled")) return;
+      if (t.attr("disabled") !== undefined) {
+        return;
+      }
       let n = t.attr("price");
       shared.general.hc_confirm(n!, () => {
         t.prop("disabled", !0),
@@ -142,7 +144,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
             (response: any) => {
               // not complete
               t.prop("disabled", !1);
-              let e = response.rewards;
               //shared.reward_popup.Reward.handlePopup(e);
               const rewardElement = shared.reward.newReward.multipleSlot(
                 response.rewards.data.rewards
@@ -156,13 +157,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
                   popEntry.status = "can_start";
                 }
               }
+              $(".pop-record .collect_notif").remove();
             }
           );
       });
     });
     $popKobanButtonContainer.append($popKobanClaimAllButton);
     const $popKobanFillAllButton = $(
-      `<btn class="pop-koban-button orange_button_L" price="${hh_prices_auto_start}" ${
+      `<btn class="pop-koban-button pop-fill-all orange_button_L" price="${hh_prices_auto_start}" ${
         popToFill ? "" : "disabled"
       }>
         <div class="action-label">Fill All</div>
@@ -177,7 +179,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $popKobanFillAllButton.on("click", function () {
       //base game function except for the update of pop_data
       let t = $(this);
-      if (t.has("disabled")) return;
+      if (t.attr("disabled") !== undefined) return;
       let n = t.attr("price");
       shared.general.hc_confirm(n!, () => {
         t.prop("disabled", !0),
