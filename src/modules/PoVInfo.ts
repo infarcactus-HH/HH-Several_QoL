@@ -1,14 +1,13 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const ConfigSchema = {
-  baseKey: "povInfo",
-  label: "<span tooltip='Click on PoV Info to get more info about PoVs'>PoV Info</span>",
-  default: true,
-} as const;
-
 export default class PoVInfo extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "povInfo",
+    label:
+      "<span tooltip='Click on PoV Info to get more info about PoVs'>PoV Info</span>",
+    default: true,
+  };
   shouldRun() {
     return location.pathname.includes("/path-of-valor.html");
   }
@@ -17,13 +16,16 @@ export default class PoVInfo extends HHModule {
       return;
     }
     this.hasRun = true;
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".potions-paths-objective > h4", ()=>{
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      ".potions-paths-objective > h4",
+      () => {
         $(".potions-paths-objective > h4").text("PoV Info (click)");
-        $(".potions-paths-objective > h4").css("cursor","pointer")
-        $(".potions-paths-objective > h4").on("click",()=>{
-            this.activatePopup()
-        })
-    })
+        $(".potions-paths-objective > h4").css("cursor", "pointer");
+        $(".potions-paths-objective > h4").on("click", () => {
+          this.activatePopup();
+        });
+      }
+    );
   }
 
   activatePopup() {

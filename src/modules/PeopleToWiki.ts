@@ -1,25 +1,23 @@
 import { HHModule, type SubSettingsType } from "../types/HH++";
 
-const ConfigSchema = {
-  baseKey: "peopleToWiki",
-  label: "People to Wiki(HH,GH,GPSH)",
-  default: false,
-  subSettings: [
-    {
-      key: "infoBubbleNameToWiki",
-      default: true,
-      label: "Info bubble name clickable to wiki",
-    },
-    {
-      key: "portraitToWiki",
-      default: false,
-      label: "Make portrait clickable to wiki",
-    },
-  ],
-} as const;
-
-export default class People extends HHModule<typeof ConfigSchema> {
-  configSchema = ConfigSchema;
+export default class People extends HHModule {
+  readonly configSchema = {
+    baseKey: "peopleToWiki",
+    label: "People to Wiki(HH,GH,GPSH)",
+    default: false,
+    subSettings: [
+      {
+        key: "infoBubbleNameToWiki",
+        default: true,
+        label: "Info bubble name clickable to wiki",
+      },
+      {
+        key: "portraitToWiki",
+        default: false,
+        label: "Make portrait clickable to wiki",
+      },
+    ],
+  };
   shouldRun() {
     return (
       location.host.includes("heroes") ||
@@ -27,7 +25,7 @@ export default class People extends HHModule<typeof ConfigSchema> {
       location.host.includes("gaypornstarharem")
     );
   }
-  run(subSettings: SubSettingsType<typeof ConfigSchema>) {
+  run(subSettings?: SubSettingsType<typeof this.configSchema>) {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
@@ -55,10 +53,9 @@ export default class People extends HHModule<typeof ConfigSchema> {
           const girlName = $this.attr("hh_title");
           if (!girlName) return;
           const formattedName = girlName.replace(/ /g, "-");
-          GM.openInTab(
-            self.getWikiPageForCurrentGame(formattedName),
-            { active: true }
-          );
+          GM.openInTab(self.getWikiPageForCurrentGame(formattedName), {
+            active: true,
+          });
         });
       }
     );
@@ -77,10 +74,9 @@ export default class People extends HHModule<typeof ConfigSchema> {
         $this.on("click.ImgToWiki", function (e) {
           e.stopPropagation();
           const formattedName = match[1].replace(/ /g, "-");
-          GM.openInTab(
-            self.getWikiPageForCurrentGame(formattedName),
-            { active: true }
-          );
+          GM.openInTab(self.getWikiPageForCurrentGame(formattedName), {
+            active: true,
+          });
         });
       }
     });

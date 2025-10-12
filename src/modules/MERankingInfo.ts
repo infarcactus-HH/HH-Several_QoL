@@ -5,14 +5,12 @@ import type {
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const ConfigSchema = {
-  baseKey: "meRankingInfo",
-  label: "ME : Adds info about rankings in seasonal event",
-  default: true,
-} as const;
-
 export default class MERankingInfo extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "meRankingInfo",
+    label: "ME : Adds info about rankings in seasonal event",
+    default: true,
+  };
   heroData: MERankingHeroData | null = null;
   leaderboardData: Array<MERankingLeaderboardEntryIncomplete> | null = null;
   shouldRun() {

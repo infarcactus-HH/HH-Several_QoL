@@ -1,12 +1,6 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const ConfigSchema = {
-  baseKey: "noReloadFromClaimingDailyChests",
-  label: "Activities : No reload from claiming daily chests",
-  default: true,
-} as const;
-
 declare let daily_goals_member_progression: {
   tier: number;
   potions_amount: number;
@@ -16,7 +10,11 @@ declare let daily_goals_member_progression: {
 };
 
 export default class NoReloadFromClaimingDailyChests extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "noReloadFromClaimingDailyChests",
+    label: "Activities : No reload from claiming daily chests",
+    default: true,
+  };
   shouldRun() {
     return true;
   }
@@ -68,7 +66,11 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
 
   checkIfAllChestsClaimed() {
     if (
-      daily_goals_member_progression.taken_rewards_array.length >= Math.min( Math.floor(daily_goals_member_progression.potions_amount / 20), 5)
+      daily_goals_member_progression.taken_rewards_array.length >=
+      Math.min(
+        Math.floor(daily_goals_member_progression.potions_amount / 20),
+        5
+      )
     ) {
       $(`[data-tab="daily_goals"] > .collect_notif`).remove();
     }

@@ -13,11 +13,11 @@ export type SubSettingsType<T extends HHModule_ConfigSchema> = T['subSettings'] 
   ? { [K in T['subSettings'][number]['key']]: boolean }
   : undefined;
 
-export abstract class HHModule<TConfig extends HHModule_ConfigSchema = HHModule_ConfigSchema> {
+export abstract class HHModule {
   public group = "severalQoL";
   protected hasRun = false;
   
-  abstract readonly configSchema: TConfig;
-  abstract run(subSettings: SubSettingsType<TConfig>): void;
+  abstract readonly configSchema: HHModule_ConfigSchema;
+  abstract run(subSettings: SubSettingsType<HHModule_ConfigSchema>): void;
   abstract shouldRun(): boolean;
 }

@@ -3,18 +3,16 @@ import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { StorageHandler } from "../utils/StorageHandler";
 
-const ConfigSchema = {
-  baseKey: "leagueOpponentHistory",
-  label: "League : Show history of opponents (click on the row to refresh)",
-  default: true,
-} as const;
-
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
 declare const league_rewards: any; // don't care
 
 export default class LeagueOpponentHistory extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "leagueOpponentHistory",
+    label: "League : Show history of opponents (click on the row to refresh)",
+    default: true,
+  };
   leaguePlayerRecord:
     | Array<{
         bestPlace: number;
@@ -23,7 +21,7 @@ export default class LeagueOpponentHistory extends HHModule {
       }>
     | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
-  
+
   shouldRun() {
     return location.pathname.includes("/leagues.html");
   }
@@ -112,7 +110,7 @@ export default class LeagueOpponentHistory extends HHModule {
     const highestLeague = Object.keys(league_rewards).length;
     const D3Placement = new RegExp(
       `<img src="https:\\/\\/.*?\\/pictures\\/design\\/leagues\\/${highestLeague}\\.png">\\n\\s*?<div class=\\"tier-stats\\">\\n\\s*?<div>Best place:\\s*<span>(\\d+)<sup>[^<]+<\\/sup><\\/span><\\/div>[\\s\\S]*?<div>Times reached: <span>(\\d+)<\\/span><\\/div>`,
-      'g'
+      "g"
     );
     shared.general.hh_ajax(
       payload,
@@ -174,7 +172,12 @@ export default class LeagueOpponentHistory extends HHModule {
       if (!opponent) return;
       const opponentId = opponent.player.id_fighter;
       const record = this.leaguePlayerRecord![opponentId];
-      if (record && !$(row).children("[column='nickname']").find(".several-qol-bestrank-timesreached").length) {
+      if (
+        record &&
+        !$(row)
+          .children("[column='nickname']")
+          .find(".several-qol-bestrank-timesreached").length
+      ) {
         $(row)
           .children("[column='nickname']")
           .append(this.generateRankHtml(record.bestPlace, record.timesReached));

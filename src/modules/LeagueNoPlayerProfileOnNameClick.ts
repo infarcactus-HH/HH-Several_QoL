@@ -1,14 +1,13 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const ConfigSchema = {
-  baseKey: "leagueNoPlayerProfileOnNameClick",
-  label: "League : Disable opening player profile when clicking on their name",
-  default: false,
-} as const;
-
 export default class LeagueNoPlayerProfileOnNameClick extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "leagueNoPlayerProfileOnNameClick",
+    label:
+      "League : Disable opening player profile when clicking on their name",
+    default: false,
+  };
   shouldRun() {
     return location.pathname.includes("/leagues.html");
   }

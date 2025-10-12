@@ -10,14 +10,13 @@ declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; 
 declare const hh_prices_auto_start: number;
 declare const hh_prices_auto_claim: number;
 
-const ConfigSchema = {
-  baseKey: "placesOfPowerPlusPlus",
-  label: "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
-  default: true,
-} as const;
-
 export default class PlacesOfPowerPlusPlus extends HHModule {
-  configSchema = ConfigSchema;
+  readonly configSchema = {
+    baseKey: "placesOfPowerPlusPlus",
+    label:
+      "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
+    default: true,
+  };
   private isUpdatingGirls: boolean = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
@@ -803,12 +802,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Binary search insertion for incremental updates if there's >100 girls stored
     else {
       // Get existing sorted lists (already arrays)
-      const orderedIdsCarac1 =
-        StorageHandler.getEnumGirlsOrderedByClass(1);
-      const orderedIdsCarac2 =
-        StorageHandler.getEnumGirlsOrderedByClass(2);
-      const orderedIdsCarac3 =
-        StorageHandler.getEnumGirlsOrderedByClass(3);
+      const orderedIdsCarac1 = StorageHandler.getEnumGirlsOrderedByClass(1);
+      const orderedIdsCarac2 = StorageHandler.getEnumGirlsOrderedByClass(2);
+      const orderedIdsCarac3 = StorageHandler.getEnumGirlsOrderedByClass(3);
 
       // Find new girls (not in stored lists)
       const existingIds = new Set(orderedIdsCarac1); // Any list works, they all have the same IDs
