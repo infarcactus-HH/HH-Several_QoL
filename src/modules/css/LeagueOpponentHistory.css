@@ -21,17 +21,19 @@
 }
 
 .several-qol-top1 {
-  background-color: var(--var-color-mythic);
+  background: transparent radial-gradient(closest-side at 50% 50%, #f5a866 0%, #ec0039 51%, #9e0e27 100%) 0% 0% no-repeat padding-box;
 }
+
 .several-qol-top4 {
-  background: var(--legendary-bg);
+  background-image: url(/images/legendary.png);
 }
+  
 .several-qol-top15 {
-  background: var(--var-color-epic);
+  background: #ffb244;
 }
 .several-qol-top30 {
-  background: var(--var-color-rare);
+  background: #23b56b;
 }
 .several-qol-top30plus {
-  background: var(--var-color-common);
+  background: #8d8e9f;
 }
