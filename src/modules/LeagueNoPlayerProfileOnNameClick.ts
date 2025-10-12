@@ -3,7 +3,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 const configSchema = {
   baseKey: "leagueNoPlayerProfileOnNameClick",
-  label: "Disable opening player profile when clicking on their name in league",
+  label: "League : Disable opening player profile when clicking on their name",
   default: false,
 } as const;
 

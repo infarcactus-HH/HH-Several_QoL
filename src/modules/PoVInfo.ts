@@ -3,7 +3,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 const configSchema = {
   baseKey: "povInfo",
-  label: "PoV Info",
+  label: "<span tooltip='Click on PoV Info to get more info about PoVs'>PoV Info</span>",
   default: true,
 } as const;
 

@@ -4,7 +4,7 @@ export default class NoOnlyRealMoneyOptions extends HHModule {
   constructor() {
     const configSchema = {
       baseKey: "entirePaid",
-      label: "Removes only $ options",
+      label: "Removes only $ options (will be deprecated when fully released publicly)",
       default: false,
     };
     super(configSchema);

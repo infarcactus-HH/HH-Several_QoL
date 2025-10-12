@@ -1,7 +1,6 @@
 import {
   global_pop_hero_girls_incomplete,
   PlacesOfPowerData,
-  PlacesOfPowerReward,
 } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { StorageHandler } from "../utils/StorageHandler";
@@ -13,7 +12,7 @@ declare const hh_prices_auto_claim: number;
 
 const configSchema = {
   baseKey: "placesOfPowerPlusPlus",
-  label: "<span tooltip='global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
+  label: "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
   default: true,
 } as const;
 

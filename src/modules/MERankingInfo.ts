@@ -7,9 +7,9 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 const configSchema = {
   baseKey: "meRankingInfo",
-  label: "Adds info about rankings in seasonal event",
+  label: "ME : Adds info about rankings in seasonal event",
   default: true,
-};
+} as const;
 
 export default class MERankingInfo extends HHModule {
   heroData: MERankingHeroData | null = null;

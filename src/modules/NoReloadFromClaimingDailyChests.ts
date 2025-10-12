@@ -3,7 +3,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 const configSchema = {
   baseKey: "noReloadFromClaimingDailyChests",
-  label: "No reload from claiming daily chests",
+  label: "Activities : No reload from claiming daily chests",
   default: true,
 } as const;
 
