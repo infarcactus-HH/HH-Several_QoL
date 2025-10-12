@@ -79,7 +79,7 @@ export default class LeagueOpponentHistory extends HHModule {
         }
         if (
           selectedOpponent.Several_QoL &&
-          selectedOpponent.Several_QoL.chechExpiresAt < server_now_ts
+          selectedOpponent.Several_QoL.chechExpiresAt > server_now_ts
         ) {
           return;
         }
