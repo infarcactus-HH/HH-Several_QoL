@@ -1,16 +1,14 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const configSchema = {
+const ConfigSchema = {
     baseKey : "whaleBossTournament",
     label: "Renames WBT to Whale Boss Tournament",
     default: false,
 } as const;
 
-export default class WhaleBossTournament extends HHModule<typeof configSchema> {
-    constructor() {
-        super(configSchema);
-    }
+export default class WhaleBossTournament extends HHModule<typeof ConfigSchema> {
+    configSchema = ConfigSchema;
     shouldRun() {
         return location.pathname.includes("/home.html");
     }

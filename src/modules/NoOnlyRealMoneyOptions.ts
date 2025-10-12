@@ -1,14 +1,11 @@
 import { HHModule } from "../types/HH++";
 
 export default class NoOnlyRealMoneyOptions extends HHModule {
-  constructor() {
-    const configSchema = {
+    configSchema = {
       baseKey: "entirePaid",
       label: "Removes only $ options (will be deprecated when fully released publicly)",
       default: false,
-    };
-    super(configSchema);
-  }
+    } as const;
   shouldRun() {
     return true;
   }

@@ -3,7 +3,7 @@ import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { StorageHandler } from "../utils/StorageHandler";
 
-const configSchema = {
+const ConfigSchema = {
   baseKey: "leagueOpponentHistory",
   label: "League : Show history of opponents (click on the row to refresh)",
   default: true,
@@ -14,6 +14,7 @@ declare const season_end_at: number;
 declare const league_rewards: any; // don't care
 
 export default class LeagueOpponentHistory extends HHModule {
+  configSchema = ConfigSchema;
   leaguePlayerRecord:
     | Array<{
         bestPlace: number;
@@ -22,9 +23,7 @@ export default class LeagueOpponentHistory extends HHModule {
       }>
     | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
-  constructor() {
-    super(configSchema);
-  }
+  
   shouldRun() {
     return location.pathname.includes("/leagues.html");
   }

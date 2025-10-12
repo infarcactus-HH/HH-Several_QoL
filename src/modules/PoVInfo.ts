@@ -1,16 +1,14 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const configSchema = {
+const ConfigSchema = {
   baseKey: "povInfo",
   label: "<span tooltip='Click on PoV Info to get more info about PoVs'>PoV Info</span>",
   default: true,
 } as const;
 
 export default class PoVInfo extends HHModule {
-  constructor() {
-    super(configSchema);
-  }
+  configSchema = ConfigSchema;
   shouldRun() {
     return location.pathname.includes("/path-of-valor.html");
   }

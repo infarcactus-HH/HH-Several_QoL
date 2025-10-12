@@ -1,14 +1,12 @@
 import { HHModule } from "../types/HH++";
 
-const configSchema = {
+const ConfigSchema = {
     baseKey : "tighterPoPs",
     label: "Tighter PoPs (requires css tweaks for PoP) (soon to be deprecated)",
     default: true,
 } as const;
 export default class TighterPoP extends HHModule {
-    constructor() {
-        super(configSchema);
-    }
+    configSchema = ConfigSchema;
     shouldRun() {
         return location.pathname.includes("/activities.html");;
     }

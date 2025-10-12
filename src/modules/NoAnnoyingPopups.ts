@@ -1,14 +1,11 @@
 import { HHModule } from "../types/HH++";
 
 export default class NoAnnoyingPopups extends HHModule {
-  constructor() {
-    const configSchema = {
+  configSchema = {
       baseKey: "noAnnoyingPopups",
       label: "<span tooltip='Tired of shop popups or news popup appearing randomly and breaking your flow ?'>Removes annoying popup appearing automaticly for shops, paths, news</span>",
       default: false,
-    };
-    super(configSchema);
-  }
+    } as const;
   shouldRun() {
     return true;
   }

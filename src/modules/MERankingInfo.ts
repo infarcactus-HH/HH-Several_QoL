@@ -5,18 +5,16 @@ import type {
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const configSchema = {
+const ConfigSchema = {
   baseKey: "meRankingInfo",
   label: "ME : Adds info about rankings in seasonal event",
   default: true,
 } as const;
 
 export default class MERankingInfo extends HHModule {
+  configSchema = ConfigSchema;
   heroData: MERankingHeroData | null = null;
   leaderboardData: Array<MERankingLeaderboardEntryIncomplete> | null = null;
-  constructor() {
-    super(configSchema);
-  }
   shouldRun() {
     return location.pathname.includes("seasonal.html");
   }

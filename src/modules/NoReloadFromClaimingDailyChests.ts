@@ -1,7 +1,7 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
-const configSchema = {
+const ConfigSchema = {
   baseKey: "noReloadFromClaimingDailyChests",
   label: "Activities : No reload from claiming daily chests",
   default: true,
@@ -16,9 +16,7 @@ declare let daily_goals_member_progression: {
 };
 
 export default class NoReloadFromClaimingDailyChests extends HHModule {
-  constructor() {
-    super(configSchema);
-  }
+  configSchema = ConfigSchema;
   shouldRun() {
     return true;
   }

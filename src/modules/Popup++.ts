@@ -1,14 +1,12 @@
 import { HHModule } from "../types/HH++";
 
-const configSchema = {
+const ConfigSchema = {
   baseKey : "popupPlusPlus",
   label: "<span tooltip='Stacking popups,click on the popup to make it disappear'>Popup++</span>",
   default: true,
 } as const;
 export default class PopupPlusPlus extends HHModule {
-  constructor() {
-    super(configSchema);
-  }
+configSchema = ConfigSchema;
   shouldRun() {
     return true;
   }

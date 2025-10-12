@@ -1,6 +1,7 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-const configSchema = {
+
+const ConfigSchema = {
   baseKey: "labyTeamPreset",
   label: "<span tooltip='Add a button to register laby team presets, and to apply it'>Laby Team Preset</span>",
   default: true,
@@ -8,9 +9,8 @@ const configSchema = {
 
 export default class LabyTeamPresets extends HHModule {
   private savedTeamPresetKey = "SeveralQoL_LabyTeamPreset";
-  constructor() {
-    super(configSchema);
-  }
+  configSchema = ConfigSchema;
+
   shouldRun() {
     return location.pathname.includes("/edit-labyrinth-team.html");
   }

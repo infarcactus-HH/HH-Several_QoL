@@ -10,13 +10,14 @@ declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; 
 declare const hh_prices_auto_start: number;
 declare const hh_prices_auto_claim: number;
 
-const configSchema = {
+const ConfigSchema = {
   baseKey: "placesOfPowerPlusPlus",
   label: "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
   default: true,
 } as const;
 
 export default class PlacesOfPowerPlusPlus extends HHModule {
+  configSchema = ConfigSchema;
   private isUpdatingGirls: boolean = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
@@ -30,9 +31,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     carac_3: 3,
   };
 
-  constructor() {
-    super(configSchema);
-  }
   shouldRun() {
     return (
       location.pathname.includes("/activities.html") &&

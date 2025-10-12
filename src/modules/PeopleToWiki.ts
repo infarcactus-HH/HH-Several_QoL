@@ -1,6 +1,6 @@
 import { HHModule, type SubSettingsType } from "../types/HH++";
 
-const PeopleToWikiConfig = {
+const ConfigSchema = {
   baseKey: "peopleToWiki",
   label: "People to Wiki(HH,GH,GPSH)",
   default: false,
@@ -18,10 +18,8 @@ const PeopleToWikiConfig = {
   ],
 } as const;
 
-export default class People extends HHModule<typeof PeopleToWikiConfig> {
-  constructor() {
-    super(PeopleToWikiConfig);
-  }
+export default class People extends HHModule<typeof ConfigSchema> {
+  configSchema = ConfigSchema;
   shouldRun() {
     return (
       location.host.includes("heroes") ||
@@ -29,7 +27,7 @@ export default class People extends HHModule<typeof PeopleToWikiConfig> {
       location.host.includes("gaypornstarharem")
     );
   }
-  run(subSettings: SubSettingsType<typeof PeopleToWikiConfig>) {
+  run(subSettings: SubSettingsType<typeof ConfigSchema>) {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
