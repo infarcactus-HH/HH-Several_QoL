@@ -2,7 +2,7 @@ import { HHModule } from "../types/HH++";
 
 const configSchema = {
     baseKey : "tighterPoPs",
-    label: "Tighter PoPs (requires css tweaks for PoP)",
+    label: "Tighter PoPs (requires css tweaks for PoP) (soon to be deprecated)",
     default: true,
 } as const;
 export default class TighterPoP extends HHModule {

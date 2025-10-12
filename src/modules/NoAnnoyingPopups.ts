@@ -4,7 +4,7 @@ export default class NoAnnoyingPopups extends HHModule {
   constructor() {
     const configSchema = {
       baseKey: "noAnnoyingPopups",
-      label: "Removes annoying popup appearing automaticly for shops, paths, news",
+      label: "<span tooltip='Tired of shop popups or news popup appearing randomly ?'>Removes annoying popup appearing automaticly for shops, paths, news</span>",
       default: false,
     };
     super(configSchema);

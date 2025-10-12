@@ -13,7 +13,7 @@ declare const hh_prices_auto_claim: number;
 
 const configSchema = {
   baseKey: "placesOfPowerPlusPlus",
-  label: "Places of Power++",
+  label: "<span tooltip='global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
   default: true,
 } as const;
 
