@@ -1,6 +1,7 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const terser = require('terser');
 
 // Read package.json for metadata
 const packageJson = JSON.parse(
@@ -36,19 +37,38 @@ const userscriptHeader = `// ==UserScript==
 // @run-at       document-end
 // ==/UserScript==`;
 
-// UserScript header plugin for esbuild
+// UserScript header plugin for esbuild, with Terser minification
 const userscriptPlugin = {
   name: 'userscript-header',
   setup(build) {
     build.onEnd(async (result) => {
       if (result.errors.length > 0) return;
-      
+
       const outputFile = path.join(__dirname, 'dist', 'userscript.user.js');
-      
+
       try {
         // Read the generated file
         let content = fs.readFileSync(outputFile, 'utf8');
-        
+
+        // Minify with Terser if not in watch mode
+        const isWatch = process.argv.includes('--watch');
+        if (!isWatch) {
+          const terserResult = await terser.minify(content, {
+            format: { comments: false },
+            compress: { 
+              passes: 3,
+              drop_console : ["log","info","debug"],
+            },
+            mangle: true,
+          });
+          if (terserResult.code) {
+            content = terserResult.code;
+            console.log('✅ Minified with Terser:', content.length, 'bytes');
+          } else {
+            console.warn('⚠️ Terser did not return code, skipping minification.');
+          }
+        }
+
         // Add header if not already present
         if (!content.startsWith('// ==UserScript==')) {
           const newContent = userscriptHeader + '\n\n' + content;

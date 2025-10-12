@@ -21,6 +21,7 @@
     "@types/jquery": "^3.5.0",
     "@types/node": "^24.5.2",
     "esbuild": "^0.25.10",
+    "terser": "^5.44.0",
     "typescript": "^5.0.0"
   }
 }
