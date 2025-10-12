@@ -35,7 +35,7 @@ class Userscript {
     this.run();
   }
 
-  allModules: HHModule<any>[] = [
+  allModules: HHModule[] = [
     new PopupPlusPlus(),
     new LabyTeamPresets(),
     new NoAnnoyingPopups(),
@@ -55,9 +55,17 @@ class Userscript {
       key: "severalQoL",
       name: "<span tooltip='by infarctus'>Several QoL</span>",
     });
-    this.allModules.forEach((module) => {
-      unsafeWindow.hhPlusPlusConfig.registerModule(module);
-    });
+    if (location.pathname.includes("/home.html")) {
+      this.allModules.forEach((module) => {
+        unsafeWindow.hhPlusPlusConfig.registerModule(module);
+      });
+    } else {
+      this.allModules.forEach((module) => {
+        if (module.shouldRun()) {
+          unsafeWindow.hhPlusPlusConfig.registerModule(module);
+        }
+      });
+    }
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
@@ -71,7 +79,7 @@ class Userscript {
               acc[setting.key] = true;
               return acc;
             }, {} as Record<string, any>);
-            module.run(subSettings);
+            module.run(subSettings as any);
           } else {
             module.run(undefined);
           }
