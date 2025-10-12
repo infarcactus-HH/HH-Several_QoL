@@ -11,6 +11,7 @@ import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDaily
 import PoVInfo from "./modules/PoVInfo";
 import MERankingInfo from "./modules/MERankingInfo";
 import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
+import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
 
 class Userscript {
   constructor() {
@@ -47,6 +48,7 @@ class Userscript {
     new PoVInfo(),
     new MERankingInfo(),
     new LeagueOpponentHistory(),
+    new LeagueNoPlayerProfileOnNameClick(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
