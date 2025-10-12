@@ -175,7 +175,7 @@ export default class LeagueOpponentHistory extends HHModule {
       if (!opponent) return;
       const opponentId = opponent.player.id_fighter;
       const record = this.leaguePlayerRecord![opponentId];
-      if (record) {
+      if (record && !$(row).children("[column='nickname']").find(".several-qol-bestrank-timesreached").length) {
         $(row)
           .children("[column='nickname']")
           .append(this.generateRankHtml(record.bestPlace, record.timesReached));
