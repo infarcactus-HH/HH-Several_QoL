@@ -18,8 +18,8 @@ importers:
         specifier: ^0.25.10
         version: 0.25.10
       typescript:
-        specifier: ^4.0.0
-        version: 4.9.5
+        specifier: ^5.0.0
+        version: 5.9.3
 
 packages:
 
@@ -193,9 +193,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  typescript@4.9.5:
-    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
-    engines: {node: '>=4.2.0'}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
     hasBin: true
 
   undici-types@7.12.0:
@@ -320,6 +320,6 @@ snapshots:
       '@esbuild/win32-ia32': 0.25.10
       '@esbuild/win32-x64': 0.25.10
 
-  typescript@4.9.5: {}
+  typescript@5.9.3: {}
 
   undici-types@7.12.0: {}
