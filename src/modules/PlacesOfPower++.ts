@@ -115,15 +115,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popKobanClaimAllButton = $(
       `<btn class="pop-koban-button pop-claim-all orange_button_L" price="${hh_prices_auto_claim}" ${
         popToClaim ? "" : "disabled"
-      }>
-        <div class="action-label">Claim All</div>
-        <div class="action-cost">
-          <div class="hc-cost">
-            <span class="hard_currency_icn"></span>
-            ${hh_prices_auto_claim}
-          </div>
-        </div>
-      </div>`
+      }>` +
+        `<div class="action-label">Claim All</div>` +
+        `<div class="action-cost">` +
+        `<div class="hc-cost">` +
+        `<span class="hard_currency_icn"></span>${hh_prices_auto_claim}` +
+        `</div></div></div>`
     );
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
@@ -162,15 +159,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popKobanFillAllButton = $(
       `<btn class="pop-koban-button pop-fill-all orange_button_L" price="${hh_prices_auto_start}" ${
         popToFill ? "" : "disabled"
-      }>
-        <div class="action-label">Fill All</div>
-        <div class="action-cost">
-          <div class="hc-cost">
-            <span class="hard_currency_icn"></span>
-            ${hh_prices_auto_start}
-          </div>
-        </div>
-      </div>`
+      }>` +
+        `<div class="action-label">Fill All</div>` +
+        `<div class="action-cost">` +
+        `<div class="hc-cost">` +
+        `<span class="hard_currency_icn"></span>${hh_prices_auto_start}` +
+        `</div></div></div>`
     );
     $popKobanFillAllButton.on("click", function () {
       //base game function except for the update of pop_data

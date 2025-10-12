@@ -63,13 +63,14 @@ export default class MERankingInfo extends HHModule {
     const currentPotions = this.heroData.potions;
 
     // Build tooltip content as a table
-    let tooltipContent = `<div class="me-ranking-tooltip">`;
-    tooltipContent += `<table style="border-collapse: collapse; width: 100%;">`;
-    tooltipContent += `<thead><tr>`;
-    tooltipContent += `<th>Rank</th>`;
-    tooltipContent += `<th>Resource</th>`;
-    tooltipContent += `<th>Difference</th>`;
-    tooltipContent += `</tr></thead><tbody>`;
+    let tooltipContent =
+      `<div class="me-ranking-tooltip">` +
+      `<table style="border-collapse: collapse; width: 100%;">` +
+      `<thead><tr>` +
+      `<th>Rank</th>` +
+      `<th>Resource</th>` +
+      `<th>Difference</th>` +
+      `</tr></thead><tbody>`;
 
     const playerEntry = this.leaderboardData.find(
       (entry) => entry.rank === currentRank
@@ -105,11 +106,12 @@ export default class MERankingInfo extends HHModule {
         }
       }
 
-      tooltipContent += `<tr>`;
-      tooltipContent += `<td>${threshold}</td>`;
-      tooltipContent += `<td>${potionsAtRank}</td>`;
-      tooltipContent += `<td style="color: ${diffColor}; font-weight: bold;">${diffText}</td>`;
-      tooltipContent += `</tr>`;
+      tooltipContent +=
+        `<tr>` +
+        `<td>${threshold}</td>` +
+        `<td>${potionsAtRank}</td>` +
+        `<td style="color: ${diffColor}; font-weight: bold;">${diffText}</td>` +
+        `</tr>`;
     });
 
     tooltipContent += `</tbody></table></div>`;
