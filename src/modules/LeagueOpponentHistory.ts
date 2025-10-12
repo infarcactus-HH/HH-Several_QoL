@@ -11,6 +11,7 @@ const configSchema = {
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
+declare const league_rewards: any; // don't care
 
 export default class LeagueOpponentHistory extends HHModule {
   leaguePlayerRecord:
@@ -109,22 +110,25 @@ export default class LeagueOpponentHistory extends HHModule {
       preview: false,
       player_id: opponentId,
     };
-    const D3Placement =
-      /<img src="https:\/\/.*?\/pictures\/design\/leagues\/9\.png">\n\s*?<div class="tier-stats">\n\s*?<div>Best place:\s*<span>(\d+)<sup>[^<]+<\/sup><\/span><\/div>[\s\S]*?<div>Times reached: <span>(\d+)<\/span><\/div>/g;
+    const highestLeague = Object.keys(league_rewards).length;
+    const D3Placement = new RegExp(
+      `<img src="https:\\/\\/.*?\\/pictures\\/design\\/leagues\\/${highestLeague}\\.png">\\n\\s*?<div class=\\"tier-stats\\">\\n\\s*?<div>Best place:\\s*<span>(\\d+)<sup>[^<]+<\\/sup><\\/span><\\/div>[\\s\\S]*?<div>Times reached: <span>(\\d+)<\\/span><\\/div>`,
+      'g'
+    );
     shared.general.hh_ajax(
       payload,
       (response: { html: string; success: boolean }) => {
         const match = D3Placement.exec(response.html);
         const bestPlace = match ? parseInt(match[1]) : null;
         const timesReached = match ? parseInt(match[2]) : null;
+        this.updatedPlayerRecordsThisSession.add(opponentId);
         if (!bestPlace || !timesReached) {
           console.warn(
-            "Could not find D3 placement info for opponent id ",
+            `Could not find league ${highestLeague} placement info for opponent id `,
             opponentId
           );
           return;
         }
-        this.updatedPlayerRecordsThisSession.add(opponentId);
         const existingPlayerRecord = this.leaguePlayerRecord![opponentId];
         if (
           existingPlayerRecord &&
