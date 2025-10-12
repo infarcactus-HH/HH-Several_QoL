@@ -81,7 +81,7 @@ export default class LeagueOpponentHistory extends HHModule {
         }
         if (
           selectedOpponent.Several_QoL &&
-          selectedOpponent.Several_QoL.chechExpiresAt > server_now_ts
+          selectedOpponent.Several_QoL.chechExpiresAt < server_now_ts
         ) {
           return;
         }
@@ -110,7 +110,7 @@ export default class LeagueOpponentHistory extends HHModule {
       player_id: opponentId,
     };
     const D3Placement =
-      /<div class="history-independent-tier">[\s\S]*?<img src="https:\/\/hh\.hh-content\.com\/pictures\/design\/leagues\/9\.png">[\s\S]*?<div>Best place:\s*<span>(\d+)<sup>[^<]+<\/sup><\/span><\/div>[\s\S]*?<div>Times reached: <span>(\d+)<\/span><\/div>/g;
+      /<img src="https:\/\/.*?\/pictures\/design\/leagues\/9\.png">\n\s*?<div class="tier-stats">\n\s*?<div>Best place:\s*<span>(\d+)<sup>[^<]+<\/sup><\/span><\/div>[\s\S]*?<div>Times reached: <span>(\d+)<\/span><\/div>/g;
     shared.general.hh_ajax(
       payload,
       (response: { html: string; success: boolean }) => {
