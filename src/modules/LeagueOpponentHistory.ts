@@ -10,7 +10,7 @@ declare const league_rewards: any; // don't care
 export default class LeagueOpponentHistory extends HHModule {
   readonly configSchema = {
     baseKey: "leagueOpponentHistory",
-    label: "League : Show history of opponents (click on the row to refresh)",
+    label: "League : Show history of opponents (click on the row to refresh, only looks for highest league)",
     default: true,
   };
   leaguePlayerRecord:
