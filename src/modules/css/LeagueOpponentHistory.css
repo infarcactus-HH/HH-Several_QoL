@@ -1,25 +1,37 @@
-.several-qol-top1 {
-  background-color: var(--var-color-mythic);
+.several-qol-bestrank-timesreached {
+  margin-left: 5px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  text-shadow: 1px 0 0 #000, 0 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000,
+    1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+.several-qol-bestrank-timesreached > .rank-container {
   background-size: cover;
   text-align: center;
+  min-width: 16px;
+  max-width: 32px;
+  width: auto;
+  height: 16px;
+  font-size: 10px;
+}
+.several-qol-bestrank-timesreached > .times-reached {
+  margin-left: 3px;
+}
+
+.several-qol-top1 {
+  background-color: var(--var-color-mythic);
 }
 .several-qol-top4 {
   background: var(--legendary-bg);
-  background-size: cover;
-  text-align: center;
 }
 .several-qol-top15 {
   background: var(--var-color-epic);
-  background-size: cover;
-  text-align: center;
 }
 .several-qol-top30 {
   background: var(--var-color-rare);
-  background-size: cover;
-  text-align: center;
 }
 .several-qol-top30plus {
   background: var(--var-color-common);
-  background-size: cover;
-  text-align: center;
 }

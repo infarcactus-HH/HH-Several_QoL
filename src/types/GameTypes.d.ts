@@ -94,4 +94,9 @@ export interface LeagueOpponentIncomplete { // very very incomplete x)
   player: {
     id_fighter: number;
   }
+  Several_QoL?: { // added by the script
+    chechExpiresAt: number;
+    bestPlace: number;
+    timesReached: number;
+  }
 }

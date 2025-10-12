@@ -13,11 +13,13 @@ declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
 
 export default class LeagueOpponentHistory extends HHModule {
-  leaguePlayerRecord: Array<{
-    bestPlace: number;
-    timesReached: number;
-    checkExpiresAt: number;
-  }> = StorageHandler.getLeaguePlayerRecord();
+  leaguePlayerRecord:
+    | Array<{
+        bestPlace: number;
+        timesReached: number;
+        checkExpiresAt: number;
+      }>
+    | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
   constructor() {
     super(configSchema);
@@ -30,13 +32,36 @@ export default class LeagueOpponentHistory extends HHModule {
       return;
     }
     this.hasRun = true;
+    this.injectCSS();
+    this.leaguePlayerRecord = StorageHandler.getLeaguePlayerRecord();
     HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table", () => {
+      this.applyRankingsToOpponentLists();
       this.startObserverClickOnTable();
       this.applyRankingsToTable();
     });
     $(document).on("league:table-sorted", () => {
       this.startObserverClickOnTable();
       this.applyRankingsToTable();
+    });
+  }
+  async injectCSS() {
+    const css = require("./css/LeagueOpponentHistory.css").default;
+    GM.addStyle(css);
+  }
+  applyRankingsToOpponentLists() {
+    if (this.leaguePlayerRecord === undefined) {
+      return;
+    }
+    opponents_list.forEach((opponent) => {
+      const opponentId = opponent.player.id_fighter;
+      const record = this.leaguePlayerRecord![opponentId];
+      if (record) {
+        opponent.Several_QoL = {
+          chechExpiresAt: server_now_ts,
+          bestPlace: record.bestPlace,
+          timesReached: record.timesReached,
+        };
+      }
     });
   }
   startObserverClickOnTable() {
@@ -54,17 +79,30 @@ export default class LeagueOpponentHistory extends HHModule {
           console.warn("Could not find opponent for place ", place);
           return;
         }
-        self.sendRequestAndAnalyzeOpponent(selectedOpponent.player.id_fighter, place);
+        if (
+          selectedOpponent.Several_QoL &&
+          selectedOpponent.Several_QoL.chechExpiresAt > server_now_ts
+        ) {
+          return;
+        }
+        if (
+          self.updatedPlayerRecordsThisSession.has(
+            selectedOpponent.player.id_fighter
+          )
+        ) {
+          return;
+        }
+        self.sendRequestAndAnalyzeOpponent(
+          selectedOpponent.player.id_fighter,
+          $(this)
+        );
       }
     );
   }
-  sendRequestAndAnalyzeOpponent(opponentId: number,opponentRank: number) {
-    if (this.updatedPlayerRecordsThisSession.has(opponentId)) {
-      return;
-    }
-    if(this.leaguePlayerRecord[opponentId] && this.leaguePlayerRecord[opponentId].checkExpiresAt > server_now_ts){
-      return;
-    }
+  sendRequestAndAnalyzeOpponent(
+    opponentId: number,
+    $opponentRow: JQuery<HTMLElement>
+  ) {
     const payload = {
       action: "fetch_hero",
       id: "profile",
@@ -87,56 +125,86 @@ export default class LeagueOpponentHistory extends HHModule {
           return;
         }
         this.updatedPlayerRecordsThisSession.add(opponentId);
-        const existingPlayerRecord = this.leaguePlayerRecord[opponentId];
-        if (existingPlayerRecord) {
-          if (
-            existingPlayerRecord.bestPlace !== bestPlace ||
-            existingPlayerRecord.timesReached !== timesReached
-          ) {
-            this.updateOpponentRecord(opponentId, bestPlace, timesReached,opponentRank);
-            return;
-          }
-        } else {
-          this.updateOpponentRecord(opponentId, bestPlace, timesReached,opponentRank);
+        const existingPlayerRecord = this.leaguePlayerRecord![opponentId];
+        if (
+          existingPlayerRecord &&
+          existingPlayerRecord.bestPlace === bestPlace &&
+          existingPlayerRecord.timesReached === timesReached
+        ) {
           return;
         }
+
+        this.updateOpponentRecord(opponentId, bestPlace, timesReached);
+        $opponentRow
+          .children("[column='nickname']")
+          .find(".several-qol-bestrank-timesreached")
+          .remove();
+        $opponentRow
+          .children("[column='nickname']")
+          .append(this.generateRankHtml(bestPlace, timesReached));
       }
     );
   }
   updateOpponentRecord(
     opponentId: number,
     bestPlace: number,
-    timesReached: number,
-    opponentRank: number
+    timesReached: number
   ) {
-    this.leaguePlayerRecord[opponentId] = {
+    this.leaguePlayerRecord![opponentId] = {
       bestPlace: bestPlace,
       timesReached: timesReached,
-      checkExpiresAt: server_now_ts + season_end_at + 10,
+      checkExpiresAt: server_now_ts + season_end_at + 10, // +10 to avoid edge cases
     };
-    StorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord);
+    StorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord!);
   }
   applyRankingsToTable() {
     const allRows = $(".data-row.body-row");
-    const self = this;
+    if (this.leaguePlayerRecord === undefined) {
+      return;
+    }
     allRows.each((_, row) => {
-      const place = parseInt(
-        $(row).children("[column='place']").text().trim()
-      );
-      if(!place) return;
+      const place = parseInt($(row).children("[column='place']").text().trim());
+      if (!place) return;
       const opponent = opponents_list.find(
         (opponents) => opponents.place === place
       );
       if (!opponent) return;
       const opponentId = opponent.player.id_fighter;
-      const record = self.leaguePlayerRecord[opponentId];
+      const record = this.leaguePlayerRecord![opponentId];
       if (record) {
-        console.log("Found record for opponent ", opponentId, record);
-        $(row).children("[column='nickname']").attr(
-          "tooltip",
-          `Best place: ${record.bestPlace}, Times reached: ${record.timesReached}`
-        );
+        $(row)
+          .children("[column='nickname']")
+          .append(this.generateRankHtml(record.bestPlace, record.timesReached));
       }
-    })
+    });
+  }
+  generateRankHtml(bestPlace: number, timesReached: number) {
+    const $divBestRankTimesReached = $(
+      `<div class="several-qol-bestrank-timesreached"></div>`
+    );
+    const $rankContainer = $(
+      `<span class="rank-container ${this.generateRankClass(
+        bestPlace
+      )}">${bestPlace}</span>`
+    );
+    const $timesReached = $(
+      `<span class="times-reached">x${timesReached}</span>`
+    );
+    $divBestRankTimesReached.prepend($rankContainer);
+    $divBestRankTimesReached.append($timesReached);
+    return $divBestRankTimesReached;
+  }
+  generateRankClass(bestPlace: number): string {
+    if (bestPlace == 1) {
+      return "several-qol-top1";
+    } else if (bestPlace <= 4) {
+      return "several-qol-top4";
+    } else if (bestPlace <= 15) {
+      return "several-qol-top15";
+    } else if (bestPlace <= 30) {
+      return "several-qol-top30";
+    } else {
+      return "several-qol-top30plus";
+    }
   }
 }
