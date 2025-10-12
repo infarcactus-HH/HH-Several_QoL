@@ -4,7 +4,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { StorageHandler } from "../utils/StorageHandler";
 
 const configSchema = {
-  baseKey: "leagueOponentHistory",
+  baseKey: "leagueOpponentHistory",
   label: "Show history of opponents in league (click on the row to refresh)",
   default: true,
 } as const;
