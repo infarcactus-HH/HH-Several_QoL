@@ -15,12 +15,11 @@ export type SubSettingsType<T extends HHModule_ConfigSchema> = T['subSettings'] 
   : undefined;
 
 export abstract class HHModule<TConfig extends HHModule_ConfigSchema = HHModule_ConfigSchema> {
-  public group: string;
+  public group = "severalQoL";
   public configSchema: TConfig;
   protected hasRun = false;
   
   constructor(configSchema: TConfig) {
-    this.group = "severalQoL";
     this.configSchema = configSchema;
   }
   
