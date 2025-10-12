@@ -19,3 +19,5 @@ HH++ bdsm **strongly** recommended, but works 100% without and every feature wil
 - Adds a clickable popup for PoV Info
 - Season event Ranking info  
   <img width="369" height="455" alt="image" src="https://github.com/user-attachments/assets/1353c21b-123a-4265-8137-47d96111f709" />
+- Added league oponent history  
+  <img width="338" height="334" alt="image" src="https://github.com/user-attachments/assets/969f4f41-3b41-4a33-b43a-88def5407304" />
