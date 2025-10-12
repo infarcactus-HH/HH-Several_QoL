@@ -55,7 +55,7 @@ export default class LeagueOpponentHistory extends HHModule {
       const record = this.leaguePlayerRecord![opponentId];
       if (record) {
         opponent.Several_QoL = {
-          chechExpiresAt: server_now_ts,
+          chechExpiresAt: record.checkExpiresAt,
           bestPlace: record.bestPlace,
           timesReached: record.timesReached,
         };
