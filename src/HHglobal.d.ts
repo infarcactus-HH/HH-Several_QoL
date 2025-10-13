@@ -4,7 +4,7 @@ export declare global {
   const shared: {
     PopupQueueManager: {
       add(options: popupForQueue): void;
-      close(options: { type: "toast" | "common" | "sliding" | "notification" }): void;
+      close(options: { type: "toast" | "common" | "sliding" | "notification" }): void; // at the end calls $dom_element.remove()
     };
     general: {
         hc_confirm: (price: string | number, callback: () => void) => void; // opens the confirm popup for premium spending
