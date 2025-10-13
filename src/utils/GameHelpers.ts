@@ -9,7 +9,7 @@ export default class GameHelpers {
       `<div class="popup_wrapper">` +
         `<div class="popup_background clickable"></div>` +
         `<div class="popup">` +
-        `<div class="container-special-bg" id="${popupID}"></div>` + // need to add ID
+        `<div class="container-special-bg" id="${popupID}"></div>` +
         `<close class="closable"></close>` +
         `</div>` +
         `</div>`
