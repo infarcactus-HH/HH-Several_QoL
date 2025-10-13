@@ -3,7 +3,7 @@ import { popupForQueue } from "../types/GameTypes";
 export default class GameHelpers {
   static createCommonPopup(
     popupID: string,
-    Finit: (popup: popupForQueue["popup"], t?: boolean) => void
+    Finit: (popup: popupForQueue["popup"], t: boolean) => void
   ) {
     const generatePopupDOM = $(
       `<div class="popup_wrapper">` +
