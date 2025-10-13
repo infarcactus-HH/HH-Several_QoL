@@ -62,17 +62,19 @@ export interface PlacesOfPowerData {
 }
 export interface popupForQueue {
   popup: {
-    $dom_element: JQuery<HTMLElement>; // unsure if really needed but prolly yes
-    init: (t: boolean) => void; // called first, no idea what the boolean is for
+    $dom_element: JQuery<HTMLElement>; // main injected dom element (?)
+    init: (t: boolean) => void; // called twice, first false in 1st, then true after open & addEventListeners
     onOpen: () => void; // called after init
     addEventListeners: () => void; // called right after open
     popup_name: string;
     close_on_esc: boolean; // wether it should close when pressing escape or not
     type: "toast" | "common" | "sliding" | "notification";
-    onClose: () => void; // called when closing
-    removeEventListeners: () => void; // called right after closing
+    onClose: () => void; // called when closing (for example when pressing escape if enabled)
+    removeEventListeners: () => void; // called right after closing (even if close was called by destroy)
     destroy: () => void; // useful when you want to put a red cross to close the popup, only called manually
   };
+  // creation flow : init(false) -> onOpen() -> addEventListeners() -> init(true)
+  // normal close flow : onClose() -> removeEventListeners()
 }
 
 export interface MERankingHeroData {
