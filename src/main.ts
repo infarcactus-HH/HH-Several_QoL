@@ -12,6 +12,7 @@ import PoVInfo from "./modules/PoVInfo";
 import MERankingInfo from "./modules/MERankingInfo";
 import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
 import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
+import EventInfo from "./modules/EventInfo";
 
 class Userscript {
   constructor() {
@@ -49,11 +50,12 @@ class Userscript {
     new MERankingInfo(),
     new LeagueOpponentHistory(),
     new LeagueNoPlayerProfileOnNameClick(),
+    new EventInfo(),
   ];
   run() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
-      name: "<span tooltip='by infarctus'>Several QoL</span>",
+      name: "<span tooltip='By infarctus'>Several QoL</span>",
     });
     if (location.pathname.includes("/home.html")) {
       this.allModules.forEach((module) => {
