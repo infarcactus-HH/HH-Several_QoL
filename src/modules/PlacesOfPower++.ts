@@ -70,7 +70,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const trackedTimes: Record<string, any> = JSON.parse(
       localStorage.getItem(localStorageKey) || "{}"
     );
-    if (!trackedTimes.pop || !trackedTimes.popDuration) {
+    if (trackedTimes.pop == null || trackedTimes.popDuration == null) { // also works for undefined
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
       return;
     }
@@ -81,7 +81,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       } // do not update if there is a PoP to claim
     }
     const nowTs = Math.floor(Date.now() / 1e3);
-    if (nowTs < trackedTimes.pop + trackedTimes.popDuration) {
+    if (trackedTimes.pop != 0) {
       console.log("Existing PoP tracked time is still valid, not updating");
       return;
     }
