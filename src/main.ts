@@ -1,8 +1,6 @@
 import type { HHModule, HHModule_ConfigSchema } from "./types/HH++";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
-import NoOnlyRealMoneyOptions from "./modules/NoOnlyRealMoneyOptions";
-import TighterPoP from "./modules/TighterPoP";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
 import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
@@ -38,18 +36,16 @@ class Userscript {
 
   allModules: HHModule[] = [
     new PopupPlusPlus(),
+    new PlacesOfPowerPlusPlus(),
     new LabyTeamPresets(),
     new NoAnnoyingPopups(),
-    new NoOnlyRealMoneyOptions(),
     new People(),
-    new TighterPoP(),
-    new WhaleBossTournament(),
-    new PlacesOfPowerPlusPlus(),
     new NoReloadFromClaimingDailyChests(),
-    new PoVInfo(),
     new MERankingInfo(),
     new LeagueOpponentHistory(),
     new LeagueNoPlayerProfileOnNameClick(),
+    new WhaleBossTournament(),
+    new PoVInfo(),
     new EventInfo(),
   ];
   run() {
