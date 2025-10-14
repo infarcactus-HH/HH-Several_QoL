@@ -16,6 +16,7 @@ export default class GameHelpers {
     );
     let generatedPopup: popupForQueue["popup"] = {
       init: function (t: boolean) {
+        $(`#common-popups`).prepend(this.$dom_element); // has to append to it ourselves
         Finit(this, t);
       },
       popup_name: "several_qol_common_popup",
@@ -34,12 +35,11 @@ export default class GameHelpers {
       onClose() {},
       destroy: function () {
         shared.PopupQueueManager.close({
-          type: "common",
+          type: this.type,
         });
       },
     };
     shared.PopupQueueManager.add({ popup: generatedPopup });
-    generatedPopup.init(true);
     return generatedPopup;
   }
 }
