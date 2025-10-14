@@ -8,8 +8,8 @@ export default class GameHelpers {
     const generatePopupDOM = $(
       `<div class="popup_wrapper">` +
         `<div class="popup_background clickable"></div>` +
-        `<div class="popup">` +
-        `<div class="container-special-bg" id="${popupID}"></div>` +
+        `<div class="popup several-qol-popup" id="popup-${popupID}">` +
+        `<div class="container-special-bg" id="container-${popupID}"></div>` +
         `<close class="closable"></close>` +
         `</div>` +
         `</div>`
