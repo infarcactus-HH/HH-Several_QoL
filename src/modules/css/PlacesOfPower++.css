@@ -24,10 +24,10 @@
 }
 /* Visit Original button */
 .pop-navigation-buttons-original {
-  top: 0px;
-  position: absolute;
-  padding: 2px 4px;
-  font-size: 10px;
+  top: 0px !important;
+  position: absolute !important;
+  padding: 2px 4px !important;
+  font-size: 10px !important;
 }
 
 /* Info panel - right side of details area */
@@ -35,8 +35,8 @@
   position: absolute;
   max-width: 320px;
   width: 320px;
-  left: 340px;
-  top: 35px;
+  bottom: 0px;
+  z-index: 1;
 }
 
 /* PoP title text */
@@ -44,7 +44,9 @@
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
-  color: white;
+  color: #ffb827;
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000,
+    1px -1px 0 #000;
   overflow: clip;
   white-space: nowrap;
   max-width: fit-content;
@@ -66,67 +68,46 @@
   width: -webkit-fill-available;
 }
 
-/* Claimed rewards section at bottom */
-.pop-claimed-rewards-container {
-  position: absolute;
-  bottom: 10px;
-  left: 340px;
-  max-width: 320px;
-  width: 320px;
-  margin-top: 10px;
-}
-
-/* Claimed rewards items wrapper */
-.pop-claimed-rewards-items {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  column-gap: 20px;
-  row-gap: 5px;
-  max-width: 320px;
-}
-
 /* PoP thumbnail grid container - right side */
-.pop-records-container {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 4px !important;
-  justify-content: start;
-  align-items: start;
-  width: 300px !important;
+#pop_info > .pop-records-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  justify-content: end;
+  width: 640px;
   margin-bottom: 10px;
-  position: absolute !important;
-  top: 60px !important;
-  right: 15px !important;
+  position: absolute;
+  top: 60px;
+  right: 15px;
 }
 
 /* Individual PoP thumbnail card */
-.pop-record {
+.pop-records-container > .pop-record {
   background-size: cover;
   background-position: center;
   position: relative;
   padding: 6px;
   border-radius: 3px;
-  min-height: 58px;
-  width: 100px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  height: -webkit-fill-available;
+  width: auto;
 }
 
 /* Selected PoP thumbnail highlight */
 .pop-record.selected {
-  border: 2px solid #ffcc00 !important;
+  outline: 2px solid #ffcc00 !important;
+  outline-offset: -2px;
   box-shadow: 0 0 10px rgba(255, 204, 0, 0.5) !important;
 }
 
 /* PoP class icon (top left of thumbnail) */
 .pop-icon {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 15px;
-  height: 15px;
+  top: 5px;
+  left: 5px;
+  width: 20px;
+  height: 20px;
   filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6))
     drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6))
     drop-shadow(-1px -1px 1px rgba(0, 0, 0, 0.6))
@@ -137,22 +118,23 @@
 /* PoP level badge (top right of thumbnail) */
 .pop-lvl {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 5px;
+  right: 5px;
   background: rgba(0, 0, 0, 0.6);
-  font-size: 12px;
+  font-size: 14px;
   color: #ffb827;
+  padding: 0px 3px;
 }
 
 /* Timer display (bottom of thumbnail) */
 .pop-timer {
   position: absolute;
-  bottom: 3px;
+  bottom: 5px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 1px 3px;
   border-radius: 1px;
-  font-size: 8px;
+  font-size: 10px;
 }
 
 /* Claim treasure on finished PoP (bottom right of thumbnail) */
@@ -162,15 +144,17 @@
   right: 3px;
 }
 
-.pop-koban-buttons-container {
+#pop_info > .pop-koban-buttons-container {
   position: absolute;
-  left: 340px;
   width: 320px;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
   flex-wrap: nowrap;
+  height: auto;
+  top: 8px;
+  right: 70px;
 }
 .pop-koban-buttons-container > .pop-koban-button {
   display: flex;

@@ -18,6 +18,6 @@ export abstract class HHModule {
   protected hasRun = false;
   
   abstract readonly configSchema: HHModule_ConfigSchema;
-  abstract run(subSettings: SubSettingsType<HHModule_ConfigSchema>): void;
+  abstract run(subSettings: any/*SubSettingsType<HHModule_ConfigSchema>*/): void;
   abstract shouldRun(): boolean;
 }

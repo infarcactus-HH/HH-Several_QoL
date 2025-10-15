@@ -2,7 +2,7 @@ import {
   global_pop_hero_girls_incomplete,
   PlacesOfPowerData,
 } from "../types/GameTypes";
-import { HHModule } from "../types/HH++";
+import { HHModule, SubSettingsType } from "../types/HH++";
 import { StorageHandler } from "../utils/StorageHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
@@ -10,16 +10,37 @@ declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; 
 declare const hh_prices_auto_start: number;
 declare const hh_prices_auto_claim: number;
 
+type configSchema = {
+  baseKey: "placesOfPowerPlusPlus";
+  label: "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>";
+  default: true;
+  subSettings: [
+    {
+      key: "rewardPopup";
+      default: true;
+      label: "Show reward popup on PoP claim";
+    }
+  ];
+};
+
 export default class PlacesOfPowerPlusPlus extends HHModule {
   readonly configSchema = {
     baseKey: "placesOfPowerPlusPlus",
     label:
       "<span tooltip='Global overhaul of PoPs especially for claiming & filling manually'>Places of Power++</span>",
     default: true,
+    subSettings: [
+      {
+        key: "rewardPopup",
+        default: true,
+        label: "Show reward popup on PoP claim",
+      },
+    ],
   };
   private isUpdatingGirls: boolean = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
+  private hasPopupEnabled: boolean = false;
 
   private readonly criteriaToClassMap: Record<
     PlacesOfPowerData["criteria"],
@@ -36,10 +57,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       !location.search.includes("?tab=pop&index=")
     );
   }
-  run() {
+  run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
+    this.hasPopupEnabled = subSettings?.rewardPopup ?? true;
     this.hasRun = true;
     const $PopSwitcher = $(".switch-tab[data-tab='pop']");
     $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
@@ -70,21 +92,16 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const trackedTimes: Record<string, any> = JSON.parse(
       localStorage.getItem(localStorageKey) || "{}"
     );
-    if (trackedTimes.pop == null || trackedTimes.popDuration == null) { // also works for undefined
+    if (trackedTimes.pop == null || trackedTimes.popDuration == null) {
+      // also works for undefined
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
       return;
     }
-    for (const entryPoP of Object.values(pop_data)) {
-      if (entryPoP.status === "pending_reward") {
-        console.log("There is a PoP to claim, not updating tracked time");
-        return;
-      } // do not update if there is a PoP to claim
-    }
-    const nowTs = Math.floor(Date.now() / 1e3);
     if (trackedTimes.pop != 0) {
       console.log("Existing PoP tracked time is still valid, not updating");
       return;
     }
+    const nowTs = Math.floor(Date.now() / 1e3);
     trackedTimes.pop = nowTs + popDuration;
     trackedTimes.popDuration = popDuration;
     localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
@@ -122,6 +139,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         `<span class="hard_currency_icn"></span>${hh_prices_auto_claim}` +
         `</div></div></div>`
     );
+    const self = this;
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
       if (t.attr("disabled") !== undefined) {
@@ -135,22 +153,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
               action: "pop_claim_all",
             },
             (response: any) => {
+              // implement popup
               // not complete
-              t.prop("disabled", !1);
-              //shared.reward_popup.Reward.handlePopup(e);
-              const rewardElement = shared.reward.newReward.multipleSlot(
-                response.rewards.data.rewards
-              );
-              const $claimedRewardsContainerItems = $(
-                ".pop-claimed-rewards-items"
-              );
-              $claimedRewardsContainerItems.append(rewardElement);
-              for (const popEntry of Object.values(pop_data)) {
-                if (popEntry.status === "pending_reward") {
-                  popEntry.status = "can_start";
-                }
+              if (self.hasPopupEnabled) {
+                shared.reward_popup.Reward.handlePopup(response.rewards);
               }
               $(".pop-record .collect_notif").remove();
+              self.createOrUpdateKobanButtons();
             }
           );
       });
@@ -185,7 +194,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       });
     });
     $popKobanButtonContainer.append($popKobanFillAllButton);
-    $(".pop-details-container").append($popKobanButtonContainer);
+    $("#pop_info").append($popKobanButtonContainer);
   }
 
   /**
@@ -402,13 +411,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     };
     delete this.currentPoPGirls[currentPoPData.id_places_of_power];
     shared.general.hh_ajax(n, (response: any) => {
-      const $claimedRewardsContainerItems = $(".pop-claimed-rewards-items");
-      if (!$claimedRewardsContainerItems.length) return;
-      if (response.rewards.data.rewards) {
-        const rewardElement = shared.reward.newReward.multipleSlot(
-          response.rewards.data.rewards
-        );
-        $claimedRewardsContainerItems.append(rewardElement);
+      if (this.hasPopupEnabled) {
+        shared.reward_popup.Reward.handlePopup(response.rewards);
       }
       this.selectNextPoPFromClaim();
       shared.animations.loadingAnimation.stop();
@@ -548,9 +552,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   buildPopDetails(popKey: string) {
     const $popDetails = $(".pop-details-container");
     if (!$popDetails.length) return;
-    $popDetails.children().not(".pop-claimed-rewards-container").remove();
     const currentPoPData = pop_data[parseInt(popKey)];
     if (!currentPoPData) return;
+
+    $popDetails.empty();
 
     // Girl image on the left
     const $popDetailsLeft = $('<div class="pop-details-left"></div>');
@@ -617,18 +622,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $startFillBtn.css("display", "none");
     } else {
       $claimBtn.css("display", "none");
-    }
-
-    if (!$(".pop-claimed-rewards-container").length) {
-      const $claimedRewardsContainer = $(
-        "<div class='pop-claimed-rewards-container'></div>"
-      );
-      $popDetails.append($claimedRewardsContainer);
-      $claimedRewardsContainer.append("<b>Claimed Rewards:</b>");
-      const $claimedRewardsContainerItems = $(
-        "<div class='pop-claimed-rewards-items'></div>"
-      );
-      $claimedRewardsContainer.append($claimedRewardsContainerItems);
     }
     this.createOrUpdateKobanButtons();
   }

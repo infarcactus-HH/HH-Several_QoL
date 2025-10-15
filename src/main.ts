@@ -35,16 +35,16 @@ class Userscript {
   }
 
   allModules: HHModule[] = [
-    new PopupPlusPlus(),
     new PlacesOfPowerPlusPlus(),
+    new PopupPlusPlus(),
     new LabyTeamPresets(),
     new NoAnnoyingPopups(),
     new People(),
     new NoReloadFromClaimingDailyChests(),
     new MERankingInfo(),
+    new WhaleBossTournament(),
     new LeagueOpponentHistory(),
     new LeagueNoPlayerProfileOnNameClick(),
-    new WhaleBossTournament(),
     new PoVInfo(),
     new EventInfo(),
   ];
@@ -77,7 +77,7 @@ class Userscript {
               acc[setting.key] = true;
               return acc;
             }, {} as Record<string, any>);
-            module.run(subSettings as any);
+            module.run(subSettings);
           } else {
             module.run(undefined);
           }
