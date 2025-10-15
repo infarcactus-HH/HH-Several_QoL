@@ -9,10 +9,18 @@ type EventInfo_Events =
   | "event"; // Org Days
 
 export default class EventInfo extends HHModule {
+  private readonly EventInfoLinks: Record<string, string> = {
+    dp_event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655",
+    sm_event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-309998",
+    cumback_contest: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304660",
+    event: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
+  };
   readonly configSchema = {
     baseKey: "eventInfo",
     label:
-      "<span tooltip='Click on the Information top right of event (only DP for now)'>Event Info (WIP): Show guides tips & tricks for events</span>",
+      "<span tooltip='Click on the Information top right of event (only DP, SM, CbC, OD for now)'>Event Info (WIP): Show guides tips & tricks for events</span>",
     default: true,
   };
   shouldRun() {
@@ -32,6 +40,29 @@ export default class EventInfo extends HHModule {
     const css = require("./css/EventInfo.css").default;
     GM.addStyle(css);
   }
+  helperCreateNotifButton(event : EventInfo_Events) {
+    const $notifButton = $(`<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`);
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".nc-panel-header .nc-pull-right", () => {
+      $(".nc-panel-header .nc-pull-right").prepend($notifButton);
+    });
+    $notifButton.off("click").on("click", (e) => {
+      GM.openInTab(this.EventInfoLinks[event], {active: true});
+    });
+    return $notifButton;
+  }
+  helperReplaceNotifButton(event : EventInfo_Events) {
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      ".button-notification-action.notif_button_s",
+      () => {
+        $(".button-notification-action.notif_button_s")
+          .attr("tooltip", "Several QoL: More Info on this event")
+          .off("click")
+          .on("click", (e) => {
+            GM.openInTab(this.EventInfoLinks[event], {active: true});
+          });
+      }
+    );
+  }
   whichEventToCall(eventType: EventInfo_Events | undefined) {
     if (!eventType) {
       return;
@@ -40,6 +71,14 @@ export default class EventInfo extends HHModule {
       case "dp_event":
         this.dp_eventRun();
         return;
+      case "sm_event":
+        this.helperReplaceNotifButton("sm_event");
+        return;
+      case "cumback_contest":
+        this.helperCreateNotifButton("cumback_contest");
+        return;
+      case "event":
+        this.helperCreateNotifButton("event")
       default:
         return; // not yet implemented or nothing to display
     }
@@ -60,7 +99,7 @@ export default class EventInfo extends HHModule {
                 .append(
                   `<div class="banner">Several QoL - Event Info - DP</div>` +
                     `<div class="event-content dp_event"><span>` +
-                    `Before going\n into more details read <a href="https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655"><strong>this</strong></a> guide made by bolitho` +
+                    `Before going\n into more details read <a href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
                     `<br><br>There are important things to note for this event:<br>` +
                     `First there are some missions that are not in the daily missions list that can appear on easy & hard side :<br>` +
                     `- Claim chest n°X on daily missions (idk if you can land on a chest you already claimed)<br>` +
@@ -69,10 +108,10 @@ export default class EventInfo extends HHModule {
                     `- Get shards<br>` +
                     `- Score points in contests<br>` +
                     `<br>` +
-                    `There's one that's <strong>really annoying</strong> that can only appear on the hard side:<br>`+
+                    `There's one that's <strong>really annoying</strong> that can only appear on the hard side:<br>` +
                     `- Restock market<br>` +
                     `<br>` +
-                    `One info not given is that a challenge cannot be the same on both easy & hard side as such try to lock an annoying mission on the hard side before you get stuck with "Restock Market"`+
+                    `One info not given is that a challenge cannot be the same on both easy & hard side as such try to lock an annoying mission on the hard side before you get stuck with "Restock Market"` +
                     `</span></div>`
                 );
             });
