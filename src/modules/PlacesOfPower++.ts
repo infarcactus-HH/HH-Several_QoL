@@ -141,11 +141,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     const self = this;
     $popKobanClaimAllButton.on("click", function () {
+      shared.animations.loadingAnimation.start();
       let t = $(this);
       if (t.attr("disabled") !== undefined) {
         return;
       }
       let n = t.attr("price");
+      t.prop("disabled", true);
       shared.general.hc_confirm(n!, () => {
         t.prop("disabled", !0),
           shared.general.hh_ajax(
@@ -153,13 +155,18 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
               action: "pop_claim_all",
             },
             (response: any) => {
-              // implement popup
-              // not complete
+              for(const popEntry of Object.values(pop_data)) {
+                if (popEntry.status === "pending_reward") {
+                  delete pop_data[popEntry.id_places_of_power];
+                }
+              }
               if (self.hasPopupEnabled) {
                 shared.reward_popup.Reward.handlePopup(response.rewards);
               }
               $(".pop-record .collect_notif").remove();
               self.createOrUpdateKobanButtons();
+              $("pop-record").first().trigger("click");
+              shared.animations.loadingAnimation.stop();
             }
           );
       });
