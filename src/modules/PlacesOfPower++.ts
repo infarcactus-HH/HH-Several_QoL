@@ -458,13 +458,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const popId = currentPoPData.id_places_of_power;
 
     // Build assignment for this specific PoP only
-    console.log(`[PoP ${popId}] Building girl assignment for this PoP...`);
+    console.log(`[PoP ${popId}] Building assignment for this PoP...`);
     const selectedGirls = this.assignGirlsToPoP(popId) || [];
     this.currentPoPGirls[popId] = selectedGirls;
 
     if (selectedGirls.length === 0) {
       alert(
-        `No girls were assigned to this PoP. This might happen if all your girls are already assigned to other PoPs.`
+        `No ${GT.design.girl} were assigned to this PoP. This might happen if all your ${GT.design.girl} are already assigned to other PoPs.`
       );
       delete this.currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
