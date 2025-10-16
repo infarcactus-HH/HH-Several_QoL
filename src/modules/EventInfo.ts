@@ -99,7 +99,7 @@ export default class EventInfo extends HHModule {
                 .append(
                   `<div class="banner">Several QoL - Event Info - DP</div>` +
                     `<div class="event-content dp_event"><span>` +
-                    `Before going\n into more details read <a href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
+                    `Before going\n into more details read <a target="_blank" href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
                     `<br><br>There are important things to note for this event:<br>` +
                     `First there are some missions that are not in the daily missions list that can appear on easy & hard side :<br>` +
                     `- Claim chest n°X on daily missions (idk if you can land on a chest you already claimed)<br>` +
