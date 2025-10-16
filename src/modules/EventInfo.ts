@@ -1,6 +1,8 @@
+import { sm_event_dataIncomplete } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import { StorageHandlerEventInfo } from "../utils/StorageHandler";
 
 type EventInfo_Events =
   | "dp_event" // Double Pen
@@ -14,13 +16,15 @@ export default class EventInfo extends HHModule {
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655",
     sm_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-309998",
-    cumback_contest: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304660",
-    event: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
+    cumback_contest:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304660",
+    event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
   };
   readonly configSchema = {
     baseKey: "eventInfo",
     label:
-      "<span tooltip='Click on the Information top right of event (only DP, SM, CbC, OD for now)'>Event Info (WIP): Show guides tips & tricks for events</span>",
+      "<span tooltip='Click on the Information top right of event (only DP, SM, CbC, OD for now)'>Event Info (WIP): Show guides, tips, tricks & more info events</span>",
     default: true,
   };
   shouldRun() {
@@ -40,17 +44,22 @@ export default class EventInfo extends HHModule {
     const css = require("./css/EventInfo.css").default;
     GM.addStyle(css);
   }
-  helperCreateNotifButton(event : EventInfo_Events) {
-    const $notifButton = $(`<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`);
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".nc-panel-header .nc-pull-right", () => {
-      $(".nc-panel-header .nc-pull-right").prepend($notifButton);
-    });
+  helperCreateNotifButton(event: EventInfo_Events) {
+    const $notifButton = $(
+      `<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`
+    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      ".nc-panel-header .nc-pull-right",
+      () => {
+        $(".nc-panel-header .nc-pull-right").prepend($notifButton);
+      }
+    );
     $notifButton.off("click").on("click", (e) => {
-      GM.openInTab(this.EventInfoLinks[event], {active: true});
+      GM.openInTab(this.EventInfoLinks[event], { active: true });
     });
     return $notifButton;
   }
-  helperReplaceNotifButton(event : EventInfo_Events) {
+  helperReplaceNotifButton(event: EventInfo_Events) {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".button-notification-action.notif_button_s",
       () => {
@@ -58,7 +67,7 @@ export default class EventInfo extends HHModule {
           .attr("tooltip", "Several QoL: More Info on this event")
           .off("click")
           .on("click", (e) => {
-            GM.openInTab(this.EventInfoLinks[event], {active: true});
+            GM.openInTab(this.EventInfoLinks[event], { active: true });
           });
       }
     );
@@ -72,13 +81,13 @@ export default class EventInfo extends HHModule {
         this.dp_eventRun();
         return;
       case "sm_event":
-        this.helperReplaceNotifButton("sm_event");
+        this.sm_eventRun();
         return;
       case "cumback_contest":
         this.helperCreateNotifButton("cumback_contest");
         return;
       case "event":
-        this.helperCreateNotifButton("event")
+        this.helperCreateNotifButton("event");
       default:
         return; // not yet implemented or nothing to display
     }
@@ -119,4 +128,53 @@ export default class EventInfo extends HHModule {
       }
     );
   }
+  sm_eventRun() {
+    this.helperReplaceNotifButton("sm_event");
+    const sm_event_data = unsafeWindow.sm_event_data as sm_event_dataIncomplete;
+    // base game function
+    const t = shared.timer.buildTimer(
+      sm_event_data.seconds_until_event_end,
+      GT.design.event_ends_in,
+      "event-timer nc-expiration-label",
+      !1
+    );
+    $(".nc-pull-right").append(t);
+    shared.timer.activateTimers("event-timer.nc-expiration-label");
+    // end base game function
+    $("#sultry-mysteries-tabs > #shop_tab").on(
+      "click.SeveralQoLEventInfo",
+      function () {
+        $(this).off("click.SeveralQoLEventInfo");
+        HHPlusPlusReplacer.doWhenSelectorAvailable(".shop-timer.timer", () => {
+          const shopRefreshesIn =
+            $(".shop-timer.timer").attr("data-time-stamp");
+          if (!shopRefreshesIn || isNaN(Number(shopRefreshesIn))) {
+            return;
+          }
+          const timeShopRefreshesIn =
+            Number(shopRefreshesIn) + Date.now() / 1000;
+          StorageHandlerEventInfo.setSMShopRefreshTimeComparedToServerTS(
+            timeShopRefreshesIn
+          );
+        });
+      }
+    );
+    const storedSMShopRefreshTime =
+      StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
+    if (storedSMShopRefreshTime > server_now_ts) {
+      const t = shared.timer.buildTimer(
+        storedSMShopRefreshTime - server_now_ts,
+        "",
+        "severalQoL-event-shop-timer nc-expiration-label",
+        !1
+      );
+      $("#sultry-mysteries-tabs > #shop_tab").append(t);
+      shared.timer.activateTimers(
+        "severalQoL-event-shop-timer.nc-expiration-label"
+      );
+    }
+  }
 }
+/*
+
+                */

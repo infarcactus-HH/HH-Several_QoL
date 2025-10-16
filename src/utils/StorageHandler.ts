@@ -25,3 +25,12 @@ export class StorageHandler {
         return GM_getValue(HH_UNIVERSE+'LeaguePlayerRecord', {});
     }
 }
+
+export class StorageHandlerEventInfo {
+    static setSMShopRefreshTimeComparedToServerTS(ts: number): void { // gives like timeout + server_now_ts
+        GM_setValue(HH_UNIVERSE+'SMShopRefreshTime', ts);
+    }
+    static getSMShopRefreshTimeComparedToServerTS(): number {
+        return GM_getValue(HH_UNIVERSE+'SMShopRefreshTime', 0);
+    }
+}

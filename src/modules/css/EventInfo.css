@@ -47,3 +47,12 @@
 #container-event_info strong {
   color: #FFB827;
 }
+
+.severalQoL-event-shop-timer {
+  margin-left: 10px;
+  width: min-content;
+}
+
+.severalQoL-event-shop-timer > span {
+  font-size: 12px;
+}
