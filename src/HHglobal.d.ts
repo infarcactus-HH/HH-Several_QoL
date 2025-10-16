@@ -31,7 +31,7 @@ export declare global {
       ) : string; // returns the html string
       activateTimers(
         className: string, // classname is wonky here. The selector they make adds a dot before it but you can add more after
-        callback: (timer: {
+        callback?: (timer: {
           $dom_element: JQuery<HTMLElement>; // self
           next_tick: number; // ??
           onComplete: () => void; // the callback
