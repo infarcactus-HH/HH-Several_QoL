@@ -141,7 +141,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     const self = this;
     $popKobanClaimAllButton.on("click", function () {
-      shared.animations.loadingAnimation.start();
       let t = $(this);
       if (t.attr("disabled") !== undefined) {
         return;
@@ -149,6 +148,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       let n = t.attr("price");
       t.prop("disabled", true);
       shared.general.hc_confirm(n!, () => {
+        shared.animations.loadingAnimation.start();
         t.prop("disabled", !0),
           shared.general.hh_ajax(
             {
