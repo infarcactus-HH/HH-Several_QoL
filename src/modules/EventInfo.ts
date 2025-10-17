@@ -61,7 +61,7 @@ export default class EventInfo extends HHModule {
     if (SMShopRefreshTime > server_now_ts) {
       const t = shared.timer.buildTimer(
         SMShopRefreshTime - server_now_ts,
-        GT.design.sm_event_restock_in,
+        GT.design.market_new_stock,
         "severalQoL-event-timer nc-expiration-label",
         !1
       );
@@ -74,7 +74,7 @@ export default class EventInfo extends HHModule {
       $smEventTimerBox.prepend(t);
       shared.timer.activateTimers("severalQoL-event-timer.nc-expiration-label");
     } else {
-      $smEventTimerBox.prepend(`<div class="severalQoL-event-timer expired">Restock Now!</div>`)
+      $smEventTimerBox.prepend(`<div class="severalQoL-event-timer expired">${GT.design.sm_event_restock_now}</div>`)
     }
   }
   helperCreateNotifButton(event: EventInfo_Events) {
