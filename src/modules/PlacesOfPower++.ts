@@ -495,7 +495,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     if (
       totalPower / currentPoPData.max_team_power <
-      this.minPercentToStartPoP / 100
+      this.minPercentToStartPoP
     ) {
       alert("Not enough power to start this PoP.");
       delete this.currentPoPGirls[popId];
