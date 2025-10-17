@@ -51,6 +51,17 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     carac_3: 3,
   };
 
+  private readonly idealPoPOrder = [
+    '1', '2', '3',      // primary pops
+    '13', '14', '15',   // orb      / water
+    '7', '8', '9',      // koban    / light
+    '4', '5', '6',      // ymen     / darkness
+    '16', '17', '18',   // booster  / fire
+    '22', '23', '24',   // gift     / sun
+    '19', '20', '21',   // ticket   / stone
+    '10', '11', '12',   // gem      / nature & psychic
+]
+
   shouldRun() {
     return (
       location.pathname.includes("/activities.html") &&
@@ -646,7 +657,22 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popRecordsContainer = $('<div class="pop-records-container"></div>');
 
     // Iterate through pop_data records
-    Object.entries(pop_data).forEach(([key, popRecord]) => {
+    // Order them according to idealPoPOrder (if an id appears there), then fallback to numeric id order
+    const orderedEntries = Object.entries(pop_data).sort(([_aKey, aRec], [_bKey, bRec]) => {
+      const aId = String(aRec.id_places_of_power ?? _aKey);
+      const bId = String(bRec.id_places_of_power ?? _bKey);
+      const idxA = this.idealPoPOrder.indexOf(aId);
+      const idxB = this.idealPoPOrder.indexOf(bId);
+      if (idxA !== -1 || idxB !== -1) {
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+      }
+      // fallback to numeric order
+      return Number(aId) - Number(bId);
+    });
+
+    orderedEntries.forEach(([key, popRecord]) => {
       const $popRecord = $(`<div class="pop-record"></div>`);
       $popRecord.attr("data-pop-id", key);
       // Set background image inline (can't be done in CSS)
