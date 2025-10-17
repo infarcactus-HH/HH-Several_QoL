@@ -175,7 +175,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
               shared.reward_popup.Reward.handlePopup(response.rewards);
             }
             $(".pop-record .collect_notif").remove();
-            self.createOrUpdateKobanButtons();
+            self.buildPopDetails("1");
             $("pop-record").first().trigger("click");
             shared.animations.loadingAnimation.stop();
           }
