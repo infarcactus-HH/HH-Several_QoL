@@ -151,7 +151,7 @@ export default class EventInfo extends HHModule {
                     `- Score points in contests<br>` +
                     `<br>` +
                     `There's one that's <strong>really annoying</strong> that can only appear on the hard side:<br>` +
-                    `- Restock market<br>` +
+                    `- Restock the Market<br>` +
                     `<br>` +
                     `One info not given is that a challenge cannot be the same on both easy & hard side as such try to lock an annoying mission on the hard side before you get stuck with "Restock Market"` +
                     `</span></div>`
