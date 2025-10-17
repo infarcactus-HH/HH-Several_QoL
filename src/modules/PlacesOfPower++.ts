@@ -167,7 +167,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
           (response: any) => {
             for (const popEntry of Object.values(pop_data)) {
               if (popEntry.status === "pending_reward") {
-                delete pop_data[popEntry.id_places_of_power];
+                delete self.currentPoPGirls[popEntry.id_places_of_power];
                 popEntry.status= "can_start";
               }
             }
