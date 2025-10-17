@@ -49,7 +49,7 @@ export default class EventInfo extends HHModule {
   }
   injectCSS() {
     const css = require("./css/EventInfo.css").default;
-    console.log(GM.addStyle(css));
+    GM.addStyle(css);
   }
   runHome() {
     const SMShopRefreshTime = StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
