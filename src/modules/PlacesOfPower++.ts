@@ -51,7 +51,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     carac_3: 3,
   };
 
-  private readonly idealPoPOrder = [
+  private readonly idealPoPOrder = [ // From HH++ slightly tweaked
     '1', '2', '3',      // primary pops
     '13', '14', '15',   // orb      / water
     '7', '8', '9',      // koban    / light
