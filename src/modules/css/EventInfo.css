@@ -56,3 +56,7 @@
 .severalQoL-event-shop-timer > span {
   font-size: 12px;
 }
+
+.timer-box .severalQoL-event-timer.expired {
+  color: #f5252a;
+}

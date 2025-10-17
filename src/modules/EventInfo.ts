@@ -28,7 +28,10 @@ export default class EventInfo extends HHModule {
     default: true,
   };
   shouldRun() {
-    return location.pathname.includes("/event.html");
+    return (
+      location.pathname.includes("/event.html") ||
+      location.pathname.includes("/home.html")
+    );
   }
   run() {
     if (this.hasRun || !this.shouldRun()) {
@@ -36,13 +39,43 @@ export default class EventInfo extends HHModule {
     }
     this.hasRun = true;
     this.injectCSS();
+    if (location.pathname.includes("/home.html")) {
+      this.runHome();
+      return;
+    }
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
     const eventType = eventInSearchParams?.replace(/_\d+$/, "");
     this.whichEventToCall(eventType as EventInfo_Events | undefined);
   }
   injectCSS() {
     const css = require("./css/EventInfo.css").default;
-    GM.addStyle(css);
+    console.log(GM.addStyle(css));
+  }
+  runHome() {
+    const SMShopRefreshTime = StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
+    const $smEventTimerBox = $("[rel='sm_event']").find(".timer-box");
+    if (SMShopRefreshTime != 0 && !$smEventTimerBox) {
+      StorageHandlerEventInfo.setSMShopRefreshTimeComparedToServerTS(0);
+      return;
+    }
+    if (SMShopRefreshTime > server_now_ts) {
+      const t = shared.timer.buildTimer(
+        SMShopRefreshTime - server_now_ts,
+        GT.design.sm_event_restock_in,
+        "severalQoL-event-timer nc-expiration-label",
+        !1
+      );
+      GM.addStyle(
+        `[rel='sm_event'] .severalQoL-event-timer {padding-bottom: 0px!important}`
+      );
+      console.log(
+        StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS()
+      );
+      $smEventTimerBox.prepend(t);
+      shared.timer.activateTimers("severalQoL-event-timer.nc-expiration-label");
+    } else {
+      $smEventTimerBox.prepend(`<div class="severalQoL-event-timer expired">Restock Now!</div>`)
+    }
   }
   helperCreateNotifButton(event: EventInfo_Events) {
     const $notifButton = $(
@@ -152,7 +185,7 @@ export default class EventInfo extends HHModule {
             return;
           }
           const timeShopRefreshesIn =
-            Number(shopRefreshesIn) + Date.now() / 1000;
+            Number(shopRefreshesIn) + Math.floor(Date.now() / 1000);
           StorageHandlerEventInfo.setSMShopRefreshTimeComparedToServerTS(
             timeShopRefreshesIn
           );
@@ -175,6 +208,3 @@ export default class EventInfo extends HHModule {
     }
   }
 }
-/*
-
-                */
