@@ -1,8 +1,20 @@
 import { SubModule } from "../../types/subModules";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { StorageHandlerEventInfo } from "../../utils/StorageHandler";
 
 export default class EventInfo_Home implements SubModule {
   run() {
+    this.injectCSS();
+    HHPlusPlusReplacer.doWhenSelectorAvailable("[rel='path-of-valor']", () => {
+      this.PoVPoGHandler();
+    });
+    this.SMEventHandler();
+  }
+  async injectCSS() {
+    const css = require("../css/EventInfo/EventInfo_Home.css").default;
+    GM_addStyle(css);
+  }
+  SMEventHandler() {
     const SMShopRefreshTime =
       StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
     const $smEventTimerBox = $("[rel='sm_event']").find(".timer-box");
@@ -17,9 +29,6 @@ export default class EventInfo_Home implements SubModule {
         "severalQoL-event-timer nc-expiration-label",
         !1
       );
-      GM.addStyle(
-        `[rel='sm_event'] .severalQoL-event-timer {padding-bottom: 0px!important}`
-      );
       $smEventTimerBox.prepend(t);
       shared.timer.activateTimers("severalQoL-event-timer.nc-expiration-label");
     } else {
@@ -28,8 +37,36 @@ export default class EventInfo_Home implements SubModule {
       );
     }
   }
-  async injectCSS() {
-    const css = require("../css/EventInfo/EventInfo_Home.css").default;
-    GM_addStyle(css);
+  PoVPoGHandler() {
+    localStorage.removeItem("HHsucklessPoV")
+    localStorage.removeItem("HHsucklessPoG")
+    console.log("PoVPoGHandler called");
+    const PoVEndTime =
+      StorageHandlerEventInfo.getPoVEndTimeComparedToServerTS();
+    const PoGEndTime =
+      StorageHandlerEventInfo.getPoGEndTimeComparedToServerTS();
+
+    addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60);
+    addPoVPoGTimer(PoGEndTime, $("[rel='path-of-glory']"), 35 * 24 * 60 * 60);
+
+    function addPoVPoGTimer(
+      endTime: number,
+      $aHrefElement: JQuery<HTMLElement>,
+      incrementSeconds: number
+    ) {
+      while (endTime < server_now_ts) {
+        endTime += incrementSeconds; // in case the time stored is old, we increment until it's in the future
+      }
+      const timer = shared.timer.buildTimer(
+        endTime - server_now_ts,
+        GT.design.event_ends_in,
+        "severalQoL-PoVPoG-timer nc-expiration-label",
+        false
+      );
+      console.log("Built PoV/PoG timer:", timer);
+      $aHrefElement.find(".white_text").append(timer);
+      console.log("Appended PoV/PoG timer");
+    }
+    shared.timer.activateTimers("severalQoL-PoVPoG-timer.nc-expiration-label",()=> {});
   }
 }

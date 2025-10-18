@@ -33,4 +33,16 @@ export class StorageHandlerEventInfo {
     static getSMShopRefreshTimeComparedToServerTS(): number {
         return GM_getValue(HH_UNIVERSE+'SMShopRefreshTime', 0);
     }
+    static setPoVEndTimeComparedToServerTS(ts: number): void { // gives like end_time + server_now_ts
+        GM_setValue(HH_UNIVERSE+'PoVEndTime', ts);
+    }
+    static getPoVEndTimeComparedToServerTS(): number {
+        return GM_getValue(HH_UNIVERSE+'PoVEndTime', 0);
+    }
+    static setPoGEndTimeComparedToServerTS(ts: number): void { // gives like end_time + server_now_ts
+        GM_setValue(HH_UNIVERSE+'PoGEndTime', ts);
+    }
+    static getPoGEndTimeComparedToServerTS(): number {
+        return GM_getValue(HH_UNIVERSE+'PoGEndTime', 0);
+    }
 }

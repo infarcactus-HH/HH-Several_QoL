@@ -1,3 +1,16 @@
 .timer-box .severalQoL-event-timer.expired {
   color: #f5252a;
 }
+
+[rel="sm_event"] .severalQoL-event-timer {
+  padding-bottom: 0px !important;
+}
+
+.severalQoL-PoVPoG-timer {
+  position: absolute;
+  left:6px;
+}
+.severalQoL-PoVPoG-timer > p {
+  font-size: 12px;
+  color: #8EC3FF;
+}

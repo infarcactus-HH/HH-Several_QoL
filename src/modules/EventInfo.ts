@@ -1,6 +1,7 @@
 import { HHModule } from "../types/HH++";
 import EventInfo_Event from "./EventInfo/EventInfo_Event";
 import EventInfo_Home from "./EventInfo/EventInfo_Home";
+import EventInfo_Pathes from "./EventInfo/EventInfo_Pathes";
 
 export default class EventInfo extends HHModule {
   readonly configSchema = {
@@ -11,8 +12,8 @@ export default class EventInfo extends HHModule {
   };
   shouldRun() {
     return (
-      location.pathname.includes("/event.html") ||
-      location.pathname.includes("/home.html")
+      location.pathname === "/event.html" ||
+      location.pathname === "/home.html"
     );
   }
   run() {
@@ -21,20 +22,28 @@ export default class EventInfo extends HHModule {
     }
     this.hasRun = true;
 
-    if (location.pathname.includes("/home.html")) {
+    const path = location.pathname;
+
+    if (path === "/home.html") {
       this.runHome();
       return;
     }
-    if (location.pathname.includes("/event.html")) {
+    if (path === "/event.html") {
       this.runEvent();
       return;
     }
-    
+    if( path === "/path-of-glory.html" || path === "/path-of-valor.html"){
+      this.runPathes();
+      return;
+    }
   }
   runHome() {
     new EventInfo_Home().run();
   }
   runEvent() {
     new EventInfo_Event().run();
+  }
+  runPathes() {
+    new EventInfo_Pathes().run();
   }
 }
