@@ -45,8 +45,8 @@ export default class EventInfo_Home implements SubModule {
     const PoGEndTime =
       StorageHandlerEventInfo.getPoGEndTimeComparedToServerTS();
 
-    addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60);
-    addPoVPoGTimer(PoGEndTime, $("[rel='path-of-glory']"), 35 * 24 * 60 * 60);
+    addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
+    addPoVPoGTimer(PoGEndTime, $("[rel='path-of-glory']"), 35 * 24 * 60 * 60); // 35 days
 
     function addPoVPoGTimer(
       endTime: number,
