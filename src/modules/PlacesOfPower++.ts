@@ -404,18 +404,20 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   sendClaimRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
+    const popKeyInt = parseInt(popKey);
     this.readdGirlsFromCurrentPoP(popKey);
-    const currentPoPData = pop_data[parseInt(popKey)];
+    const currentPoPData = pop_data[popKeyInt];
     $(".claimPoPButton").prop("disabled", true);
     if (currentPoPData.ends_in === null || currentPoPData.ends_in !== 0) {
       $(".claimPoPButton").css("display", "none");
       $(".startPoPButton").css("display", "");
-      pop_data[parseInt(popKey)].status = "can_start";
+      pop_data[popKeyInt].status = "can_start";
+      pop_data[popKeyInt].ends_in = null;
       $(".pop-record.selected .collect_notif").remove();
     } else {
       const $currentPoPRecordSelected = $(".pop-record.selected");
       this.selectNextPoPFromFill($currentPoPRecordSelected);
-      delete pop_data[parseInt(popKey)];
+      delete pop_data[popKeyInt];
       $currentPoPRecordSelected.remove();
     }
     const n = {
@@ -464,7 +466,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   sendFillRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
-    const currentPoPData = pop_data[parseInt(popKey)];
+    const popKeyInt = parseInt(popKey);
+    const currentPoPData = pop_data[popKeyInt];
     if (currentPoPData.status !== "can_start") return;
 
     const popId = currentPoPData.id_places_of_power;
@@ -554,7 +557,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $timer.append(timerElement);
     $(".pop-record.selected").append($timer);
-    pop_data[parseInt(popKey)].status = "in_progress";
+    pop_data[popKeyInt].status = "in_progress";
+    pop_data[popKeyInt].ends_in = timeToFinishSeconds;
 
     shared.general.hh_ajax(n, (_response: any) => {
       shared.timer.activateTimers(
@@ -609,7 +613,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     // Create rewards container
     const $rewardsContainer = $('<div class="pop-rewards-container"></div>');
 
-    for (const [key, reward] of Object.entries(currentPoPData.rewards)) {
+    for (const [_key, reward] of Object.entries(currentPoPData.rewards)) {
       if (reward.loot) {
         const rewardElement = shared.reward.newReward.multipleSlot(reward);
         $rewardsContainer.append(rewardElement);
