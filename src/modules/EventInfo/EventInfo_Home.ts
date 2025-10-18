@@ -40,7 +40,6 @@ export default class EventInfo_Home implements SubModule {
   PoVPoGHandler() {
     localStorage.removeItem("HHsucklessPoV")
     localStorage.removeItem("HHsucklessPoG")
-    console.log("PoVPoGHandler called");
     const PoVEndTime =
       StorageHandlerEventInfo.getPoVEndTimeComparedToServerTS();
     const PoGEndTime =
@@ -63,9 +62,7 @@ export default class EventInfo_Home implements SubModule {
         "severalQoL-PoVPoG-timer nc-expiration-label",
         false
       );
-      console.log("Built PoV/PoG timer:", timer);
       $aHrefElement.find(".white_text").append(timer);
-      console.log("Appended PoV/PoG timer");
     }
     shared.timer.activateTimers("severalQoL-PoVPoG-timer.nc-expiration-label",()=> {});
   }
