@@ -51,6 +51,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     carac_3: 3,
   };
 
+  // prettier-ignore
   private readonly idealPoPOrder = [ // From HH++ slightly tweaked
     '1', '2', '3',      // primary pops
     '13', '14', '15',   // orb      / water
@@ -60,7 +61,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     '22', '23', '24',   // gift     / sun
     '19', '20', '21',   // ticket   / stone
     '10', '11', '12',   // gem      / nature & psychic
-]
+  ];
 
   shouldRun() {
     return (
@@ -94,7 +95,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
   }
 
-  updateHHPlusPlusPoPTrackedTime(popDuration: number) {
+  updateHHPlusPlusPoPTrackedTime() {
     const localStorageKey = "HHPlusPlusTrackedTimes";
     if (!localStorage.getItem(localStorageKey)) {
       console.log("No HHPlusPlusTrackedTimes found in localStorage");
@@ -112,9 +113,18 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       console.log("Existing PoP tracked time is still valid, not updating");
       return;
     }
+    const endingsIn = Object.values(pop_data)
+      .map(({ remaining_time, time_to_finish }) => ({
+        endAt: remaining_time,
+        duration: time_to_finish,
+      }))
+      .filter(({ endAt }) => endAt)
+      .sort((a, b) => (a.endAt > b.endAt ? 1 : -1));
+
+    const soonest = endingsIn[0] || { endAt: 0, duration: 0 };
     const nowTs = Math.floor(Date.now() / 1e3);
-    trackedTimes.pop = nowTs + popDuration;
-    trackedTimes.popDuration = popDuration;
+    trackedTimes.pop = nowTs + soonest.endAt;
+    trackedTimes.popDuration = soonest.duration;
     localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
     console.log(
       "Updated HHPlusPlusTrackedTimes with new PoP end time",
@@ -168,7 +178,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
             for (const popEntry of Object.values(pop_data)) {
               if (popEntry.status === "pending_reward") {
                 delete self.currentPoPGirls[popEntry.id_places_of_power];
-                popEntry.status= "can_start";
+                popEntry.status = "can_start";
               }
             }
             if (self.hasPopupEnabled) {
@@ -566,7 +576,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         () => {}
       );
       this.selectNextPoPFromFill($(".pop-record.selected"));
-      this.updateHHPlusPlusPoPTrackedTime(timeToFinishSeconds);
+      this.updateHHPlusPlusPoPTrackedTime();
       shared.animations.loadingAnimation.stop();
     });
   }
@@ -663,19 +673,21 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Iterate through pop_data records
     // Order them according to idealPoPOrder (if an id appears there), then fallback to numeric id order
-    const orderedEntries = Object.entries(pop_data).sort(([_aKey, aRec], [_bKey, bRec]) => {
-      const aId = String(aRec.id_places_of_power ?? _aKey);
-      const bId = String(bRec.id_places_of_power ?? _bKey);
-      const idxA = this.idealPoPOrder.indexOf(aId);
-      const idxB = this.idealPoPOrder.indexOf(bId);
-      if (idxA !== -1 || idxB !== -1) {
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
+    const orderedEntries = Object.entries(pop_data).sort(
+      ([_aKey, aRec], [_bKey, bRec]) => {
+        const aId = String(aRec.id_places_of_power ?? _aKey);
+        const bId = String(bRec.id_places_of_power ?? _bKey);
+        const idxA = this.idealPoPOrder.indexOf(aId);
+        const idxB = this.idealPoPOrder.indexOf(bId);
+        if (idxA !== -1 || idxB !== -1) {
+          if (idxA === -1) return 1;
+          if (idxB === -1) return -1;
+          return idxA - idxB;
+        }
+        // fallback to numeric order
+        return Number(aId) - Number(bId);
       }
-      // fallback to numeric order
-      return Number(aId) - Number(bId);
-    });
+    );
 
     orderedEntries.forEach(([key, popRecord]) => {
       const $popRecord = $(`<div class="pop-record"></div>`);
