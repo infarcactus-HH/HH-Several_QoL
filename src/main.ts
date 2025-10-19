@@ -6,7 +6,6 @@ import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
-import PoVInfo from "./modules/PoVInfo";
 import MERankingInfo from "./modules/MERankingInfo";
 import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
 import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
@@ -45,7 +44,6 @@ class Userscript {
     new WhaleBossTournament(),
     new LeagueOpponentHistory(),
     new LeagueNoPlayerProfileOnNameClick(),
-    new PoVInfo(),
     new EventInfo(),
   ];
   run() {
