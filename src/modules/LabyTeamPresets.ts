@@ -85,7 +85,7 @@ export default class LabyTeamPresets extends HHModule {
         class: "Hero",
         action: "edit_team",
         girls: preset,
-        battle_type: "labyrinth",
+        battle_type: location.pathname === "/edit-labyrinth-team.html" ? "labyrinth" : "world_boss",
         id_team: unsafeWindow.teamId,
       };
 
