@@ -38,15 +38,18 @@ export default class EventInfo_Home implements SubModule {
     }
   }
   PoVPoGHandler() {
-    localStorage.removeItem("HHsucklessPoV")
-    localStorage.removeItem("HHsucklessPoG")
+    localStorage.removeItem("HHsucklessPoV");
+    localStorage.removeItem("HHsucklessPoG");
     const PoVEndTime =
       StorageHandlerEventInfo.getPoVEndTimeComparedToServerTS();
     const PoGEndTime =
       StorageHandlerEventInfo.getPoGEndTimeComparedToServerTS();
-
-    addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
-    addPoVPoGTimer(PoGEndTime, $("[rel='path-of-glory']"), 35 * 24 * 60 * 60); // 35 days
+    if (PoVEndTime !== 0) {
+      addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
+    }
+    if (PoGEndTime !== 0) {
+      addPoVPoGTimer(PoGEndTime, $("[rel='path-of-glory']"), 35 * 24 * 60 * 60); // 35 days
+    }
 
     function addPoVPoGTimer(
       endTime: number,
@@ -64,6 +67,9 @@ export default class EventInfo_Home implements SubModule {
       );
       $aHrefElement.find(".white_text").append(timer);
     }
-    shared.timer.activateTimers("severalQoL-PoVPoG-timer.nc-expiration-label",()=> {});
+    shared.timer.activateTimers(
+      "severalQoL-PoVPoG-timer.nc-expiration-label",
+      () => {}
+    );
   }
 }

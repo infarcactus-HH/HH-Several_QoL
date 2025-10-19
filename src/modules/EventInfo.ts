@@ -13,7 +13,9 @@ export default class EventInfo extends HHModule {
   shouldRun() {
     return (
       location.pathname === "/event.html" ||
-      location.pathname === "/home.html"
+      location.pathname === "/home.html" ||
+      location.pathname === "/path-of-glory.html" ||
+      location.pathname === "/path-of-valor.html"
     );
   }
   run() {
