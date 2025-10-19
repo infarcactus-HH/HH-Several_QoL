@@ -568,7 +568,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $timer.append(timerElement);
     $(".pop-record.selected").append($timer);
     pop_data[popKeyInt].status = "in_progress";
-    pop_data[popKeyInt].ends_in = timeToFinishSeconds;
+    pop_data[popKeyInt].time_to_finish = timeToFinishSeconds;
 
     shared.general.hh_ajax(n, (_response: any) => {
       shared.timer.activateTimers(
