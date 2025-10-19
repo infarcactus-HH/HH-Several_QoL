@@ -8,10 +8,11 @@ type EventInfo_EventsList =
   | "dp_event" // Double Pen
   | "cumback_contest"
   | "sm_event" // SM
-  | "event"; // Org Days
+  | "event" // Org Days
+  | "legendary_contest";
 
 export default class EventInfo_Event implements SubModule {
-  private readonly EventInfoLinks: Record<string, string> = {
+  private readonly EventInfoLinks: Record<EventInfo_EventsList, string> = {
     dp_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655",
     sm_event:
@@ -20,6 +21,8 @@ export default class EventInfo_Event implements SubModule {
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304660",
     event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
+    legendary_contest:
+    "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304657"
   };
   run() {
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
@@ -76,6 +79,8 @@ export default class EventInfo_Event implements SubModule {
         return;
       case "event":
         this.helperCreateNotifButton("event");
+      case "legendary_contest":
+        this.helperCreateNotifButton("legendary_contest");
       default:
         return; // not yet implemented or nothing to display
     }
