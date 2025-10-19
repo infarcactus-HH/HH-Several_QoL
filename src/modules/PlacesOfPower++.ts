@@ -95,10 +95,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
   }
 
-  updateOtherScriptsPoPTrackedTime() {
+  updateSuckless(){
     if(unsafeWindow.suckless && unsafeWindow.suckless.parsePopData) {
+      console.log("Updating other scripts PoP tracked time",pop_data);
       unsafeWindow.suckless.parsePopData(pop_data);
     }
+  }
+
+  updateOtherScriptsPoPTrackedTime() {
+    this.updateSuckless();
     const localStorageKey = "HHPlusPlusTrackedTimes";
     if (!localStorage.getItem(localStorageKey)) {
       console.log("No HHPlusPlusTrackedTimes found in localStorage");
@@ -448,6 +453,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         shared.reward_popup.Reward.handlePopup(response.rewards);
       }
       this.selectNextPoPFromClaim();
+      this.updateSuckless();
       shared.animations.loadingAnimation.stop();
     });
   }
