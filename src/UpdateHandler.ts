@@ -4,6 +4,9 @@ export default class UpdateHandler {
     static run(){
         const currentVersion = GM_info.script.version;
         const storedVersion = GlobalStorageHandler.getStoredScriptVersion();
+        if(storedVersion === currentVersion){
+            return;
+        }
         if(storedVersion === "0.0.0"){
             const values = GM_listValues();
             const partOfKeysToDelete: string[] = ["StoredGirls","EnumGirlsOrderedByClass_","PoPLastSortOfGirls"];
