@@ -46,7 +46,7 @@ export default class EventInfo extends HHModule {
       this.runPathes();
       return;
     }
-    if (path === "/seasonal.html") { // Montly Event
+    if (path === "/seasonal.html") { // Mega Event
       this.runSeasonal();
       return;
     }
