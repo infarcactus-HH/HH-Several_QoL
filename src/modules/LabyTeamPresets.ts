@@ -1,23 +1,28 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import { StorageHandlerLabyTeam, StorageHandlerWBTTeam } from "../utils/StorageHandler";
 
 export default class LabyTeamPresets extends HHModule {
-  private savedTeamPresetKey = "SeveralQoL_LabyTeamPreset";
   readonly configSchema = {
     baseKey: "labyTeamPreset",
     label:
-      "<span tooltip='Add a button to register laby team presets, and to apply it'>Laby Team Preset</span>",
+      "<span tooltip='Add a button to register laby team presets, and to apply it (also for WBT)'>Laby Team Preset</span>",
     default: true,
   };
+  private StorageHandlerTeam = location.pathname === "/edit-labyrinth-team.html" ? StorageHandlerLabyTeam : StorageHandlerWBTTeam
 
   shouldRun() {
-    return location.pathname.includes("/edit-labyrinth-team.html");
+    return (
+      location.pathname === "/edit-labyrinth-team.html" ||
+      location.pathname === "/edit-world-boss-team.html"
+    );
   }
   run() {
     if (this.hasRun || !this.shouldRun()) {
       return;
     }
     this.hasRun = true;
+    this.migrateLocalStorageIfNeeded();
     const $centralPannel = $(".boss-bang-panel");
     const $savePresetBtn = $(
       `<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`
@@ -30,7 +35,7 @@ export default class LabyTeamPresets extends HHModule {
 
     const $FillPresetBtn = $(
       `<button class="green_button_L" tooltip="Use previously saved preset & leave page" ${
-        !localStorage.getItem(this.savedTeamPresetKey) ? "disabled" : ""
+        !this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""
       }>Fill Preset</button>`
     );
     $FillPresetBtn.on("click", () => {
@@ -44,32 +49,42 @@ export default class LabyTeamPresets extends HHModule {
       }
     );
   }
+  migrateLocalStorageIfNeeded() {
+    const oldKey = "SeveralQoL_LabyTeamPreset";
+    const existingOldPreset = localStorage.getItem(oldKey);
+    if (existingOldPreset) {
+      StorageHandlerLabyTeam.setTeamPreset(JSON.parse(existingOldPreset));
+      localStorage.removeItem(oldKey);
+      console.log(
+        `Migrated old laby team preset from key ${oldKey} to storage handler`
+      );
+    }
+  }
 
   private saveCurrentPreset() {
-    let n: any = [];
+    let n: Record<number,string> = {};
     $(".team-hexagon .team-member-container").each(function () {
-      const position = $(this).attr("data-team-member-position");
+      const position = $(this).attr("data-team-member-position") as (number | undefined);
       const girlId = $(this).attr("data-girl-id");
       if ($(this).is("[data-girl-id]") && position && girlId) {
         n[position] = girlId;
       }
     });
     console.log("Saving preset: ", n);
-    localStorage.setItem(this.savedTeamPresetKey, JSON.stringify(n));
+    this.StorageHandlerTeam.setTeamPreset(n);
   }
   private loadSavedPreset() {
-    const preset = localStorage.getItem(this.savedTeamPresetKey);
+    const preset = this.StorageHandlerTeam.getTeamPreset();
     if (!preset) {
       console.warn("No saved preset found");
       return;
     }
     try {
-      const teamArray: number[] = JSON.parse(preset);
-      console.log("Loading preset: ", teamArray);
+      console.log("Loading preset: ", preset);
       const settings = {
         class: "Hero",
         action: "edit_team",
-        girls: teamArray,
+        girls: preset,
         battle_type: "labyrinth",
         id_team: unsafeWindow.teamId,
       };

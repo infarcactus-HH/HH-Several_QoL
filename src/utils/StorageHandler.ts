@@ -46,3 +46,20 @@ export class StorageHandlerEventInfo {
         return GM_getValue(HH_UNIVERSE+'PoGEndTime', 0);
     }
 }
+
+export class StorageHandlerLabyTeam {
+    static setTeamPreset(data: Record<number, string>): void {
+        GM_setValue(HH_UNIVERSE+'LabyTeamPreset', data);
+    }
+    static getTeamPreset(): Record<number, string> | undefined {
+        return GM_getValue(HH_UNIVERSE+'LabyTeamPreset', undefined);
+    }
+}
+export class StorageHandlerWBTTeam {
+    static setTeamPreset(data: Record<number, string>): void {
+        GM_setValue(HH_UNIVERSE+'WBTTeamPreset', data);
+    }
+    static getTeamPreset(): Record<number, string> | undefined {
+        return GM_getValue(HH_UNIVERSE+'WBTTeamPreset', undefined);
+    }
+}
