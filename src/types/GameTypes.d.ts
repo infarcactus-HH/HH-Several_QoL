@@ -59,6 +59,7 @@ export interface PlacesOfPowerData {
   time_to_finish: number; // 0 when PoP is claimable or can be started
   title: string;
   type: "standard" | "temp";
+  end_ts?: number; // Added by Several QoL
 }
 export interface popupForQueue {
   popup: {
