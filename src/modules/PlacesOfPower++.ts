@@ -95,7 +95,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
   }
 
-  updateHHPlusPlusPoPTrackedTime() {
+  updateOtherScriptsPoPTrackedTime() {
+    if(unsafeWindow.suckless && unsafeWindow.suckless.parsePopData) {
+      unsafeWindow.suckless.parsePopData(pop_data);
+    }
     const localStorageKey = "HHPlusPlusTrackedTimes";
     if (!localStorage.getItem(localStorageKey)) {
       console.log("No HHPlusPlusTrackedTimes found in localStorage");
@@ -569,7 +572,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $(".pop-record.selected").append($timer);
     pop_data[popKeyInt].status = "in_progress";
     pop_data[popKeyInt].time_to_finish = timeToFinishSeconds;
-    pop_data[popKeyInt].end_ts = timeToFinishSeconds + Math.floor(Date.now() / 1e3);
+    pop_data[popKeyInt].end_ts =
+      timeToFinishSeconds + Math.floor(Date.now() / 1e3);
 
     shared.general.hh_ajax(n, (_response: any) => {
       shared.timer.activateTimers(
@@ -577,7 +581,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         () => {}
       );
       this.selectNextPoPFromFill($(".pop-record.selected"));
-      this.updateHHPlusPlusPoPTrackedTime();
+      this.updateOtherScriptsPoPTrackedTime();
       shared.animations.loadingAnimation.stop();
     });
   }
