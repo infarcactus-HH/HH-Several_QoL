@@ -3,7 +3,6 @@ import {
   PlacesOfPowerData,
 } from "../types/GameTypes";
 import { HHModule, SubSettingsType } from "../types/HH++";
-import { StorageHandler } from "../utils/StorageHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -37,7 +36,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       },
     ],
   };
-  private isUpdatingGirls: boolean = false;
+  private sortedGirlsCache: Record<1 | 2 | 3, number[]> = {
+    1: [],
+    2: [],
+    3: [],
+  };
+  private isLoadingGirls = false;
   private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
   private hasPopupEnabled: boolean = false;
@@ -80,9 +84,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $PopSwitcher.attr("tooltip", "By infarctus");
     $PopSwitcher.on("click", async () => {
       // Wait for girls to finish updating before building UI
-      if (this.isUpdatingGirls) {
+      if (this.isLoadingGirls) {
         shared.animations.loadingAnimation.start();
-        while (this.isUpdatingGirls) {
+        while (this.isLoadingGirls) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
         shared.animations.loadingAnimation.stop();
@@ -90,14 +94,17 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       this.buildCustomPopInfo();
     });
     this.injectCustomStyles();
-    this.girlsHandler().then(() => {
-      this.whichGirlsInPoP();
-    });
+    const popToStart = Object.values(pop_data).find(
+      (pop) => pop.status === "can_start"
+    );
+    if (popToStart) {
+      this.girlsHandler();
+    }
   }
 
-  updateSuckless(){
-    if(unsafeWindow.suckless && unsafeWindow.suckless.parsePopData) {
-      console.log("Updating other scripts PoP tracked time",pop_data);
+  updateSuckless() {
+    if (unsafeWindow.suckless && unsafeWindow.suckless.parsePopData) {
+      console.log("Updating other scripts PoP tracked time", pop_data);
       unsafeWindow.suckless.parsePopData(pop_data);
     }
   }
@@ -278,8 +285,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const classNumber = this.criteriaToClassMap[criteria];
 
     // Get pre-sorted list of girl IDs for this class (already sorted by power, descending)
-    const sortedGirlIds =
-      StorageHandler.getEnumGirlsOrderedByClass(classNumber);
+    const sortedGirlIds = this.sortedGirlsCache[classNumber];
 
     if (sortedGirlIds.length === 0) {
       console.error(`[PoP ${popId}] No girls available in storage!`);
@@ -772,143 +778,38 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     GM.addStyle(css);
   }
 
-  /**
-   * Binary search to find insertion index for a girl based on her power
-   * Returns the index where the girl should be inserted (descending order)
-   */
-  private binarySearchInsertIndex(
-    orderedIds: number[],
-    girlPower: number,
-    caracKey: keyof Pick<
-      global_pop_hero_girls_incomplete,
-      "carac1" | "carac2" | "carac3"
-    >
-  ): number {
-    let left = 0;
-    let right = orderedIds.length;
-
-    while (left < right) {
-      const mid = Math.floor((left + right) / 2);
-      const midGirl = pop_hero_girls[orderedIds[mid]];
-
-      if (!midGirl) {
-        // If girl not found, move to next position
-        left = mid + 1;
-        continue;
-      }
-
-      const midPower = midGirl[caracKey];
-
-      // Descending order: insert before if new girl has higher power
-      if (girlPower > midPower) {
-        right = mid;
-      } else {
-        left = mid + 1;
-      }
-    }
-
-    return left;
-  }
-
   async girlsHandler() {
-    const numberOfGirlsStored = StorageHandler.getStoredGirlsNumber();
-    const currentNumberOfGirls = Object.keys(pop_hero_girls).length;
+    this.isLoadingGirls = true;
 
-    if (currentNumberOfGirls - numberOfGirlsStored < 5) {
-      return; // Don't update every time
-    }
-    this.isUpdatingGirls = true;
+    const byClass: { [k in 1 | 2 | 3]: { id: number; carac: number }[] } = {
+      1: [],
+      2: [],
+      3: [],
+    };
 
-    const allGirls = Object.values(pop_hero_girls);
-
-    // Full sort for initial setup (0-100 girls)
-    if (
-      numberOfGirlsStored <= 100 ||
-      numberOfGirlsStored < StorageHandler.getLastSortOfGirls() - 20
-    ) {
-      StorageHandler.setLastSortOfGirls(currentNumberOfGirls);
-
-      // Sort girls by carac1 (class 1) and store their IDs in order
-      const girlsByCarac1 = [...allGirls].sort((a, b) => b.carac1 - a.carac1);
-      const orderedIdsCarac1 = girlsByCarac1.map((g) => g.id_girl);
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
-
-      // Sort girls by carac2 (class 2) and store their IDs in order
-      const girlsByCarac2 = [...allGirls].sort((a, b) => b.carac2 - a.carac2);
-      const orderedIdsCarac2 = girlsByCarac2.map((g) => g.id_girl);
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
-
-      // Sort girls by carac3 (class 3) and store their IDs in order
-      const girlsByCarac3 = [...allGirls].sort((a, b) => b.carac3 - a.carac3);
-      const orderedIdsCarac3 = girlsByCarac3.map((g) => g.id_girl);
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
-
-      StorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
-      console.log(`[PoP++] Full sort completed`);
-    }
-    // Binary search insertion for incremental updates if there's >100 girls stored
-    else {
-      // Get existing sorted lists (already arrays)
-      const orderedIdsCarac1 = StorageHandler.getEnumGirlsOrderedByClass(1);
-      const orderedIdsCarac2 = StorageHandler.getEnumGirlsOrderedByClass(2);
-      const orderedIdsCarac3 = StorageHandler.getEnumGirlsOrderedByClass(3);
-
-      // Find new girls (not in stored lists)
-      const existingIds = new Set(orderedIdsCarac1); // Any list works, they all have the same IDs
-      const newGirls = allGirls.filter(
-        (girl) => !existingIds.has(girl.id_girl)
-      );
-
-      // Insert each new girl into sorted position using binary search
-      for (const newGirl of newGirls) {
-        // Insert into carac1 list
-        const index1 = this.binarySearchInsertIndex(
-          orderedIdsCarac1,
-          newGirl.carac1,
-          "carac1"
-        );
-        orderedIdsCarac1.splice(index1, 0, newGirl.id_girl);
-
-        // Insert into carac2 list
-        const index2 = this.binarySearchInsertIndex(
-          orderedIdsCarac2,
-          newGirl.carac2,
-          "carac2"
-        );
-        orderedIdsCarac2.splice(index2, 0, newGirl.id_girl);
-
-        // Insert into carac3 list
-        const index3 = this.binarySearchInsertIndex(
-          orderedIdsCarac3,
-          newGirl.carac3,
-          "carac3"
-        );
-        orderedIdsCarac3.splice(index3, 0, newGirl.id_girl);
-      }
-
-      // Store updated lists (already arrays, no conversion needed)
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac1, 1);
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac2, 2);
-      StorageHandler.setEnumGirlsOrderedByClass(orderedIdsCarac3, 3);
-
-      StorageHandler.setStoredGirlsNumber(currentNumberOfGirls);
-      console.log(
-        `[PoP++] Binary search insertion completed for ${newGirls.length} new girls`
-      );
-    }
-  }
-
-  whichGirlsInPoP() {
-    for (const girlEntry of Object.values(pop_hero_girls)) {
-      if (girlEntry.id_places_of_power != null) {
-        if (!this.currentPoPGirls[girlEntry.id_places_of_power]) {
-          this.currentPoPGirls[girlEntry.id_places_of_power] = [];
+    for (const g of Object.values(pop_hero_girls)) {
+      if (!g || g.id_girl == null) continue;
+      byClass[1].push({ id: g.id_girl, carac: g.carac1 });
+      byClass[2].push({ id: g.id_girl, carac: g.carac2 });
+      byClass[3].push({ id: g.id_girl, carac: g.carac3 });
+      if (g.id_places_of_power != null) {
+        if (!this.currentPoPGirls[g.id_places_of_power]) {
+          this.currentPoPGirls[g.id_places_of_power] = [];
         }
-        this.currentPoPGirls[girlEntry.id_places_of_power].push(
-          girlEntry.id_girl
-        );
+        this.currentPoPGirls[g.id_places_of_power].push(g.id_girl);
       }
     }
-    this.isUpdatingGirls = false;
+
+    this.sortedGirlsCache[1] = byClass[1]
+      .sort((a, b) => b.carac - a.carac)
+      .map((x) => x.id);
+    this.sortedGirlsCache[2] = byClass[2]
+      .sort((a, b) => b.carac - a.carac)
+      .map((x) => x.id);
+    this.sortedGirlsCache[3] = byClass[3]
+      .sort((a, b) => b.carac - a.carac)
+      .map((x) => x.id);
+
+    this.isLoadingGirls = false;
   }
 }

@@ -1,22 +1,10 @@
 
-export class StorageHandler {
-    static getStoredGirlsNumber(): number {
-        return GM_getValue(HH_UNIVERSE+'StoredGirls', 0);
+export class GlobalStorageHandler {
+    static setStoredScriptVersion(version: string): void {
+        GM_setValue('StoredScriptVersion', version);
     }
-    static setStoredGirlsNumber(num: number): void {
-        GM_setValue(HH_UNIVERSE+'StoredGirls', num);
-    }
-    static setEnumGirlsOrderedByClass(girls: number[], classType: 1 | 2 | 3): void {
-        GM_setValue(HH_UNIVERSE+'EnumGirlsOrderedByClass_'+classType, girls);
-    }
-    static getEnumGirlsOrderedByClass(classType: 1 | 2 | 3): number[] {
-        return GM_getValue(HH_UNIVERSE+'EnumGirlsOrderedByClass_'+classType, []);
-    }
-    static setLastSortOfGirls(nbGirls : number){
-        GM_setValue(HH_UNIVERSE+'PoPLastSortOfGirls', nbGirls);
-    }
-    static getLastSortOfGirls(): number {
-        return GM_getValue(HH_UNIVERSE+'PoPLastSortOfGirls', 0);
+    static getStoredScriptVersion(): string {
+        return GM_getValue('StoredScriptVersion', '0.0.0');
     }
     static setLeaguePLayerRecord(data: Array<{bestPlace: number, timesReached: number, checkExpiresAt: number}>): void {
         GM_setValue(HH_UNIVERSE+'LeaguePlayerRecord', data);
@@ -26,7 +14,7 @@ export class StorageHandler {
     }
 }
 
-export class StorageHandlerEventInfo {
+export class EventInfoStorageHandler {
     static setSMShopRefreshTimeComparedToServerTS(ts: number): void { // gives like timeout + server_now_ts
         GM_setValue(HH_UNIVERSE+'SMShopRefreshTime', ts);
     }
@@ -47,7 +35,7 @@ export class StorageHandlerEventInfo {
     }
 }
 
-export class StorageHandlerLabyTeam {
+export class LabyTeamStorageHandler {
     static setTeamPreset(data: Record<number, string>): void {
         GM_setValue(HH_UNIVERSE+'LabyTeamPreset', data);
     }
@@ -55,7 +43,7 @@ export class StorageHandlerLabyTeam {
         return GM_getValue(HH_UNIVERSE+'LabyTeamPreset', undefined);
     }
 }
-export class StorageHandlerWBTTeam {
+export class WBTTeamStorageHandler {
     static setTeamPreset(data: Record<number, string>): void {
         GM_setValue(HH_UNIVERSE+'WBTTeamPreset', data);
     }

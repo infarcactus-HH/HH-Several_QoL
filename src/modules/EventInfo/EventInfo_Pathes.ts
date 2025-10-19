@@ -1,6 +1,6 @@
 import { SubModule } from "../../types/subModules";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
-import { StorageHandlerEventInfo } from "../../utils/StorageHandler";
+import { EventInfoStorageHandler } from "../../utils/StorageHandler";
 
 export default class EventInfo_Pathes implements SubModule {
   run() {
@@ -8,12 +8,12 @@ export default class EventInfo_Pathes implements SubModule {
     const timeRemaining = +(unsafeWindow.time_remaining as string);
 
     if (window.location.pathname === "/path-of-valor.html") {
-      StorageHandlerEventInfo.setPoVEndTimeComparedToServerTS(
+      EventInfoStorageHandler.setPoVEndTimeComparedToServerTS(
         server_now_ts + timeRemaining
       );
       this.replacePoVNotifButton();
     } else if (window.location.pathname === "/path-of-glory.html") {
-      StorageHandlerEventInfo.setPoGEndTimeComparedToServerTS(
+      EventInfoStorageHandler.setPoGEndTimeComparedToServerTS(
         server_now_ts + timeRemaining
       );
       this.replacePoGNotifButton();

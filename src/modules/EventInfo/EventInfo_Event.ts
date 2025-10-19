@@ -2,7 +2,7 @@ import { sm_event_dataIncomplete } from "../../types/GameTypes";
 import { SubModule } from "../../types/subModules";
 import GameHelpers from "../../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
-import { StorageHandlerEventInfo } from "../../utils/StorageHandler";
+import { EventInfoStorageHandler } from "../../utils/StorageHandler";
 
 type EventInfo_EventsList =
   | "dp_event" // Double Pen
@@ -146,14 +146,14 @@ export default class EventInfo_Event implements SubModule {
           }
           const timeShopRefreshesIn =
             Number(shopRefreshesIn) + Math.floor(Date.now() / 1000);
-          StorageHandlerEventInfo.setSMShopRefreshTimeComparedToServerTS(
+          EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(
             timeShopRefreshesIn
           );
         });
       }
     );
     const storedSMShopRefreshTime =
-      StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
+      EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
     if (storedSMShopRefreshTime > server_now_ts) {
       const t = shared.timer.buildTimer(
         storedSMShopRefreshTime - server_now_ts,

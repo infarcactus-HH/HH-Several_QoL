@@ -33,6 +33,8 @@ const userscriptHeader = `// ==UserScript==
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        GM_info
+// @grant        GM_listValues
 // @grant        unsafeWindow
 // @run-at       document-end
 // ==/UserScript==`;

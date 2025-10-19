@@ -10,6 +10,7 @@ import MERankingInfo from "./modules/MERankingInfo";
 import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
 import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
 import EventInfo from "./modules/EventInfo";
+import UpdateHandler from "./UpdateHandler";
 
 class Userscript {
   constructor() {
@@ -23,12 +24,14 @@ class Userscript {
         new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
       ]).then((result) => {
         if (result === "hh++-bdsm:loaded") {
-          this.run();
+          this.runWithBDSM();
         } else {
           this.runWithoutBdsm();
         }
       });
       return;
+    } else {
+      this.runWithBDSM();
     }
     this.run();
   }
@@ -46,7 +49,7 @@ class Userscript {
     new LeagueNoPlayerProfileOnNameClick(),
     new EventInfo(),
   ];
-  run() {
+  runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
       name: "<span tooltip='By infarctus'>Several QoL</span>",
@@ -84,6 +87,9 @@ class Userscript {
         console.error("Error running module", module, e);
       }
     });
+  }
+  run() {
+    UpdateHandler.run();
   }
 }
 

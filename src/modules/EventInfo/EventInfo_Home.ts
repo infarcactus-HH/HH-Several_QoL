@@ -1,6 +1,6 @@
 import { SubModule } from "../../types/subModules";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
-import { StorageHandlerEventInfo } from "../../utils/StorageHandler";
+import { EventInfoStorageHandler } from "../../utils/StorageHandler";
 
 export default class EventInfo_Home implements SubModule {
   run() {
@@ -16,10 +16,10 @@ export default class EventInfo_Home implements SubModule {
   }
   SMEventHandler() {
     const SMShopRefreshTime =
-      StorageHandlerEventInfo.getSMShopRefreshTimeComparedToServerTS();
+      EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
     const $smEventTimerBox = $("[rel='sm_event']").find(".timer-box");
     if (SMShopRefreshTime != 0 && !$smEventTimerBox) {
-      StorageHandlerEventInfo.setSMShopRefreshTimeComparedToServerTS(0);
+      EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(0);
       return;
     }
     if (SMShopRefreshTime > server_now_ts) {
@@ -41,9 +41,9 @@ export default class EventInfo_Home implements SubModule {
     localStorage.removeItem("HHsucklessPoV");
     localStorage.removeItem("HHsucklessPoG");
     const PoVEndTime =
-      StorageHandlerEventInfo.getPoVEndTimeComparedToServerTS();
+      EventInfoStorageHandler.getPoVEndTimeComparedToServerTS();
     const PoGEndTime =
-      StorageHandlerEventInfo.getPoGEndTimeComparedToServerTS();
+      EventInfoStorageHandler.getPoGEndTimeComparedToServerTS();
     if (PoVEndTime !== 0) {
       addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
     }
