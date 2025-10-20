@@ -9,6 +9,9 @@ You need [TamperMonkey](https://www.tampermonkey.net) or a similar browser exten
 
 HH++ bdsm **strongly** recommended, but works 100% without and every feature will be turned on if you don't have bdsm
 
+### Want to support my work ?
+You can support me on [patreon](https://patreon.com/infarcactusHH)
+
 ## Main Features
 - Popup++ (stacking popups and when you click on it makes it disappear)
 - Laby team presets
