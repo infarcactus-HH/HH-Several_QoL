@@ -54,4 +54,10 @@ export class WBTTeamStorageHandler {
     static getTeamPreset(): Record<number, string> | undefined {
         return GM_getValue(HH_UNIVERSE+'WBTTeamPreset', undefined);
     }
+    static setWBTId(id: number): void {
+        GM_setValue(HH_UNIVERSE+'WBTId', id);
+    }
+    static getWBTId(): number {
+        return GM_getValue(HH_UNIVERSE+'WBTId', -1);
+    }
 }
