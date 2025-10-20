@@ -31,7 +31,7 @@ export default class EventInfo_Seasonal implements SubModule {
           .on("click", (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
-            GM.openInTab(link, {
+            GM_openInTab(link, {
               active: true,
             });
           });

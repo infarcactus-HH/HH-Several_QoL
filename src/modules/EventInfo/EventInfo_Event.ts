@@ -46,7 +46,7 @@ export default class EventInfo_Event implements SubModule {
       }
     );
     $notifButton.off("click").on("click", (e) => {
-      GM.openInTab(this.EventInfoLinks[event], { active: true });
+      GM_openInTab(this.EventInfoLinks[event], { active: true });
     });
     return $notifButton;
   }
@@ -58,7 +58,7 @@ export default class EventInfo_Event implements SubModule {
           .attr("tooltip", "Several QoL: More Info on this event")
           .off("click")
           .on("click", (e) => {
-            GM.openInTab(this.EventInfoLinks[event], { active: true });
+            GM_openInTab(this.EventInfoLinks[event], { active: true });
           });
       }
     );

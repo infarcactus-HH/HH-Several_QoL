@@ -15,7 +15,7 @@ export default class PopupPlusPlus extends HHModule {
       return;
     }
     this.hasRun = true;
-    GM.addStyle("#toast-popups {display:inherit!important;}");
+    GM_addStyle("#toast-popups {display:inherit!important;}");
     let lastPoints: any = {};
     let timeOut: NodeJS.Timeout | null = null;
     delete shared.general.objectivePopup.show;

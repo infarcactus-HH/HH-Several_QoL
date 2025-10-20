@@ -774,10 +774,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $popRecord.append('<div class="collect_notif"></div>');
     });
   }
-  injectCustomStyles() {
+  async injectCustomStyles() {
     // Lazy load CSS only when needed
     const css = require("./css/PlacesOfPower++.css").default;
-    GM.addStyle(css);
+    GM_addStyle(css);
   }
 
   async girlsHandler() {

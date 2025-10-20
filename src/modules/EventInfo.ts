@@ -86,7 +86,7 @@ export default class EventInfo extends HHModule {
           .attr("tooltip", "Several QoL: More Info on this event")
           .off("click")
           .on("click", (e) => {
-            GM.openInTab(url, { active: true });
+            GM_openInTab(url, { active: true });
           });
       }
     );

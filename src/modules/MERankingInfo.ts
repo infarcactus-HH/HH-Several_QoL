@@ -26,7 +26,7 @@ export default class MERankingInfo extends HHModule {
   }
   async injectCSS() {
     const css = require("./css/MERankingInfo.css").default;
-    GM.addStyle(css);
+    GM_addStyle(css);
   }
   hookAjaxRequest() {
     $(document).ajaxComplete((event, xhr, settings) => {

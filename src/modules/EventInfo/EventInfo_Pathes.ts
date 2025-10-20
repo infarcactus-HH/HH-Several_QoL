@@ -33,7 +33,7 @@ export default class EventInfo_Pathes implements SubModule {
           .on("click", (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
-            GM.openInTab(
+            GM_openInTab(
               "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310477",
               { active: true }
             );
@@ -51,7 +51,7 @@ export default class EventInfo_Pathes implements SubModule {
           .on("click", (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
-            GM.openInTab(
+            GM_openInTab(
               "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310673",
               { active: true }
             );

@@ -53,7 +53,7 @@ export default class People extends HHModule {
           const girlName = $this.attr("hh_title");
           if (!girlName) return;
           const formattedName = girlName.replace(/ /g, "-");
-          GM.openInTab(self.getWikiPageForCurrentGame(formattedName), {
+          GM_openInTab(self.getWikiPageForCurrentGame(formattedName), {
             active: true,
           });
         });
@@ -74,7 +74,7 @@ export default class People extends HHModule {
         $this.on("click.ImgToWiki", function (e) {
           e.stopPropagation();
           const formattedName = match[1].replace(/ /g, "-");
-          GM.openInTab(self.getWikiPageForCurrentGame(formattedName), {
+          GM_openInTab(self.getWikiPageForCurrentGame(formattedName), {
             active: true,
           });
         });
