@@ -95,9 +95,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
     this.injectCustomStyles();
     const popToStart = Object.values(pop_data).find(
-      (pop) => pop.status === "can_start"
+      (pop) => pop.status === "can_start" || pop.status === "pending_reward"
     );
-    if (popToStart) {
+    if (true || popToStart) {
       this.girlsHandler();
     }
   }
