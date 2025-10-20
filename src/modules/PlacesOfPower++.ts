@@ -769,6 +769,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       }
       const popId = $popRecord.data("pop-id");
       pop_data[popId].status = "pending_reward";
+      pop_data[popId].remaining_time = 0;
+      pop_data[popId].time_to_finish = 0;
       $popRecord.append('<div class="collect_notif"></div>');
     });
   }
