@@ -12,11 +12,15 @@ HH++ bdsm **strongly** recommended, but works 100% without and every feature wil
 ## Main Features
 - Popup++ (stacking popups and when you click on it makes it disappear)
 - Laby team presets
+  - Laby Team & WBT Team
+  - Adds a warning when opening WBT for the first time to change your team 
 - Removes annoying popups appearing automaticly
 - Add a way to go from a girl info bubble name or portait to the wiki
 - Places of Power++ (better interface, minimal reloads, better filling algorithm)
-- No reload from daily chests (to avoid having to load every girl every time)
-- Adds a clickable popup for PoV Info
+- No reload from daily chests (to avoid having to load the page every time)
+- Event Info
+  - Click on the ! to get redirected to a guide (thanks Bolitho for the guides)
+  - On some event adds timer on main screen & other things
 - Season event Ranking info  
   <img width="369" height="455" alt="image" src="https://github.com/user-attachments/assets/1353c21b-123a-4265-8137-47d96111f709" />
 - League oponent history  
