@@ -1,7 +1,7 @@
 import { LeagueOpponentIncomplete } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { GlobalStorageHandler } from "../utils/StorageHandler";
+import { GlobalStorageHandler, LeagueStorageHandler } from "../utils/StorageHandler";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
@@ -31,7 +31,7 @@ export default class LeagueOpponentHistory extends HHModule {
     }
     this.hasRun = true;
     this.injectCSS();
-    this.leaguePlayerRecord = GlobalStorageHandler.getLeaguePlayerRecord();
+    this.leaguePlayerRecord = LeagueStorageHandler.getLeaguePlayerRecord();
     HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table", () => {
       this.applyRankingsToOpponentLists();
       this.startObserverClickOnTable();
@@ -156,7 +156,7 @@ export default class LeagueOpponentHistory extends HHModule {
       timesReached: timesReached,
       checkExpiresAt: server_now_ts + season_end_at + 10, // +10 to avoid edge cases
     };
-    GlobalStorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord!);
+    LeagueStorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord!);
   }
   applyRankingsToTable() {
     const allRows = $(".data-row.body-row");

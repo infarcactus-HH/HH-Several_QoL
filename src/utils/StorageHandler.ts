@@ -6,6 +6,10 @@ export class GlobalStorageHandler {
     static getStoredScriptVersion(): string {
         return GM_getValue('StoredScriptVersion', '0.0.0');
     }
+    
+}
+
+export class LeagueStorageHandler {
     static setLeaguePLayerRecord(data: Array<{bestPlace: number, timesReached: number, checkExpiresAt: number}>): void {
         GM_setValue(HH_UNIVERSE+'LeaguePlayerRecord', data);
     }
