@@ -435,8 +435,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     if (currentPoPData.ends_in === null || currentPoPData.ends_in !== 0) {
       $(".claimPoPButton").css("display", "none");
       $(".startPoPButton").css("display", "");
-      pop_data[popKeyInt].status = "can_start";
-      pop_data[popKeyInt].ends_in = null;
+      currentPoPData.status = "can_start";
+      currentPoPData.ends_in = null;
+      currentPoPData.time_to_finish = 0;
       $(".pop-record.selected .collect_notif").remove();
     } else {
       const $currentPoPRecordSelected = $(".pop-record.selected");
@@ -770,7 +771,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       const popId = $popRecord.data("pop-id");
       pop_data[popId].status = "pending_reward";
       pop_data[popId].remaining_time = 0;
-      pop_data[popId].time_to_finish = 0;
       $popRecord.append('<div class="collect_notif"></div>');
     });
   }

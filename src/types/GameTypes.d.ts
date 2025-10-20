@@ -44,6 +44,7 @@ export interface PlacesOfPowerData {
   level: number;
   level_power: number;
   levelup_cost: number;
+  locked : 1 | undefined;
   max_level: number;
   max_power: number | null;
   max_team_power: number;
@@ -55,8 +56,8 @@ export interface PlacesOfPowerData {
   remaining_time: number;
   rewards: Record<number, PlacesOfPowerReward>;
   skin: string | "hentai,gay";
-  status: "can_start" | "in_progress" | "pending_reward";
-  time_to_finish: number; // 0 when PoP is claimable or can be started
+  status: "can_start" | "in_progress" | "pending_reward" | "locked";
+  time_to_finish: number; // 0 when PoP can be started
   title: string;
   type: "standard" | "temp";
   end_ts?: number; // Added by Several QoL
