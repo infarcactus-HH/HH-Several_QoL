@@ -73,10 +73,10 @@ class Userscript {
       const moduleInstance = new module();
       try {
         const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
-        if (module.shouldRun()) {
+        if (module.shouldRun() && schema.default) {
           if (schema.subSettings) {
             const subSettings = schema.subSettings.reduce((acc, setting) => {
-              acc[setting.key] = true;
+              acc[setting.key] = setting.default;
               return acc;
             }, {} as Record<string, any>);
             moduleInstance.run(subSettings as any);
