@@ -1,4 +1,8 @@
-import { HHModule } from "../types/HH++";
+import {
+  HHModule,
+  HHModule_ConfigSchema,
+  SubSettingsType,
+} from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 declare let daily_goals_member_progression: {
@@ -9,16 +13,36 @@ declare let daily_goals_member_progression: {
   next_rewards_in: number;
 };
 
+type configSchema = {
+  baseKey: "noReloadFromClaimingDailyChests";
+  label: "Activities : No reload from claiming daily chests";
+  default: true;
+  subSettings: [
+    {
+      key: "popupEnabled";
+      default: true;
+      label: "Show reward popup on claiming";
+    }
+  ];
+};
+
 export default class NoReloadFromClaimingDailyChests extends HHModule {
-  readonly configSchema = {
+  readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "noReloadFromClaimingDailyChests",
     label: "Activities : No reload from claiming daily chests",
     default: true,
+    subSettings: [
+      {
+        key: "popupEnabled",
+        default: true,
+        label: "Show reward popup on claiming",
+      },
+    ],
   };
   shouldRun() {
     return true;
   }
-  run() {
+  run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !this.shouldRun()) {
       return location.pathname.includes("/activities.html");
     }
@@ -29,12 +53,12 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       HHPlusPlusReplacer.doWhenSelectorAvailable(
         ".progress-bar-claim-reward",
         () => {
-          this.applyNoReloadFix();
+          this.applyNoReloadFix(subSettings.popupEnabled);
         }
       );
     });
   }
-  applyNoReloadFix() {
+  applyNoReloadFix(popupEnabled: boolean) {
     const self = this;
     $(".progress-bar-claim-reward")
       .off("click")
@@ -52,15 +76,21 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
           tier: tier,
         };
         daily_goals_member_progression.taken_rewards_array.push(tier);
+        shared.animations.loadingAnimation.start();
         shared.general.hh_ajax(t, (t: any) => {
-          const n = t.rewards;
-          shared.reward_popup.Reward.handlePopup(n);
+          if (popupEnabled) {
+            const n = t.rewards;
+            shared.reward_popup.Reward.handlePopup(n);
+          } else {
+            shared.Hero.updates(t.rewards.heroChangesUpdate, false);
+          }
           self.checkIfAllChestsClaimed();
+          shared.animations.loadingAnimation.stop();
         });
       });
     $(".progress-bar-claim-reward").attr(
       "tooltip",
-      "Several QoL: Claim without reload"
+      `Several QoL: Claim without reload${popupEnabled ? "" : " & without popup"}`
     );
   }
 
