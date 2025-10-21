@@ -94,6 +94,19 @@
   width: auto;
 }
 
+.pop-record-locked {
+  filter: grayscale(1);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 6px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  height: -webkit-fill-available;
+  width: auto;
+}
+
 /* Selected PoP thumbnail highlight */
 .pop-record.selected {
   outline: 2px solid #ffcc00 !important;

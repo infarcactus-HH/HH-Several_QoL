@@ -120,7 +120,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const trackedTimes: Record<string, any> = JSON.parse(
       localStorage.getItem(localStorageKey) || "{}"
     );
-    if (trackedTimes.pop == undefined || trackedTimes.popDuration == undefined) {
+    if (
+      trackedTimes.pop == undefined ||
+      trackedTimes.popDuration == undefined
+    ) {
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
       return;
     }
@@ -362,7 +365,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       .nextAll()
       .filter(function () {
         const popId = $(this).data("pop-id");
-        return pop_data[popId] && pop_data[popId].status !== "in_progress";
+        const popData = pop_data[popId];
+        return !popData.locked && popData && popData.status !== "in_progress";
       })
       .first();
     if ($next.length) {
@@ -373,14 +377,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $next = $(".pop-record")
       .filter(function () {
         const popId = $(this).data("pop-id");
-        return pop_data[popId] && pop_data[popId].status !== "in_progress";
+        const popData = pop_data[popId];
+        return !popData.locked && popData && popData.status !== "in_progress";
       })
       .first();
     if ($next.length) {
       $next.trigger("click");
     } else {
       for (const popEntry of Object.values(pop_data)) {
-        if (popEntry.status !== "in_progress") {
+        if (!popEntry.locked && popEntry.status !== "in_progress") {
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
         }
@@ -409,7 +414,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       return;
     } else {
       for (const popEntry of Object.values(pop_data)) {
-        if (popEntry.status === "can_start") {
+        if (!popEntry.locked && popEntry.status === "can_start") {
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
         }
@@ -700,46 +705,51 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
 
     orderedEntries.forEach(([key, popRecord]) => {
-      const $popRecord = $(`<div class="pop-record"></div>`);
+      const isLocked = popRecord.locked || 0;
+      const $popRecord = $(
+        `<div class="${isLocked ? "pop-record-locked" : "pop-record"}"></div>`
+      );
       $popRecord.attr("data-pop-id", key);
       // Set background image inline (can't be done in CSS)
       $popRecord.css("background-image", `url(${popRecord.image})`);
 
       // Add click handler for selection
-      $popRecord.on("click", () => {
-        // Remove selection styling from all records
-        $(".pop-record").removeClass("selected");
-        // Add selection styling to clicked record
-        $popRecord.addClass("selected");
-        // Update details view
-        this.buildPopDetails(key);
-      });
+      if (!isLocked) {
+        $popRecord.on("click", () => {
+          // Remove selection styling from all records
+          $(".pop-record").removeClass("selected");
+          // Add selection styling to clicked record
+          $popRecord.addClass("selected");
+          // Update details view
+          this.buildPopDetails(key);
+        });
 
-      // Create icon (top left)
-      const $icon = $(
-        `<img src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png" class="pop-icon" />`
-      );
-      $popRecord.append($icon);
-
-      const $lvl = $(`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
-      $popRecord.append($lvl);
-
-      if (popRecord.status === "in_progress") {
-        // Create timer
-        const $timer = $('<div class="pop-timer"></div>');
-
-        const timerElement = shared.timer.buildTimer(
-          popRecord.remaining_time,
-          "",
-          "pop-active-timer",
-          false
+        // Create icon (top left)
+        const $icon = $(
+          `<img src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png" class="pop-icon" />`
         );
-        $timer.append(timerElement);
-        $popRecord.append($timer);
-      }
-      if (popRecord.status === "pending_reward") {
-        const $claimNotif = $(`<div class="collect_notif"></div>`);
-        $popRecord.append($claimNotif);
+        $popRecord.append($icon);
+
+        const $lvl = $(`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
+        $popRecord.append($lvl);
+
+        if (popRecord.status === "in_progress") {
+          // Create timer
+          const $timer = $('<div class="pop-timer"></div>');
+
+          const timerElement = shared.timer.buildTimer(
+            popRecord.remaining_time,
+            "",
+            "pop-active-timer",
+            false
+          );
+          $timer.append(timerElement);
+          $popRecord.append($timer);
+        }
+        if (popRecord.status === "pending_reward") {
+          const $claimNotif = $(`<div class="collect_notif"></div>`);
+          $popRecord.append($claimNotif);
+        }
       }
 
       $popRecordsContainer.append($popRecord);
