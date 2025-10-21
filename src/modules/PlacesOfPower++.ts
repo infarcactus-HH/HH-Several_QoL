@@ -119,13 +119,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const trackedTimes: Record<string, any> = JSON.parse(
       localStorage.getItem(localStorageKey) || "{}"
     );
-    if (trackedTimes.pop == null || trackedTimes.popDuration == null) {
-      // also works for undefined
+    if (trackedTimes.pop == undefined || trackedTimes.popDuration == undefined) {
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
-      return;
-    }
-    if (trackedTimes.pop != 0) {
-      console.log("Existing PoP tracked time is still valid, not updating");
       return;
     }
     const endingsIn = Object.values(pop_data)
@@ -141,10 +136,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     trackedTimes.pop = nowTs + soonest.endAt;
     trackedTimes.popDuration = soonest.duration;
     localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
-    console.log(
-      "Updated HHPlusPlusTrackedTimes with new PoP end time",
-      trackedTimes
-    );
   }
 
   createOrUpdateKobanButtons() {
