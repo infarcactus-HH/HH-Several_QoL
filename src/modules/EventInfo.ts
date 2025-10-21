@@ -34,26 +34,28 @@ export default class EventInfo extends HHModule {
 
     console.log("EventInfo module running on path:", path);
 
-    if (path === "/home.html") {
-      this.runHome();
-      return;
+    switch(path){
+      case "/home.html":
+        this.runHome();
+        break;
+      case "/event.html":
+        this.runEvent();
+        break;
+      case "/path-of-glory.html":
+      case "/path-of-valor.html":
+        this.runPathes();
+        break;
+      case "/seasonal.html": // Mega Event
+        this.runSeasonal();
+        break;
+      case "/season.html":
+        this.runSeason();
+        break;
+      case "/love-raids.html":
+        this.runLoveRaids();
+        break;
     }
-    if (path === "/event.html") {
-      this.runEvent();
-      return;
-    }
-    if (path === "/path-of-glory.html" || path === "/path-of-valor.html") {
-      this.runPathes();
-      return;
-    }
-    if (path === "/seasonal.html") { // Mega Event
-      this.runSeasonal();
-      return;
-    }
-    if (path === "/season.html") {
-      this.runSeason();
-      return;
-    }
+
   }
   runHome() {
     new EventInfo_Home().run();
@@ -82,6 +84,7 @@ export default class EventInfo extends HHModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".button-notification-action.notif_button_s",
       () => {
+        console.log("EventInfo: Replacing notif button link for more info");
         $(".button-notification-action.notif_button_s")
           .attr("tooltip", "Several QoL: More Info on this event")
           .off("click")
