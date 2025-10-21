@@ -70,7 +70,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   shouldRun() {
     return (
       location.pathname.includes("/activities.html") &&
-      !location.search.includes("?tab=pop&index=")
+      !location.search.includes("?tab=pop&index=") &&
+      unsafeWindow.pop_data !== undefined
     );
   }
   run(subSettings: SubSettingsType<configSchema>) {
