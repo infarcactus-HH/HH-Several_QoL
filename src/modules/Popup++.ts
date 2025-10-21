@@ -16,7 +16,7 @@ export default class PopupPlusPlus extends HHModule {
     }
     this.hasRun = true;
     GM_addStyle("#toast-popups {display:inherit!important;}");
-    let lastPoints: any = {};
+    let lastPoints: Record<string, Record<string, number>> = {};
     let timeOut: NodeJS.Timeout | null = null;
     delete shared.general.objectivePopup.show;
     shared.general.objectivePopup.show = function (t: any) {
@@ -44,20 +44,19 @@ export default class PopupPlusPlus extends HHModule {
       customPopup(this, t.objective_points);
     };
     function customPopup(_objectivePopupthis: any, objective_points: any) {
-      const changedObjectives = new Set();
-      Object.keys(objective_points).map((n) => {
-        const currObjective = objective_points[n];
-        if (!lastPoints[n]) {
-          lastPoints[n] = currObjective;
-          if (currObjective.points_gained > 0) {
-            changedObjectives.add(n);
-          }
+      Object.keys(objective_points).map((n: string) => {
+        const currObjective = objective_points[n] as {
+          name: string;
+          points_gained: number;
+          title: string;
+        };
+        if (!lastPoints[currObjective.title]) {
+          lastPoints[currObjective.title] = {};
+        }
+        if (!lastPoints[currObjective.title][currObjective.name]) {
+          lastPoints[currObjective.title][currObjective.name] = currObjective.points_gained;
         } else {
-          const newPointsGained = currObjective.points_gained;
-          if (newPointsGained > 0) {
-            changedObjectives.add(n);
-          }
-          lastPoints[n].points_gained += newPointsGained;
+          lastPoints[currObjective.title][currObjective.name] += currObjective.points_gained;
         }
       });
       const $popup = $(
@@ -67,15 +66,19 @@ export default class PopupPlusPlus extends HHModule {
           .map((n) => {
             const currObjective = lastPoints[n];
             const animateClass = "row animate";
-            return `<div class="${animateClass}" style="transition: all 20ms;"><div class="contest_name">${
-              currObjective.title
-            }:</div><div class="contest_points"><div class="points_name" style="animation:none;">${
-              currObjective.name
-            }: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
-              currObjective.points_gained
-            )}</div></div></div></div>`;
+            let title = `<div class="${animateClass}" style="transition: all 20ms;"><div class="contest_name">${n}:</div>`;
+            for (const key in currObjective) {
+              const value = currObjective[key];
+              title += `<div class="contest_points"><div class="points_name" style="animation:none;">${
+                key
+              }: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
+                value
+              )}</div></div></div>`;
+            }
+            title += `</div>`;
+            return title;
           })
-          .join("")}</div></div></div></div></div>`
+          .join("")}</div></div></div></div>`
       );
       $("#toast-popups .popup_wrapper").remove();
       $("#toast-popups").css("display", "unset");
