@@ -17,7 +17,7 @@ export default class LabyTeamPresets extends HHModule {
       ? LabyTeamStorageHandler
       : WBTTeamStorageHandler;
 
-  shouldRun() {
+  static shouldRun() {
     return (
       location.pathname === "/edit-labyrinth-team.html" ||
       location.pathname === "/edit-world-boss-team.html" ||
@@ -25,7 +25,7 @@ export default class LabyTeamPresets extends HHModule {
     );
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !LabyTeamPresets.shouldRun()) {
       return;
     }
     this.hasRun = true;

@@ -7,11 +7,11 @@ export default class WhaleBossTournament extends HHModule {
     label: "Renames WBT to Whale Boss Tournament",
     default: false,
   };
-  shouldRun() {
+  static shouldRun() {
     return location.pathname.includes("/home.html");
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !WhaleBossTournament.shouldRun()) {
       return;
     }
     this.hasRun = true;

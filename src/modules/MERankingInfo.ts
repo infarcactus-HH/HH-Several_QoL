@@ -13,11 +13,11 @@ export default class MERankingInfo extends HHModule {
   };
   heroData: MERankingHeroData | null = null;
   leaderboardData: Array<MERankingLeaderboardEntryIncomplete> | null = null;
-  shouldRun() {
+  static shouldRun() {
     return location.pathname.includes("seasonal.html");
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !MERankingInfo.shouldRun()) {
       return;
     }
     this.hasRun = true;

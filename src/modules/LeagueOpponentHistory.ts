@@ -22,11 +22,11 @@ export default class LeagueOpponentHistory extends HHModule {
     | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
 
-  shouldRun() {
+  static shouldRun() {
     return location.pathname.includes("/leagues.html");
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !LeagueOpponentHistory.shouldRun()) {
       return;
     }
     this.hasRun = true;

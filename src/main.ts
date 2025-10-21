@@ -36,18 +36,18 @@ class Userscript {
     this.run();
   }
 
-  allModules: HHModule[] = [
-    new PlacesOfPowerPlusPlus(),
-    new PopupPlusPlus(),
-    new LabyTeamPresets(),
-    new NoAnnoyingPopups(),
-    new People(),
-    new NoReloadFromClaimingDailyChests(),
-    new MERankingInfo(),
-    new WhaleBossTournament(),
-    new LeagueOpponentHistory(),
-    new LeagueNoPlayerProfileOnNameClick(),
-    new EventInfo(),
+  allModules = [
+    PlacesOfPowerPlusPlus,
+    PopupPlusPlus,
+    LabyTeamPresets,
+    NoAnnoyingPopups,
+    People,
+    NoReloadFromClaimingDailyChests,
+    MERankingInfo,
+    WhaleBossTournament,
+    LeagueOpponentHistory,
+    LeagueNoPlayerProfileOnNameClick,
+    EventInfo,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
@@ -56,12 +56,12 @@ class Userscript {
     });
     if (location.pathname.includes("/home.html")) {
       this.allModules.forEach((module) => {
-        unsafeWindow.hhPlusPlusConfig.registerModule(module);
+        unsafeWindow.hhPlusPlusConfig.registerModule(new module());
       });
     } else {
       this.allModules.forEach((module) => {
         if (module.shouldRun()) {
-          unsafeWindow.hhPlusPlusConfig.registerModule(module);
+          unsafeWindow.hhPlusPlusConfig.registerModule(new module());
         }
       });
     }
@@ -70,17 +70,18 @@ class Userscript {
   }
   runWithoutBdsm() {
     this.allModules.forEach((module) => {
+      const moduleInstance = new module();
       try {
-        const schema = module.configSchema as HHModule_ConfigSchema;
+        const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
         if (module.shouldRun()) {
           if (schema.subSettings) {
             const subSettings = schema.subSettings.reduce((acc, setting) => {
               acc[setting.key] = true;
               return acc;
             }, {} as Record<string, any>);
-            module.run(subSettings);
+            moduleInstance.run(subSettings as any);
           } else {
-            module.run(undefined);
+            moduleInstance.run(undefined as any);
           }
         }
       } catch (e) {

@@ -19,5 +19,5 @@ export abstract class HHModule {
   
   abstract readonly configSchema: HHModule_ConfigSchema;
   abstract run(subSettings: any/*SubSettingsType<HHModule_ConfigSchema>*/): void;
-  abstract shouldRun(): boolean;
+  //static shouldRun(): boolean; < NEEDS to be defined as static
 }

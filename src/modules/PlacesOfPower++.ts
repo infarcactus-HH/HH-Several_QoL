@@ -67,7 +67,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     '10', '11', '12',   // gem      / nature & psychic
   ];
 
-  shouldRun() {
+  static shouldRun() {
     return (
       location.pathname.includes("/activities.html") &&
       !location.search.includes("?tab=pop&index=") &&
@@ -75,7 +75,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
   }
   run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !PlacesOfPowerPlusPlus.shouldRun()) {
       return;
     }
     this.hasPopupEnabled = subSettings?.rewardPopup ?? true;

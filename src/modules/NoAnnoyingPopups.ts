@@ -7,11 +7,11 @@ export default class NoAnnoyingPopups extends HHModule {
       "<span tooltip='Tired of shop popups or news popup appearing randomly and breaking your flow ?'>Removes annoying popup appearing automaticly for shops, paths, news</span>",
     default: false,
   } as const;
-  shouldRun() {
+  static shouldRun() {
     return true;
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !NoAnnoyingPopups.shouldRun()) {
       return;
     }
     this.hasRun = true;

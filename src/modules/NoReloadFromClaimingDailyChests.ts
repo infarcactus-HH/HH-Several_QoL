@@ -39,11 +39,11 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       },
     ],
   };
-  shouldRun() {
+  static shouldRun() {
     return true;
   }
   run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !NoReloadFromClaimingDailyChests.shouldRun()) {
       return location.pathname.includes("/activities.html");
     }
     this.hasRun = true;

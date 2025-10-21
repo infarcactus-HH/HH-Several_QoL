@@ -12,7 +12,7 @@ export default class EventInfo extends HHModule {
       "<span tooltip='Click on the Information top right of event (only DP, SM, CbC, OD, PoV & PoG)'>Event Info (WIP): Show guides, tips, tricks & more info on events</span>",
     default: true,
   };
-  shouldRun() {
+  static shouldRun() {
     return (
       location.pathname === "/event.html" ||
       location.pathname === "/home.html" ||
@@ -25,7 +25,7 @@ export default class EventInfo extends HHModule {
     );
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !EventInfo.shouldRun()) {
       return;
     }
     this.hasRun = true;

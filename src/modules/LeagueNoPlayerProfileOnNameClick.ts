@@ -8,11 +8,11 @@ export default class LeagueNoPlayerProfileOnNameClick extends HHModule {
       "League : Disable opening player profile when clicking on their name",
     default: false,
   };
-  shouldRun() {
+  static shouldRun() {
     return location.pathname.includes("/leagues.html");
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !LeagueNoPlayerProfileOnNameClick.shouldRun()) {
       return;
     }
     this.hasRun = true;

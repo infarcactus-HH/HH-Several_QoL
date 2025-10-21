@@ -7,11 +7,11 @@ export default class PopupPlusPlus extends HHModule {
       "<span tooltip='Stacking popups, click on the popup to make it disappear'>Popup++</span>",
     default: true,
   };
-  shouldRun() {
+  static shouldRun() {
     return true;
   }
   run() {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !PopupPlusPlus.shouldRun()) {
       return;
     }
     this.hasRun = true;

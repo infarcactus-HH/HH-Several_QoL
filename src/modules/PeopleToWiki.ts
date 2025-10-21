@@ -18,7 +18,7 @@ export default class People extends HHModule {
       },
     ],
   };
-  shouldRun() {
+  static shouldRun() {
     return (
       location.host.includes("heroes") ||
       location.host.includes("gayharem") ||
@@ -26,7 +26,7 @@ export default class People extends HHModule {
     );
   }
   run(subSettings?: SubSettingsType<typeof this.configSchema>) {
-    if (this.hasRun || !this.shouldRun()) {
+    if (this.hasRun || !People.shouldRun()) {
       return;
     }
     this.hasRun = true;
