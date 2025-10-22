@@ -4,7 +4,7 @@ export default class NoAnnoyingPopups extends HHModule {
   readonly configSchema = {
     baseKey: "noAnnoyingPopups",
     label:
-      "<span tooltip='Tired of shop popups or news popup appearing randomly and breaking your flow ?'>Removes annoying popup appearing automaticly for shops, paths, news</span>",
+      "<span tooltip='Tired of shop popups or news popup appearing randomly and breaking your flow ?'>Removes annoying popup appearing automatically for shops, paths, news</span>",
     default: false,
   } as const;
   static shouldRun() {
