@@ -502,7 +502,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     if (selectedGirls.length === 0) {
       alert(
-        `No ${GT.design.girl} were assigned to this PoP. This might happen if all your ${GT.design.girl} are already assigned to other PoPs.`
+        `No ${GT.design.Girls} were assigned to this PoP. This might happen if all your ${GT.design.Girls} are already assigned to other PoPs.`
       );
       delete this.currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
