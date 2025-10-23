@@ -9,7 +9,8 @@ type EventInfo_EventsList =
   | "cumback_contest"
   | "sm_event" // SM
   | "event" // Org Days
-  | "legendary_contest";
+  | "legendary_contest"
+  | "mythic_event";
 
 export default class EventInfo_Event implements SubModule {
   private readonly EventInfoLinks: Record<EventInfo_EventsList, string> = {
@@ -22,7 +23,9 @@ export default class EventInfo_Event implements SubModule {
     event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
     legendary_contest:
-    "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304657"
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304657",
+    mythic_event:
+      "https://forum.kinkoid.com/index.php?/topic/23259-everything-about-mythic-days-revival/",
   };
   run() {
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
@@ -50,14 +53,22 @@ export default class EventInfo_Event implements SubModule {
     });
     return $notifButton;
   }
-  helperReplaceNotifButton(event: EventInfo_EventsList) {
+  helperReplaceNotifButton(
+    event: EventInfo_EventsList,
+    stopPropagation = false
+  ) {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".button-notification-action.notif_button_s",
+      ".nc-pull-right > .button-notification-action",
       () => {
-        $(".button-notification-action.notif_button_s")
+        $(".nc-pull-right > .button-notification-action")
           .attr("tooltip", "Several QoL: More Info on this event")
           .off("click")
           .on("click", (e) => {
+            if (stopPropagation) {
+              e.preventDefault();
+              e.stopPropagation();
+              e.stopImmediatePropagation();
+            }
             GM_openInTab(this.EventInfoLinks[event], { active: true });
           });
       }
@@ -68,22 +79,35 @@ export default class EventInfo_Event implements SubModule {
       return;
     }
     switch (eventType) {
+      case "cumback_contest":
+      case "legendary_contest":
+      case "event":
+        this.helperCreateNotifButton(eventType);
+        return;
+      case "mythic_event":
+        this.mythic_eventRun();
+        return;
       case "dp_event":
         this.dp_eventRun();
         return;
       case "sm_event":
         this.sm_eventRun();
         return;
-      case "cumback_contest":
-        this.helperCreateNotifButton("cumback_contest");
         return;
-      case "event":
-        this.helperCreateNotifButton("event");
-      case "legendary_contest":
-        this.helperCreateNotifButton("legendary_contest");
       default:
         return; // not yet implemented or nothing to display
     }
+  }
+  mythic_eventRun() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      ".nc-pull-right > .button-notification-action",
+      () => {
+        $(".nc-pull-right > .button-notification-action").removeClass(
+          "js-mythic-help-open-button"
+        );
+        this.helperReplaceNotifButton("mythic_event");
+      }
+    );
   }
   dp_eventRun() {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
