@@ -1,0 +1,28 @@
+#love-raids .raid-card:not(.expanded) .raid-content .info-box {
+  padding-top: 0;
+  top: 4.8em;
+}
+
+#love-raids
+  .raid-card:not(.expanded).multiple-girl
+  .raid-content
+  .info-box
+  .classic-girl:nth-of-type(2)
+  .shards-container {
+  top: 0;
+}
+.notify-toggle {
+  position: relative;
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+.raid-name[data-notify="true"] .notify-toggle {
+  opacity: 1;
+  filter: grayscale(0);
+}

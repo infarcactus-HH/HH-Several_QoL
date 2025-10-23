@@ -44,7 +44,7 @@ export interface PlacesOfPowerData {
   level: number;
   level_power: number;
   levelup_cost: number;
-  locked : 1 | undefined;
+  locked: 1 | undefined;
   max_level: number;
   max_power: number | null;
   max_team_power: number;
@@ -92,20 +92,21 @@ export interface MERankingLeaderboardEntryIncomplete {
   rewards: Array<any>;
 }
 
-
-export interface LeagueOpponentIncomplete { // very very incomplete x)
+export interface LeagueOpponentIncomplete {
+  // very very incomplete x)
   place: number;
   player: {
     id_fighter: number;
-  }
-  Several_QoL?: { // added by the script
+  };
+  Several_QoL?: {
+    // added by the script
     chechExpiresAt: number;
     bestPlace: number;
     timesReached: number;
-  }
+  };
 }
-
 
 export interface sm_event_dataIncomplete {
   seconds_until_event_end: number;
 }
+
