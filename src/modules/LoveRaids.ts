@@ -24,10 +24,13 @@ export default class LoveRaids extends HHModule {
       return;
     }
     this.hasRun = true;
-    if (location.pathname === "/love-raids.html") {
-      this.loveRaidsPageModifications();
-    } else {
-      console.log("Not on love raids page, skipping modifications");
+    switch (location.pathname) {
+      case "/home.html":
+        this.homePageModifications();
+        break;
+      case "/love-raids.html":
+        this.loveRaidsPageModifications();
+        break;
     }
   }
   loveRaidsPageModifications() {
@@ -40,46 +43,19 @@ export default class LoveRaids extends HHModule {
       // need to add the condition
       GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
     }
-    // clean up notifications for raids that no longer exist
-    const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
-    let currentLoveRaidNotifs = loveRaidNotifs.filter((id) =>
-      love_raids.some((raid) => raid.id_raid === id)
-    ); // can also be used later in the script
-    LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
+    const result = updateStorage();
+    let currentLoveRaidNotifs = result.loveRaidNotifs;
 
-    const reducedLoveRaids = love_raids.map((raid) => {
-      const { id_raid, all_is_owned } = raid;
-      let start, end;
-      if (raid["status"] === "ongoing") {
-        const { seconds_until_event_end } = raid;
-        start = 0; // irrelevant since it is running
-        end = server_now_ts + seconds_until_event_end;
-      } else {
-        const { event_duration_seconds, seconds_until_event_start } = raid;
-        start = server_now_ts + seconds_until_event_start;
-        end = start + event_duration_seconds;
-      }
-      return { all_is_owned, id_raid, start, end };
-    });
     HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
-      LoveRaidsStorageHandler.setReducedLoveRaids(reducedLoveRaids);
-      modifyPageWithoutGirlDict(reducedLoveRaids);
+      modifyPageWithoutGirlDict();
       unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then(
         (girlDict: any) => {
-          modifyPageWithGirlDict(girlDict, reducedLoveRaids);
+          modifyPageWithGirlDict(girlDict);
         }
       );
     });
 
-    function modifyPageWithGirlDict(
-      girlDict: any,
-      reducedLoveRaids: Array<{
-        all_is_owned: boolean;
-        id_raid: number;
-        start: number;
-        end: number;
-      }>
-    ) {
+    function modifyPageWithGirlDict(girlDict: any) {
       if (love_raids === undefined) {
         return;
       }
@@ -91,7 +67,7 @@ export default class LoveRaids extends HHModule {
           return;
         }
         const $raidCard = $(raidCard);
-        const { name, shards } = girls[index];
+        const { name, shards, skins } = girls[index];
         const {
           id_girl,
           girl_data: { grade_skins },
@@ -104,51 +80,60 @@ export default class LoveRaids extends HHModule {
           id_girl,
           unsafeWindow.HHPlusPlus.I18n.getLang()
         );
-        if (grade_skins.length) {
-          if (!raidCard.classList.contains("multiple-girl")) {
-            const leftImage = $(raidCard.querySelector(".girl-img.left")!);
-            raidCard.classList.add("multiple-girl");
-            raidCard.classList.remove("single-girl");
-            $raidCard
-              .find("div.raid-content")
-              .append(
-                $(
-                  `<div class="right-girl-container">` +
-                    `<img class="girl-img right" src="" alt="Right" style="margin-top: ${leftImage.css(
-                      "marginTop"
-                    )}">` +
-                    `</div>`
-                )
-              );
-            $raidCard.find(".info-box .info-container .classic-girl").after(
+        if (
+          grade_skins.length &&
+          !raidCard.classList.contains("multiple-girl")
+        ) {
+          const skinsList = skins as Array<{
+            id_girl_grade_skin: number;
+            num_order: number;
+            girl_grade_num: number;
+            grade_skin_name: string;
+            shards_count: number;
+            is_selected: boolean;
+          }>;
+          // Find the lowest num_order that has shards_count != 33
+          const nextSkin = skinsList.filter(
+            (skin) => skin.shards_count !== 33
+          )[0];
+
+          const leftImage = $(raidCard.querySelector(".girl-img.left")!);
+          raidCard.classList.add("multiple-girl");
+          raidCard.classList.remove("single-girl");
+          $raidCard
+            .find("div.raid-content")
+            .append(
               $(
-                `<div class="classic-girl">` +
-                  `<div class="shards-container">` +
-                  `<div class="progress-container">` +
-                  `<div class="shards_bar_wrapper">` +
-                  `<div class="shards">` +
-                  `<span class="skins_shard_icn"></span>` +
-                  `<p><span>?/33</span></p>` +
-                  `</div>` +
-                  `<div class="shards_bar skins-shards">` +
-                  `<div class="bar basic-progress-bar-fill pink" style="width: 0"></div>` +
-                  `</div>` +
-                  `</div>` +
-                  `</div>` +
-                  `<a href="" class="redirect_button blue_button_L" disabled="">Go</a>
-                    </div>` +
-                  `<div class="border-bottom"></div>` +
+                `<div class="right-girl-container">` +
+                  `<img class="girl-img right" src="${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin${
+                    nextSkin.num_order
+                  }.png" alt="Right" style="margin-top: ${leftImage.css(
+                    "marginTop"
+                  )}">` +
                   `</div>`
               )
             );
-          }
-          const rightImage = raidCard.querySelector(
-            ".girl-img.right"
-          ) as HTMLImageElement;
-          if (!rightImage.src.includes("grade_skins")) {
-            // there is no good way to tell which skin it will be so this will always show the first
-            rightImage.src = `${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin1.png`;
-          }
+          $raidCard.find(".info-box .info-container .classic-girl").after(
+            $(
+              `<div class="classic-girl">` +
+                `<div class="shards-container">` +
+                `<div class="progress-container">` +
+                `<div class="shards_bar_wrapper">` +
+                `<div class="shards">` +
+                `<span class="skins_shard_icn"></span>` +
+                `<p><span>${nextSkin.shards_count}/33</span></p>` +
+                `</div>` +
+                `<div class="shards_bar skins-shards">` +
+                `<div class="bar basic-progress-bar-fill pink" style="width: 0"></div>` +
+                `</div>` +
+                `</div>` +
+                `</div>` +
+                `<a href="" class="redirect_button blue_button_L" disabled="">Go</a>
+                    </div>` +
+                `<div class="border-bottom"></div>` +
+                `</div>`
+            )
+          );
         }
         const objectives = raidCard.querySelectorAll(".classic-girl");
         const girl = objectives[0];
@@ -197,14 +182,7 @@ export default class LoveRaids extends HHModule {
         }
       });
     }
-    function modifyPageWithoutGirlDict(
-      reducedLoveRaids: Array<{
-        all_is_owned: boolean;
-        id_raid: number;
-        start: number;
-        end: number;
-      }>
-    ) {
+    function modifyPageWithoutGirlDict() {
       HHPlusPlusReplacer.doWhenSelectorAvailable(
         // removes the eye from HH++
         ".raid-content > .eye.btn-control",
@@ -282,7 +260,6 @@ export default class LoveRaids extends HHModule {
             );
           });
           $raidName.append($notifyToggle);
-          console.log("Added notify toggle ", $notifyToggle);
         }
       });
     }
@@ -299,6 +276,99 @@ export default class LoveRaids extends HHModule {
       );
       const css = require("./css/LoveRaids.css").default;
       GM_addStyle(css);
+    }
+    function updateStorage() {
+      // clean up notifications for raids that no longer exist
+      const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
+      let currentLoveRaidNotifs = loveRaidNotifs.filter((id) =>
+        love_raids!.some((raid) => raid.id_raid === id)
+      ); // can also be used later in the script
+      LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
+      const reducedLoveRaids = love_raids!.map((raid) => {
+        const { id_raid, all_is_owned } = raid;
+        let start, end;
+        if (raid["status"] === "ongoing") {
+          const { seconds_until_event_end } = raid;
+          start = 0; // irrelevant since it is running
+          end = server_now_ts + seconds_until_event_end;
+        } else {
+          const { event_duration_seconds, seconds_until_event_start } = raid;
+          start = server_now_ts + seconds_until_event_start;
+          end = start + event_duration_seconds;
+        }
+        return { all_is_owned, id_raid, start, end };
+      });
+      LoveRaidsStorageHandler.setReducedLoveRaids(reducedLoveRaids);
+      return { reducedLoveRaids, loveRaidNotifs };
+    }
+  }
+  homePageModifications() {
+    console.log("Modifying home page for love raids notifications");
+    const raids = LoveRaidsStorageHandler.getReducedLoveRaids();
+    const raidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
+    if (raids.length === 0 || raidNotifs.length === 0) {
+      return;
+    }
+    HHPlusPlusReplacer.doWhenSelectorAvailable(`.raids`, () => {
+      setNonCompletedRaidCounts();
+      setRaidNotif();
+    });
+
+    function setNonCompletedRaidCounts() {
+      const { ongoing_love_raids_count, upcoming_love_raids_count } =
+        unsafeWindow;
+      let expired = 0,
+        ongoing = 0,
+        upcoming = 0;
+      raids.forEach((raid) => {
+        if (raid.end < server_now_ts) {
+          expired += 1;
+        } else if (raid.all_is_owned) {
+          // don't care
+        } else if (raid.start < server_now_ts) {
+          ongoing += 1;
+        } else {
+          upcoming += 1;
+        }
+      });
+      const outdated =
+        raids.length - expired <
+        ongoing_love_raids_count + upcoming_love_raids_count;
+      const $raidAmounts = $(`.raids .raids-amount`);
+      $raidAmounts
+        .first()
+        .html(
+          `<span ${
+            outdated ? 'style="color:pink"' : ""
+          }>${ongoing}</span> ${GT.design.love_raid}`
+        );
+      $raidAmounts
+        .last()
+        .html(
+          `<span ${
+            outdated ? 'style="color:pink"' : ""
+          }>${upcoming}</span> ${GT.design.upcoming_love_raids}`
+        );
+    }
+    function setRaidNotif() {
+      const showNotif = raids.reduce((result, raid) => {
+        const ongoing = raid.start < server_now_ts && raid.end > server_now_ts;
+        if (
+          ongoing &&
+          raidNotifs.includes(raid.id_raid) &&
+          !raid.all_is_owned
+        ) {
+          if (raid.end > server_now_ts) {
+            return true;
+          }
+        }
+        return result;
+      }, false);
+      if (showNotif) {
+        $(".raids").append(
+          `<img class="new_notif" src="${IMAGES_URL}/ic_new.png" style="position: relative;" alt="!">`
+        );
+      }
     }
   }
 }
