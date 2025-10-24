@@ -11,6 +11,7 @@ import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
 import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
 import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
+import LoveRaids from "./modules/LoveRaids";
 
 class Userscript {
   constructor() {
@@ -48,6 +49,7 @@ class Userscript {
     LeagueOpponentHistory,
     LeagueNoPlayerProfileOnNameClick,
     EventInfo,
+    LoveRaids,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
