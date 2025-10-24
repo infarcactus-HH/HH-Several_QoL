@@ -1,17 +1,40 @@
 import type { love_raids } from "../types/GameTypes/love_raids";
-import { HHModule } from "../types/HH++";
+import {
+  HHModule,
+  HHModule_ConfigSchema,
+  SubSettingsType,
+} from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 
 declare const love_raids: Array<love_raids> | undefined;
-declare const GT_design_love_raid: string;
-declare const GT_design_girl_town_event_owned_v2: string;
+
+type configSchema = {
+  baseKey: "loveRaids";
+  label: "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>";
+  default: true;
+  subSettings: [
+    {
+      key: "hideCompletedRaids";
+      default: true;
+      label: "Hide completed raids from love raids page";
+    }
+  ];
+};
 
 export default class LoveRaids extends HHModule {
-  readonly configSchema = {
+  readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "loveRaids",
-    label: "Additional Love Raids tweaks",
+    label:
+      "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
     default: true,
+    subSettings: [
+      {
+        key: "hideCompletedRaids",
+        default: true,
+        label: "Hide completed raids from love raids page",
+      },
+    ],
   };
   static shouldRun() {
     return (
@@ -19,7 +42,7 @@ export default class LoveRaids extends HHModule {
       (unsafeWindow.love_raids !== undefined && love_raids?.length)
     );
   }
-  run() {
+  run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !LoveRaids.shouldRun()) {
       return;
     }
@@ -29,17 +52,37 @@ export default class LoveRaids extends HHModule {
         this.homePageModifications();
         break;
       case "/love-raids.html":
-        this.loveRaidsPageModifications();
+        this.loveRaidsPageModifications(subSettings.hideCompletedRaids);
+        break;
+      default:
+        this.hideEntirelyCompletedRaids();
         break;
     }
   }
-  loveRaidsPageModifications() {
+  hideEntirelyCompletedRaids() {
+    if (love_raids === undefined) {
+      return;
+    }
+    $("a.love-raid-container.raid").each(function (_index, element) {
+      const id = +URL.parse(
+        (element as HTMLLinkElement).href
+      )!.searchParams.get("raid")!;
+      const raid = love_raids.find((raid) => raid.id_raid === id);
+      if (raid === undefined) {
+        return;
+      }
+      if (raid.all_is_owned) {
+        element.remove();
+      }
+    });
+  }
+  loveRaidsPageModifications(shouldHideCompletedRaids: boolean) {
     if (love_raids === undefined) {
       console.log("love_raids data is undefined, cannot modify page");
       return;
     }
     injectCSS();
-    if (true) {
+    if (shouldHideCompletedRaids) {
       // need to add the condition
       GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
     }
@@ -306,12 +349,13 @@ export default class LoveRaids extends HHModule {
     console.log("Modifying home page for love raids notifications");
     const raids = LoveRaidsStorageHandler.getReducedLoveRaids();
     const raidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
-    if (raids.length === 0 || raidNotifs.length === 0) {
-      return;
-    }
     HHPlusPlusReplacer.doWhenSelectorAvailable(`.raids`, () => {
-      setNonCompletedRaidCounts();
-      setRaidNotif();
+      if (raids.length !== 0 && raidNotifs.length !== 0) {
+        setRaidNotif();
+      }
+      if (raids.length !== 0) {
+        setNonCompletedRaidCounts();
+      }
     });
 
     function setNonCompletedRaidCounts() {
@@ -335,19 +379,20 @@ export default class LoveRaids extends HHModule {
         raids.length - expired <
         ongoing_love_raids_count + upcoming_love_raids_count;
       const $raidAmounts = $(`.raids .raids-amount`);
+      console.log("raid amounts:", $raidAmounts);
       $raidAmounts
         .first()
         .html(
-          `<span ${
-            outdated ? 'style="color:pink"' : ""
-          }>${ongoing}</span> ${GT.design.love_raid}`
+          `<span ${outdated ? 'style="color:pink"' : ""}>${ongoing}</span> ${
+            GT.design.love_raid
+          }`
         );
       $raidAmounts
         .last()
         .html(
-          `<span ${
-            outdated ? 'style="color:pink"' : ""
-          }>${upcoming}</span> ${GT.design.upcoming_love_raids}`
+          `<span ${outdated ? 'style="color:pink"' : ""}>${upcoming}</span> ${
+            GT.design.upcoming_love_raids
+          }`
         );
     }
     function setRaidNotif() {

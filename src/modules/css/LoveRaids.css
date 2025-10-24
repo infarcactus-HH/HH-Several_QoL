@@ -8,7 +8,7 @@
   .raid-content
   .info-box
   .classic-girl:nth-of-type(2)
-  .shards-container {
+  div.shards-container {
   top: 0;
 }
 .notify-toggle {
