@@ -1,6 +1,6 @@
 import { GlobalStorageHandler } from "./utils/StorageHandler";
 
-export default class UpdateHandler {
+export default class UpdateHandler { // needs to test it on real script not a link to local file
     static run(){
         const currentVersion = GM_info.script.version;
         const storedVersion = GlobalStorageHandler.getStoredScriptVersion();
