@@ -167,7 +167,7 @@ export default class LoveRaids extends HHModule {
                 `<p><span>${nextSkin.shards_count}/33</span></p>` +
                 `</div>` +
                 `<div class="shards_bar skins-shards">` +
-                `<div class="bar basic-progress-bar-fill pink" style="width: 0"></div>` +
+                `<div class="bar basic-progress-bar-fill pink" style="width: ${nextSkin.shards_count/33*100}%"></div>` +
                 `</div>` +
                 `</div>` +
                 `</div>` +
