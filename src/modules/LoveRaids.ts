@@ -126,6 +126,7 @@ export default class LoveRaids extends HHModule {
         if (
           grade_skins.length &&
           !raidCard.classList.contains("multiple-girl")
+          && skins
         ) {
           const skinsList = skins as Array<{
             id_girl_grade_skin: number;
