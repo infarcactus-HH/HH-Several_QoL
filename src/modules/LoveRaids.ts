@@ -268,9 +268,7 @@ export default class LoveRaids extends HHModule {
             const $girlImg = $element.find(".girl-img.avatar");
             $girlImg.attr(
               "src",
-              raidData.girl_data.ico
-                .replace(/\/avb0/, "/ava0")
-                .toImageUrl("ava")
+              `${IMAGES_URL}/pictures/girls/${raidData.id_girl}/ava0.png`
             ); // set the image to normal avatar
             if ($girlImg.css("visibility") === "hidden") {
               // sometimes hidden by default ?
