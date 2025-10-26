@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Several QoL
 // @namespace    http://tampermonkey.net/
-// @version      1.16.5
+// @version      1.17.0
 // @description  A userscript for QoL for the Haremverse
 // @author       infarcactus
 // @license      GPLv3
