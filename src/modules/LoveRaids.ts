@@ -330,7 +330,7 @@ export default class LoveRaids extends HHModule {
     function handleHidingCompletedRaids() {
       let shouldHideCompletedRaids =
         LoveRaidsStorageHandler.getShouldHideCompletedRaids();
-      let hidingCss : Element | undefined;
+      let hidingCss: Element | undefined;
       if (shouldHideCompletedRaids) {
         hidingCss = GM_addStyle(
           `.raid-card.grey-overlay{display:none!important;}`
@@ -352,16 +352,19 @@ export default class LoveRaids extends HHModule {
             LoveRaidsStorageHandler.setShouldHideCompletedRaids(
               shouldHideCompletedRaids
             );
-            $toggle.find("img").attr(
-              "src",
-              `${IMAGES_URL}/quest/${shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"}.svg`
-            );
-            if(shouldHideCompletedRaids){
+            $toggle
+              .find("img")
+              .attr(
+                "src",
+                `${IMAGES_URL}/quest/${
+                  shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"
+                }.svg`
+              );
+            if (shouldHideCompletedRaids) {
               hidingCss = GM_addStyle(
                 `.raid-card.grey-overlay{display:none!important;}`
               );
-            }
-            else{
+            } else {
               hidingCss?.remove();
             }
           });

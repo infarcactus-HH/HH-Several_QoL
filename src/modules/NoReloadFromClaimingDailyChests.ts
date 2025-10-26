@@ -90,7 +90,9 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       });
     $(".progress-bar-claim-reward").attr(
       "tooltip",
-      `Several QoL: Claim without reload${popupEnabled ? "" : " & without popup"}`
+      `Several QoL: Claim without reload${
+        popupEnabled ? "" : " & without popup"
+      }`
     );
   }
 

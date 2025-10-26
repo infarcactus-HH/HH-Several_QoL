@@ -1,5 +1,8 @@
 export class HHPlusPlusReplacer {
-  static doWhenSelectorAvailable(selector: string, callback: ($element: JQuery<HTMLElement>) => void) {
+  static doWhenSelectorAvailable(
+    selector: string,
+    callback: ($element: JQuery<HTMLElement>) => void
+  ) {
     const $elementOnCall = $(selector);
     if ($elementOnCall.length) {
       callback($elementOnCall);

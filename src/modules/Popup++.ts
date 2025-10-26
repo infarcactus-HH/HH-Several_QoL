@@ -54,9 +54,11 @@ export default class PopupPlusPlus extends HHModule {
           lastPoints[currObjective.title] = {};
         }
         if (!lastPoints[currObjective.title][currObjective.name]) {
-          lastPoints[currObjective.title][currObjective.name] = currObjective.points_gained;
+          lastPoints[currObjective.title][currObjective.name] =
+            currObjective.points_gained;
         } else {
-          lastPoints[currObjective.title][currObjective.name] += currObjective.points_gained;
+          lastPoints[currObjective.title][currObjective.name] +=
+            currObjective.points_gained;
         }
       });
       const $popup = $(
@@ -69,9 +71,7 @@ export default class PopupPlusPlus extends HHModule {
             let title = `<div class="${animateClass}" style="transition: all 20ms;"><div class="contest_name">${n}:</div>`;
             for (const key in currObjective) {
               const value = currObjective[key];
-              title += `<div class="contest_points"><div class="points_name" style="animation:none;">${
-                key
-              }: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
+              title += `<div class="contest_points"><div class="points_name" style="animation:none;">${key}: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
                 value
               )}</div></div></div>`;
             }

@@ -22,7 +22,7 @@ export declare global {
         url: string,
         grade_offsets: Array<number>,
         unknown4: number, //seems to be 0 or 1 (for now only seen 0)
-        $parentContainer: JQuery<HTMLElement> = null,// unsure if it has to be the parent container
+        $parentContainer: JQuery<HTMLElement> = null, // unsure if it has to be the parent container
         unknown6: boolean = false // unsure of it's purpose ? On love raid pages only called with true, but on main page called with false
       ): void;
     };

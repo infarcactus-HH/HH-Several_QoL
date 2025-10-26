@@ -34,7 +34,7 @@ export default class EventInfo extends HHModule {
 
     console.log("EventInfo module running on path:", path);
 
-    switch(path){
+    switch (path) {
       case "/home.html":
         this.runHome();
         break;
@@ -55,7 +55,6 @@ export default class EventInfo extends HHModule {
         this.runLoveRaids();
         break;
     }
-
   }
   runHome() {
     new EventInfo_Home().run();

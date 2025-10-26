@@ -1,7 +1,7 @@
 import { LeagueOpponentIncomplete } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { GlobalStorageHandler, LeagueStorageHandler } from "../utils/StorageHandler";
+import { LeagueStorageHandler } from "../utils/StorageHandler";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
@@ -10,7 +10,8 @@ declare const league_rewards: any; // don't care
 export default class LeagueOpponentHistory extends HHModule {
   readonly configSchema = {
     baseKey: "leagueOpponentHistory",
-    label: "League : Show history of opponents (click on the row to refresh, only looks for highest league)",
+    label:
+      "League : Show history of opponents (click on the row to refresh, only looks for highest league)",
     default: true,
   };
   leaguePlayerRecord:
