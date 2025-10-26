@@ -26,3 +26,11 @@
   opacity: 1;
   filter: grayscale(0);
 }
+
+.love-raids-hide-completed-btn > img {
+  margin-left: 10px;
+  height: 2rem;
+  width: 50px;
+  vertical-align: middle;
+  cursor: pointer;
+}

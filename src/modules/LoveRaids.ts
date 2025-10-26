@@ -13,13 +13,6 @@ type configSchema = {
   baseKey: "loveRaids";
   label: "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>";
   default: true;
-  subSettings: [
-    {
-      key: "hideCompletedRaids";
-      default: true;
-      label: "Hide completed raids from love raids page";
-    }
-  ];
 };
 
 export default class LoveRaids extends HHModule {
@@ -28,13 +21,6 @@ export default class LoveRaids extends HHModule {
     label:
       "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
     default: true,
-    subSettings: [
-      {
-        key: "hideCompletedRaids",
-        default: true,
-        label: "Hide completed raids from love raids page",
-      },
-    ],
   };
   static shouldRun() {
     return (
@@ -42,7 +28,7 @@ export default class LoveRaids extends HHModule {
       (unsafeWindow.love_raids !== undefined && love_raids?.length)
     );
   }
-  run(subSettings: SubSettingsType<configSchema>) {
+  run() {
     if (this.hasRun || !LoveRaids.shouldRun()) {
       return;
     }
@@ -52,7 +38,7 @@ export default class LoveRaids extends HHModule {
         this.homePageModifications();
         break;
       case "/love-raids.html":
-        this.loveRaidsPageModifications(subSettings.hideCompletedRaids);
+        this.loveRaidsPageModifications();
         break;
       default:
         this.hideEntirelyCompletedRaids();
@@ -76,19 +62,14 @@ export default class LoveRaids extends HHModule {
       }
     });
   }
-  loveRaidsPageModifications(shouldHideCompletedRaids: boolean) {
+  loveRaidsPageModifications() {
     if (love_raids === undefined) {
       console.log("love_raids data is undefined, cannot modify page");
       return;
     }
     injectCSS();
-    if (shouldHideCompletedRaids) {
-      // need to add the condition
-      GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
-    }
     const result = updateStorage();
     let currentLoveRaidNotifs = result.loveRaidNotifs;
-
     HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
       modifyPageWithoutGirlDict();
       unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then(
@@ -229,6 +210,7 @@ export default class LoveRaids extends HHModule {
       });
     }
     function modifyPageWithoutGirlDict() {
+      handleHidingCompletedRaids();
       HHPlusPlusReplacer.doWhenSelectorAvailable(
         // removes the eye from HH++
         ".raid-content > .eye.btn-control",
@@ -344,6 +326,47 @@ export default class LoveRaids extends HHModule {
       });
       LoveRaidsStorageHandler.setReducedLoveRaids(reducedLoveRaids);
       return { reducedLoveRaids, loveRaidNotifs };
+    }
+    function handleHidingCompletedRaids() {
+      let shouldHideCompletedRaids =
+        LoveRaidsStorageHandler.getShouldHideCompletedRaids();
+      let hidingCss : Element | undefined;
+      if (shouldHideCompletedRaids) {
+        hidingCss = GM_addStyle(
+          `.raid-card.grey-overlay{display:none!important;}`
+        );
+      }
+      HHPlusPlusReplacer.doWhenSelectorAvailable(
+        ".head-section > a",
+        ($element) => {
+          const $toggle = $(
+            `<div class="eye btn-control love-raids-hide-completed-btn" tooltip="Toggle hiding completed raids">
+              <img src="${IMAGES_URL}/quest/${
+              shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"
+            }.svg">
+            </div>`
+          );
+          $element.after($toggle);
+          $toggle.on("click", () => {
+            shouldHideCompletedRaids = !shouldHideCompletedRaids;
+            LoveRaidsStorageHandler.setShouldHideCompletedRaids(
+              shouldHideCompletedRaids
+            );
+            $toggle.find("img").attr(
+              "src",
+              `${IMAGES_URL}/quest/${shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"}.svg`
+            );
+            if(shouldHideCompletedRaids){
+              hidingCss = GM_addStyle(
+                `.raid-card.grey-overlay{display:none!important;}`
+              );
+            }
+            else{
+              hidingCss?.remove();
+            }
+          });
+        }
+      );
     }
   }
   homePageModifications() {

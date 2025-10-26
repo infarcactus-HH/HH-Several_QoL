@@ -98,4 +98,10 @@ export class LoveRaidsStorageHandler {
   static getLoveRaidNotifications(): Array<number> {
     return GM_getValue(HH_UNIVERSE + "LoveRaidNotifications", []);
   }
+  static setShouldHideCompletedRaids(shouldHide : boolean) {
+    GM_setValue("HideCompletedLoveRaids", shouldHide);
+  }
+  static getShouldHideCompletedRaids(): boolean {
+    return GM_getValue("HideCompletedLoveRaids", true);
+  }
 }
