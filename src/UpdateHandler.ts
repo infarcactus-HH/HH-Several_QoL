@@ -74,7 +74,8 @@ export default class UpdateHandler {
       ".hh-plus-plus-config-button",
       ($element) => {
         console.log("Adding click handler to HH++ config");
-        $element.on("click", () => {
+        $element.on("click.severalQoLAddConfig", () => {
+          $element.off("click.severalQoLAddConfig");
           console.log("clicked on config");
           HHPlusPlusReplacer.doWhenSelectorAvailable(
             ".group-panel[rel='severalQoL']",
