@@ -24,6 +24,9 @@ You can support me on [patreon](https://patreon.com/infarcactusHH)
 - Event Info
   - Click on the ! to get redirected to a guide (thanks Bolitho for the guides)
   - On some event adds timer on main screen & other things
+- Additional Love Raids Tweak (HH++ BDSM recommended)
+  - Mark raids as favorite
+  - Hide completed raids
 - Season event Ranking info  
   <img width="369" height="455" alt="image" src="https://github.com/user-attachments/assets/1353c21b-123a-4265-8137-47d96111f709" />
 - League oponent history  

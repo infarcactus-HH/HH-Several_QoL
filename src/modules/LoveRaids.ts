@@ -19,7 +19,7 @@ export default class LoveRaids extends HHModule {
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "loveRaids",
     label:
-      "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
+      "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
     default: true,
   };
   static shouldRun() {
