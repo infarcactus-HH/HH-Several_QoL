@@ -5,6 +5,12 @@ export class GlobalStorageHandler {
   static getStoredScriptVersion(): string {
     return GM_getValue("StoredScriptVersion", "0.0.0");
   }
+  static setShowUpdatePopup(show: boolean): void {
+    GM_setValue("ShowUpdatePopup", show);
+  }
+  static getShowUpdatePopup(): boolean {
+    return GM_getValue("ShowUpdatePopup", true);
+  }
 }
 
 export class LeagueStorageHandler {
