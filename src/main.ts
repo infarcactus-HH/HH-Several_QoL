@@ -12,6 +12,7 @@ import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnN
 import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
+import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
 
 class Userscript {
   constructor() {
@@ -50,6 +51,7 @@ class Userscript {
     LeagueNoPlayerProfileOnNameClick,
     EventInfo,
     LoveRaids,
+    PoVPoGHideClaimAllUntilLastDay,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
