@@ -11,7 +11,7 @@ export default class EventInfo_Home implements SubModule {
     this.SMEventHandler();
   }
   async injectCSS() {
-    const css = require("../css/EventInfo/EventInfo_Home.css").default;
+    const css = require("../../css/modules/EventInfo/EventInfo_Home.css").default;
     GM_addStyle(css);
   }
   SMEventHandler() {

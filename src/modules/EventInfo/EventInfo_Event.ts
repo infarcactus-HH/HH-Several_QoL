@@ -37,7 +37,7 @@ export default class EventInfo_Event implements SubModule {
     this.whichEventToCall(eventType as EventInfo_EventsList | undefined);
   }
   async injectCSS() {
-    const css = require("../css/EventInfo/EventInfo_Event.css").default;
+    const css = require("../../css/modules/EventInfo/EventInfo_Event.css").default;
     GM_addStyle(css);
   }
 

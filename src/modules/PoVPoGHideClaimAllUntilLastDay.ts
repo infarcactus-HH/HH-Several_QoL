@@ -28,7 +28,7 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
     }
   }
   async injectCSS() {
-    const css = require("./css/PoVPoGHideClaimAllUntilLastDay.css").default;
+    const css = require("../css/modules/PoVPoGHideClaimAllUntilLastDay.css").default;
     GM_addStyle(css);
   }
 }

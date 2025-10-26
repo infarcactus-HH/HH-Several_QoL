@@ -300,7 +300,7 @@ export default class LoveRaids extends HHModule {
       GM_addStyle(
         `.notify-toggle {background-image: url(${IMAGES_URL}/ic_new.png);`
       );
-      const css = require("./css/LoveRaids.css").default;
+      const css = require("../css/modules/LoveRaids.css").default;
       GM_addStyle(css);
     }
     function updateStorage() {

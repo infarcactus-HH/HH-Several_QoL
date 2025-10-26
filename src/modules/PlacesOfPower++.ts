@@ -778,7 +778,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
   async injectCustomStyles() {
     // Lazy load CSS only when needed
-    const css = require("./css/PlacesOfPower++.css").default;
+    const css = require("../css/modules/PlacesOfPower++.css").default;
     GM_addStyle(css);
   }
 

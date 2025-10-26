@@ -44,7 +44,7 @@ export default class LeagueOpponentHistory extends HHModule {
     });
   }
   async injectCSS() {
-    const css = require("./css/LeagueOpponentHistory.css").default;
+    const css = require("../css/modules/LeagueOpponentHistory.css").default;
     GM_addStyle(css);
   }
   applyRankingsToOpponentLists() {
