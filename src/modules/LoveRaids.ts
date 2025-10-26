@@ -125,8 +125,8 @@ export default class LoveRaids extends HHModule {
         );
         if (
           grade_skins.length &&
-          !raidCard.classList.contains("multiple-girl")
-          && skins
+          !raidCard.classList.contains("multiple-girl") &&
+          skins
         ) {
           const skinsList = skins as Array<{
             id_girl_grade_skin: number;
@@ -159,23 +159,25 @@ export default class LoveRaids extends HHModule {
             );
           $raidCard.find(".info-box .info-container .classic-girl").after(
             $(
-              `<div class="classic-girl">` +
-                `<div class="shards-container">` +
-                `<div class="progress-container">` +
-                `<div class="shards_bar_wrapper">` +
-                `<div class="shards">` +
-                `<span class="skins_shard_icn"></span>` +
-                `<p><span>${nextSkin.shards_count}/33</span></p>` +
-                `</div>` +
-                `<div class="shards_bar skins-shards">` +
-                `<div class="bar basic-progress-bar-fill pink" style="width: ${nextSkin.shards_count/33*100}%"></div>` +
-                `</div>` +
-                `</div>` +
-                `</div>` +
-                `<a href="" class="redirect_button blue_button_L" disabled="">Go</a>
-                    </div>` +
-                `<div class="border-bottom"></div>` +
-                `</div>`
+              `<div class="classic-girl">
+                <div class="shards-container">
+                  <div class="progress-container">
+                    <div class="shards_bar_wrapper">
+                      <div class="shards">
+                        <span class="skins_shard_icn"></span>
+                        <p><span>${nextSkin.shards_count}/33</span></p>
+                      </div>
+                      <div class="shards_bar skins-shards">
+                        <div class="bar basic-progress-bar-fill pink" style="width: ${
+                          (nextSkin.shards_count / 33) * 100
+                        }%"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="" class="redirect_button blue_button_L" disabled="">Go</a>
+                </div>
+                <div class="border-bottom"></div>
+              </div>`
             )
           );
         }
