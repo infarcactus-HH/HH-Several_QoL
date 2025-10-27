@@ -12,8 +12,15 @@ declare const love_raids: Array<love_raids> | undefined;
 
 type configSchema = {
   baseKey: "loveRaids";
-  label: "<span tooltip='Show mysterious raids, CSS tweak'>Additional Love Raids tweaks | Credits to xnh0x !</span>";
+  label: "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks | Credits to xnh0x !</span>";
   default: true;
+  subSettings: [
+    {
+      key: "hideRaidCardsUntillStart";
+      default: false;
+      label: `<span tooltip="Hides raids until they start (5min before starting they'll appear)">Hide raids cards until they start</span>`;
+    }
+  ];
 };
 
 export default class LoveRaids extends HHModule {
@@ -22,6 +29,13 @@ export default class LoveRaids extends HHModule {
     label:
       "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
     default: true,
+    subSettings: [
+      {
+        key: "hideRaidCardsUntillStart",
+        default: false,
+        label: `<span tooltip="Hides raids until they start (5min before starting they'll appear)">Hide raids cards until they start</span>`,
+      },
+    ],
   };
   static shouldRun() {
     return (
@@ -29,7 +43,7 @@ export default class LoveRaids extends HHModule {
       (unsafeWindow.love_raids !== undefined && love_raids?.length)
     );
   }
-  run() {
+  run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !LoveRaids.shouldRun()) {
       return;
     }
@@ -42,26 +56,47 @@ export default class LoveRaids extends HHModule {
         this.loveRaidsPageModifications();
         break;
       default:
-        this.hideEntirelyCompletedRaids();
+        HHPlusPlusReplacer.doWhenSelectorAvailable(
+          "a.love-raid-container.raid",
+          () => {
+            this.handleRaidCards(subSettings.hideRaidCardsUntillStart);
+          }
+        );
         break;
     }
   }
-  hideEntirelyCompletedRaids() {
+  handleRaidCards(hideRaidCardsUntillStart: boolean) {
     if (love_raids === undefined) {
       return;
     }
+
     $("a.love-raid-container.raid").each(function (_index, element) {
-      const id = +URL.parse(
+      const raidSearchParam = URL.parse(
         (element as HTMLLinkElement).href
-      )!.searchParams.get("raid")!;
+      )?.searchParams?.get("raid");
+      if (!raidSearchParam) {
+        return;
+      }
+      const id = +raidSearchParam;
       const raid = love_raids.find((raid) => raid.id_raid === id);
       if (raid === undefined) {
         return;
       }
+      handleRaidCards(raid, element);
+    });
+
+    function handleRaidCards(raid: love_raids, element: HTMLElement) {
+      console.log("Handling raid card for raid:", raid);
       if (raid.all_is_owned) {
         element.remove();
+        return;
       }
-    });
+      if (hideRaidCardsUntillStart && raid.status === "upcoming") {
+        if (raid.seconds_until_event_start > 60 * 5) {
+          element.remove();
+        }
+      }
+    }
   }
   loveRaidsPageModifications() {
     if (love_raids === undefined) {
