@@ -305,7 +305,7 @@ export default class LoveRaids extends HHModule {
           if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
             $raidName.attr("data-notify", "true");
           }
-          const $notifyToggle = $(`<span class="notify-toggle"></span>`);
+          const $notifyToggle = $(`<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`);
           $notifyToggle.on("click", (event) => {
             event.stopPropagation();
             if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
