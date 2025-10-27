@@ -38,8 +38,6 @@ export default class EventInfo_Home implements SubModule {
     }
   }
   PoVPoGHandler() {
-    localStorage.removeItem("HHsucklessPoV");
-    localStorage.removeItem("HHsucklessPoG");
     const PoVEndTime =
       EventInfoStorageHandler.getPoVEndTimeComparedToServerTS();
     const PoGEndTime =
