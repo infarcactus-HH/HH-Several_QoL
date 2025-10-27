@@ -12,7 +12,8 @@ type EventInfo_EventsList =
   | "event" // Org Days
   | "legendary_contest"
   | "mythic_event"
-  | "path_event"; // Path of Renaissance
+  | "path_event"
+  | "crazy_cumback_contest"; // Path of Renaissance
 
 export default class EventInfo_Event implements SubModule {
   private readonly EventInfoLinks: Record<EventInfo_EventsList, string> = {
@@ -30,6 +31,8 @@ export default class EventInfo_Event implements SubModule {
       "https://forum.kinkoid.com/index.php?/topic/23259-everything-about-mythic-days-revival/",
     path_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304650",
+    crazy_cumback_contest:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304661",
   };
   run() {
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
@@ -86,6 +89,7 @@ export default class EventInfo_Event implements SubModule {
       case "legendary_contest":
       case "event":
       case "path_event":
+      case "crazy_cumback_contest":
         this.helperCreateNotifButton(eventType);
         return;
       case "mythic_event":
