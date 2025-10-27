@@ -1,6 +1,7 @@
 import { SubModule } from "../../types/subModules";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
+import eventInfoHomeCss from "../../css/modules/EventInfo/EventInfo_Home.css";
 
 export default class EventInfo_Home implements SubModule {
   run() {
@@ -11,8 +12,7 @@ export default class EventInfo_Home implements SubModule {
     this.SMEventHandler();
   }
   async injectCSS() {
-    const css = require("../../css/modules/EventInfo/EventInfo_Home.css").default;
-    GM_addStyle(css);
+    GM_addStyle(eventInfoHomeCss);
   }
   SMEventHandler() {
     const SMShopRefreshTime =

@@ -1,6 +1,7 @@
 import GameHelpers from "./utils/GameHelpers";
 import { HHPlusPlusReplacer } from "./utils/HHPlusPlusreplacer";
 import { GlobalStorageHandler } from "./utils/StorageHandler";
+import updateHandlerCss from "./css/UpdateHandler.css";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
@@ -65,8 +66,7 @@ export default class UpdateHandler {
     GlobalStorageHandler.setStoredScriptVersion(currentVersion);
   }
   static async injectCSS() {
-    const css = require("./css/UpdateHandler.css").default;
-    GM_addStyle(css);
+    GM_addStyle(updateHandlerCss);
   }
   static addOptionToHHPlusPlusConfig() {
     let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup();

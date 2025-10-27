@@ -4,6 +4,7 @@ import type {
 } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import meRankingInfoCss from "../css/modules/MERankingInfo.css";
 
 export default class MERankingInfo extends HHModule {
   readonly configSchema = {
@@ -25,8 +26,7 @@ export default class MERankingInfo extends HHModule {
     this.hookAjaxRequest();
   }
   async injectCSS() {
-    const css = require("../css/modules/MERankingInfo.css").default;
-    GM_addStyle(css);
+    GM_addStyle(meRankingInfoCss);
   }
   hookAjaxRequest() {
     $(document).ajaxComplete((event, xhr, settings) => {

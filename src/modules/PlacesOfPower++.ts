@@ -3,6 +3,7 @@ import {
   PlacesOfPowerData,
 } from "../types/GameTypes";
 import { HHModule, SubSettingsType } from "../types/HH++";
+import placesOfPowerCss from "../css/modules/PlacesOfPower++.css";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -777,9 +778,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
   }
   async injectCustomStyles() {
-    // Lazy load CSS only when needed
-    const css = require("../css/modules/PlacesOfPower++.css").default;
-    GM_addStyle(css);
+    // Inject module-specific styling when the PoP UI is displayed
+    GM_addStyle(placesOfPowerCss);
   }
 
   async girlsHandler() {

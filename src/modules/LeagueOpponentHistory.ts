@@ -2,6 +2,7 @@ import { LeagueOpponentIncomplete } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LeagueStorageHandler } from "../utils/StorageHandler";
+import leagueOpponentHistoryCss from "../css/modules/LeagueOpponentHistory.css";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
@@ -44,8 +45,7 @@ export default class LeagueOpponentHistory extends HHModule {
     });
   }
   async injectCSS() {
-    const css = require("../css/modules/LeagueOpponentHistory.css").default;
-    GM_addStyle(css);
+    GM_addStyle(leagueOpponentHistoryCss);
   }
   applyRankingsToOpponentLists() {
     if (this.leaguePlayerRecord === undefined) {

@@ -3,6 +3,7 @@ import { SubModule } from "../../types/subModules";
 import GameHelpers from "../../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
+import eventInfoEventCss from "../../css/modules/EventInfo/EventInfo_Event.css";
 
 type EventInfo_EventsList =
   | "dp_event" // Double Pen
@@ -37,8 +38,7 @@ export default class EventInfo_Event implements SubModule {
     this.whichEventToCall(eventType as EventInfo_EventsList | undefined);
   }
   async injectCSS() {
-    const css = require("../../css/modules/EventInfo/EventInfo_Event.css").default;
-    GM_addStyle(css);
+    GM_addStyle(eventInfoEventCss);
   }
 
   helperCreateNotifButton(event: EventInfo_EventsList) {

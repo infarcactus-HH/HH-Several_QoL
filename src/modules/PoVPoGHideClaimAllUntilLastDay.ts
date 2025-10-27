@@ -1,4 +1,5 @@
 import { HHModule } from "../types/HH++";
+import povPoGHideClaimAllUntilLastDayCss from "../css/modules/PoVPoGHideClaimAllUntilLastDay.css";
 
 export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
   readonly configSchema = {
@@ -28,7 +29,6 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
     }
   }
   async injectCSS() {
-    const css = require("../css/modules/PoVPoGHideClaimAllUntilLastDay.css").default;
-    GM_addStyle(css);
+    GM_addStyle(povPoGHideClaimAllUntilLastDayCss);
   }
 }

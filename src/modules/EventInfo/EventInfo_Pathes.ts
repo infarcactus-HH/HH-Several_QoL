@@ -1,6 +1,7 @@
 import { SubModule } from "../../types/subModules";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
+import eventInfoEventCss from "../../css/modules/EventInfo/EventInfo_Event.css";
 
 export default class EventInfo_Pathes implements SubModule {
   run() {
@@ -20,8 +21,7 @@ export default class EventInfo_Pathes implements SubModule {
     }
   }
   async injectCSS() {
-    const css = require("../../css/modules/EventInfo/EventInfo_Event.css").default;
-    GM_addStyle(css);
+    GM_addStyle(eventInfoEventCss);
   }
   replacePoVNotifButton() {
     HHPlusPlusReplacer.doWhenSelectorAvailable(

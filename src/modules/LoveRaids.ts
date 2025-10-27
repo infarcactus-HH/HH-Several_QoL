@@ -6,6 +6,7 @@ import {
 } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
+import loveRaidsCss from "../css/modules/LoveRaids.css";
 
 declare const love_raids: Array<love_raids> | undefined;
 
@@ -300,8 +301,7 @@ export default class LoveRaids extends HHModule {
       GM_addStyle(
         `.notify-toggle {background-image: url(${IMAGES_URL}/ic_new.png);`
       );
-      const css = require("../css/modules/LoveRaids.css").default;
-      GM_addStyle(css);
+      GM_addStyle(loveRaidsCss);
     }
     function updateStorage() {
       // clean up notifications for raids that no longer exist

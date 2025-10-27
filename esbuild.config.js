@@ -92,36 +92,41 @@ const userscriptPlugin = {
   },
 };
 
-// Plugin to load CSS files as text strings (minified)
-const cssTextPlugin = {
+// Plugin to load CSS files as text strings using esbuild's CSS parser
+const createCssTextPlugin = ({ minify }) => ({
   name: "css-text",
   setup(build) {
     build.onLoad({ filter: /\.css$/ }, async (args) => {
       console.log("📦 Loading CSS file:", args.path);
-      const css = fs.readFileSync(args.path, "utf8");
+      const css = await fs.promises.readFile(args.path, "utf8");
 
-      // Minify CSS: remove comments, extra whitespace, and line breaks
-      const minified = css
-        .replace(/\/\*[\s\S]*?\*\//g, "") // Remove comments
-        .replace(/\s+/g, " ") // Replace multiple spaces/newlines with single space
-        .replace(/\s*([{}:;,])\s*/g, "$1") // Remove spaces around CSS syntax characters
-        .trim();
+      const { code } = await esbuild.transform(css, {
+        loader: "css",
+        minify,
+        target: "es2021",
+        logLevel: "silent",
+      });
 
-      console.log(
-        "📦 CSS minified:",
-        css.length,
-        "→",
-        minified.length,
-        "bytes"
-      );
+      const output = code.trim();
+
+      if (minify) {
+        console.log(
+          "📦 CSS minified:",
+          css.length,
+          "→",
+          output.length,
+          "bytes"
+        );
+      }
 
       return {
-        contents: `export default ${JSON.stringify(minified)}`,
+        contents: `export default ${JSON.stringify(output)}`,
         loader: "js",
+        resolveDir: path.dirname(args.path),
       };
     });
   },
-};
+});
 
 async function build() {
   const isWatch = process.argv.includes("--watch");
@@ -136,7 +141,7 @@ async function build() {
       minify: !isWatch, // Don't minify in watch mode for easier debugging
       sourcemap: false,
       external: ["jquery"], // jQuery is available globally as $
-      plugins: [cssTextPlugin, userscriptPlugin],
+  plugins: [createCssTextPlugin({ minify: !isWatch }), userscriptPlugin],
       define: {
         // Replace any build-time constants
         "process.env.NODE_ENV": isWatch ? '"development"' : '"production"',
