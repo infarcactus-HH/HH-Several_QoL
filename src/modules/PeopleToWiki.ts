@@ -33,9 +33,13 @@ export default class People extends HHModule {
 
     // Now TypeScript should know these are the correct keys
     if (subSettings?.infoBubbleNameToWiki) {
-      setInterval(() => {
-        this.applyInfoBubbleToWiki();
-      }, 500);
+      $(document).on(
+        "click.InfoBubbleToWiki",
+        ".girl-information > .speech_bubble_info_icn",
+        () => {
+          this.applyInfoBubbleToWiki();
+        }
+      ); // to avoid duplicate bindings
     }
     if (subSettings?.portraitToWiki) {
       setInterval(() => {
