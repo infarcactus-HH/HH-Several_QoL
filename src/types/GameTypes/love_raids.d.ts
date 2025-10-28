@@ -10,7 +10,7 @@ interface LoveRaidsBase {
   id_girl: number;
   id_raid: number;
   is_mega_raid: boolean;
-  raid_module_pk: number; // no idea what it's for
+  raid_module_pk: number; // it's to know which troll / champ it's for
   raid_module_type: "season" | "troll" | "champion";
   start_datetime: string; // "2025-10-23 07:00:00"
   tranche_data: any; // TODO ?
