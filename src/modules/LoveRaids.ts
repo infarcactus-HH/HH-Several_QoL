@@ -12,7 +12,7 @@ declare const love_raids: Array<love_raids> | undefined;
 
 type configSchema = {
   baseKey: "loveRaids";
-  label: "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks | Credits to xnh0x !</span>";
+  label: "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks</span>";
   default: true;
   subSettings: [
     {
@@ -27,7 +27,7 @@ export default class LoveRaids extends HHModule {
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "loveRaids",
     label:
-      "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks | Credits to xnh0x !</span>",
+      "<span tooltip='Show mysterious raids, CSS tweaks, Hide completed raids ...'>Additional Love Raids tweaks</span>",
     default: true,
     subSettings: [
       {

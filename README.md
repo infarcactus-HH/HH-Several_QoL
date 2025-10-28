@@ -24,7 +24,7 @@ You can support me on [patreon](https://patreon.com/infarcactusHH)
 - Event Info
   - Click on the ! to get redirected to a guide (thanks Bolitho for the guides)
   - On some event adds timer on main screen & other things
-- Additional Love Raids Tweak (HH++ BDSM recommended)
+- Additional Love Raids Tweak (HH++ BDSM recommended)  Credits to xnh0x !
   - Mark raids as favorite
   - Hide completed raids
 - Season event Ranking info  
