@@ -7,7 +7,7 @@ export default class FixSessID extends HHModule {
     baseKey: "fixSessID",
     label:
       "<span tooltip='For example when viewing some scenes'>[NUTAKU] Fix session in URLs</span>",
-    default: true,
+    default: location.hostname.startsWith("nutaku"),
   };
   static shouldRun() {
     return location.hostname.startsWith("nutaku");
