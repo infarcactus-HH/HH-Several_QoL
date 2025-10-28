@@ -15,15 +15,17 @@ export default class UpdateHandler {
     if (storedVersion === currentVersion) {
       return;
     }
-    //const [storedMajor, storedMinor, storedPatch] = storedVersion
-    //  .split(".")
-    //  .map(Number);
+    const [storedMajor, storedMinor, storedPatch] = storedVersion
+      .split(".")
+      .map(Number);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
 
-    if (storedVersion === "1.16.4" && GlobalStorageHandler.getShowUpdatePopup()) {
-      console.log("popup");
+    if (storedMinor === 17 && GlobalStorageHandler.getShowUpdatePopup()) {
+      if(!location.hostname.startsWith("nutaku")) {
+        return; // only show update popup on nutaku for this update
+      }
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
@@ -35,15 +37,14 @@ export default class UpdateHandler {
         $container.append(
           $(
             `<div class="changelog-content">
-              <h2> New Feature : PoV/PoG: Hide 'Claim All' until last day </h2>
+              <h2> [NUTAKU] New Feature : Fix session in URLs </h2>
               <p>
-                This feature hides the 'Claim All' button in Path of Valor and Path of Glory until the last day<br>
-                It's not enabled by default so if you want to use it, please enable it in the settings.
+                This feature fixes the session in URLs when viewing scenes or when session is not put properly in url
               </p>
-              <h2> New feature : Update popup </h2>
+              
+              <h3> New subfeature : Hide raids cards until they start </h2>
               <p>
-                A new popup will appear on important updates or new features to inform you about the changes.<br>
-                You can disable this popup in the settings. (It won't appear often I promise)
+                This will hide the raid card on champions, world map until 5min before the raid starts.
               </p>
             </div>`
           )

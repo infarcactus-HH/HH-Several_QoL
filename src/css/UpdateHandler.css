@@ -64,3 +64,16 @@
   margin-left: 0.5rem;
   height: -webkit-fill-available;
 }
+
+#container-update-several-qol > .changelog-content h2 {
+  font-size: 25px;
+  color: #F5252A;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+#container-update-several-qol > .changelog-content h3 {
+  font-size: 20px;
+  color: #FF6F61;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
