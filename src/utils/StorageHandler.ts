@@ -111,3 +111,15 @@ export class LoveRaidsStorageHandler {
     return GM_getValue("HideCompletedLoveRaids", true);
   }
 }
+
+export class sessionStorageHandler {
+  static setSessID(sessID: string): void {
+    GM_setValue(location.hostname + "SessID", sessID);
+  }
+  static getSessID(): string {
+    return GM_getValue(location.hostname + "SessID", "");
+  }
+  static clearSessID(): void {
+    GM_deleteValue(location.hostname + "SessID");
+  }
+}

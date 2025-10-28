@@ -13,9 +13,12 @@ import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
 import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
+import FixSessID from "./modules/FixSessID";
+import { sessionStorageHandler } from "./utils/StorageHandler";
 
 class Userscript {
   constructor() {
+    this.applySessionFix();
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       Promise.race([
         new Promise((resolve) => {
@@ -52,6 +55,7 @@ class Userscript {
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
+    FixSessID,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
@@ -78,20 +82,43 @@ class Userscript {
       try {
         const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
         if (module.shouldRun() && schema.default) {
-          if (schema.subSettings) {
-            const subSettings = schema.subSettings.reduce((acc, setting) => {
-              acc[setting.key] = setting.default;
-              return acc;
-            }, {} as Record<string, any>);
-            moduleInstance.run(subSettings as any);
-          } else {
-            moduleInstance.run(undefined as any);
+          try {
+            if (schema.subSettings) {
+              const subSettings = schema.subSettings.reduce((acc, setting) => {
+                acc[setting.key] = setting.default;
+                return acc;
+              }, {} as Record<string, any>);
+              moduleInstance.run(subSettings as any);
+            } else {
+              moduleInstance.run(undefined as any);
+            }
+          } catch (e) {
+            console.error("Error running module with subsettings", module, e);
           }
         }
       } catch (e) {
         console.error("Error running module", module, e);
       }
     });
+  }
+  applySessionFix() {
+    if (
+      location.hostname.startsWith("nutaku") &&
+      !location.search.includes("sess=") &&
+      sessionStorageHandler.getSessID() != ""
+    ) {
+      const storedSessID = sessionStorageHandler.getSessID();
+      if (!storedSessID) {
+        return;
+      }
+      const newURL =
+        location.href +
+        (location.href.includes("?") ? "&" : "?") +
+        "sess=" +
+        storedSessID;
+      console.log("FixSessID: reloading page with stored sessID:", newURL);
+      window.location.href = newURL;
+    }
   }
   run() {
     UpdateHandler.run();
