@@ -30,6 +30,12 @@ export class LeagueStorageHandler {
   }> {
     return GM_getValue(HH_UNIVERSE + "LeaguePlayerRecord", {});
   }
+  static setLeagueCurrentRank(rank: number): void {
+    GM_setValue(HH_UNIVERSE + "LeagueCurrentRank", rank);
+  }
+  static getLeagueCurrentRank(): number {
+    return GM_getValue(HH_UNIVERSE + "LeagueCurrentRank", -1);
+  }
 }
 
 export class EventInfoStorageHandler {

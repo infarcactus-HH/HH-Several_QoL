@@ -15,6 +15,7 @@ import LoveRaids from "./modules/LoveRaids";
 import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
+import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
 
 class Userscript {
   constructor() {
@@ -58,6 +59,7 @@ class Userscript {
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
+    LeagueCorrectRankShowing,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
