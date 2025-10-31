@@ -22,7 +22,7 @@ export default class UpdateHandler {
     //  .split(".")
     //  .map(Number);
 
-    if (storedMinor === 17 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor === 18 && GlobalStorageHandler.getShowUpdatePopup()) {
       if(!location.hostname.startsWith("nutaku")) {
         return; // only show update popup on nutaku for this update
       }
@@ -37,14 +37,9 @@ export default class UpdateHandler {
         $container.append(
           $(
             `<div class="changelog-content">
-              <h2> [NUTAKU] New Feature : Fix session in URLs </h2>
+              <h2> New Feature : League show correct rank on home page </h2>
               <p>
-                This feature fixes the session in URLs when viewing scenes or when session is not put properly in url
-              </p>
-              
-              <h3> New subfeature : Hide raids cards until they start </h2>
-              <p>
-                This will hide the raid card on champions, world map until 5min before the raid starts.
+                This feature fixes the slowly update rank displayed on home page, to update it go to league page and it'll show the correct rank after.
               </p>
             </div>`
           )
