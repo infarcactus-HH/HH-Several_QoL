@@ -18,7 +18,10 @@ import { sessionStorageHandler } from "./utils/StorageHandler";
 
 class Userscript {
   constructor() {
-    this.applySessionFix();
+    if (location.hostname.startsWith("nutaku")) {
+      this.applySessionFix();
+      this.allModules.push(FixSessID);
+    }
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       Promise.race([
         new Promise((resolve) => {
@@ -55,7 +58,6 @@ class Userscript {
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
-    FixSessID,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
@@ -78,6 +80,7 @@ class Userscript {
   }
   runWithoutBdsm() {
     this.allModules.forEach((module) => {
+      if (module === null) return;
       const moduleInstance = new module();
       try {
         const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
@@ -103,7 +106,6 @@ class Userscript {
   }
   applySessionFix() {
     if (
-      location.hostname.startsWith("nutaku") &&
       !location.search.includes("sess=") &&
       sessionStorageHandler.getSessID() != ""
     ) {
