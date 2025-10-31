@@ -1,5 +1,23 @@
 import { HHModule, type SubSettingsType } from "../types/HH++";
 
+type configSchema = {
+  baseKey: "peopleToWiki";
+  label: "People to Wiki(HH,GH,GPSH)";
+  default: false;
+  subSettings: [
+    {
+      key: "infoBubbleNameToWiki";
+      default: true;
+      label: "Info bubble name clickable to wiki";
+    },
+    {
+      key: "portraitToWiki";
+      default: false;
+      label: "Make portrait clickable to wiki";
+    }
+  ];
+};
+
 export default class People extends HHModule {
   readonly configSchema = {
     baseKey: "peopleToWiki",
@@ -25,7 +43,7 @@ export default class People extends HHModule {
       location.host.includes("gaypornstarharem")
     );
   }
-  run(subSettings?: SubSettingsType<typeof this.configSchema>) {
+  run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !People.shouldRun()) {
       return;
     }
