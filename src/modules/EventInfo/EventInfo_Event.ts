@@ -12,8 +12,8 @@ type EventInfo_EventsList =
   // | "event" // Org Days, Classic Event
   | "legendary_contest"
   | "mythic_event"
-  | "path_event"
-  | "crazy_cumback_contest"; // Path of Renaissance
+  | "path_event" // Path of Renaissance
+  | "crazy_cumback_contest";
 
 type WeirdKKShitEvent = "classic_event" | "org_days";
 
