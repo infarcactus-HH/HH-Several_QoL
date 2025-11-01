@@ -9,21 +9,26 @@ type EventInfo_EventsList =
   | "dp_event" // Double Pen
   | "cumback_contest"
   | "sm_event" // SM
-  | "event" // Org Days
+  // | "event" // Org Days, Classic Event
   | "legendary_contest"
   | "mythic_event"
   | "path_event"
   | "crazy_cumback_contest"; // Path of Renaissance
 
+type WeirdKKShitEvent = "classic_event" | "org_days";
+
 export default class EventInfo_Event implements SubModule {
-  private readonly EventInfoLinks: Record<EventInfo_EventsList, string> = {
+  private readonly EventInfoLinks: Record<
+    EventInfo_EventsList | WeirdKKShitEvent,
+    string
+  > = {
     dp_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655",
     sm_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-309998",
     cumback_contest:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304660",
-    event:
+    org_days:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304653",
     legendary_contest:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304657",
@@ -33,6 +38,8 @@ export default class EventInfo_Event implements SubModule {
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304650",
     crazy_cumback_contest:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304661",
+    classic_event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304648",
   };
   run() {
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
@@ -44,7 +51,7 @@ export default class EventInfo_Event implements SubModule {
     GM_addStyle(eventInfoEventCss);
   }
 
-  helperCreateNotifButton(event: EventInfo_EventsList) {
+  helperCreateNotifButton(event: EventInfo_EventsList | WeirdKKShitEvent) {
     const $notifButton = $(
       `<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`
     );
@@ -60,7 +67,7 @@ export default class EventInfo_Event implements SubModule {
     return $notifButton;
   }
   helperReplaceNotifButton(
-    event: EventInfo_EventsList,
+    event: EventInfo_EventsList | WeirdKKShitEvent,
     stopPropagation = false
   ) {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
@@ -80,14 +87,13 @@ export default class EventInfo_Event implements SubModule {
       }
     );
   }
-  whichEventToCall(eventType: EventInfo_EventsList | undefined) {
+  whichEventToCall(eventType: EventInfo_EventsList | "event" | undefined) {
     if (!eventType) {
       return;
     }
     switch (eventType) {
       case "cumback_contest":
       case "legendary_contest":
-      case "event":
       case "path_event":
       case "crazy_cumback_contest":
         this.helperCreateNotifButton(eventType);
@@ -101,9 +107,21 @@ export default class EventInfo_Event implements SubModule {
       case "sm_event":
         this.sm_eventRun();
         return;
-        return;
+      case "event":
+        this.event_Run();
       default:
         return; // not yet implemented or nothing to display
+    }
+  }
+  event_Run() {
+    console.log(unsafeWindow.event_data);
+    if (
+      unsafeWindow.event_data &&
+      unsafeWindow.event_data.subtype === "classic"
+    ) {
+      this.helperCreateNotifButton("classic_event");
+    } else {
+      this.helperCreateNotifButton("org_days");
     }
   }
   mythic_eventRun() {
