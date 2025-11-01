@@ -17,9 +17,15 @@ export default class FixSessID extends HHModule {
       return;
     }
     this.hasRun = true;
-    $(document).on("click.severalQoL_toggleFixSessID", `input[name="severalQoL_fixSessID"]`,() => {
-        sessionStorageHandler.clearSessID();
-    });
+    if (location.pathname === "/home.html") {
+      $(document).on(
+        "click.severalQoL_toggleFixSessID",
+        `input[name="severalQoL_fixSessID"]`,
+        () => {
+          sessionStorageHandler.clearSessID();
+        }
+      );
+    }
     console.log("FixSessID module running");
     if (!unsafeWindow.PLATFORM_SESS || !unsafeWindow.PLATFORM_COOKIELESS) {
       return;
