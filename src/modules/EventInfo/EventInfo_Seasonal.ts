@@ -3,19 +3,17 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
 export default class EventInfo_Seasonal implements SubModule {
   private readonly EventInfoSeasonalLinks: string[] = [
-    "",
+    "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310475",
     "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310068",
-    "",
+    "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310473",
   ];
   run() {
     const currentSeasonalType = unsafeWindow.event_functionalities
       ?.id_seasonal_event_type as number;
-    if (!currentSeasonalType || currentSeasonalType !== 2) {
-      //2 only for now
+    if (!currentSeasonalType || ! this.EventInfoSeasonalLinks[currentSeasonalType -1]) {
       console.log("SE Info: No known seasonal event detected");
       return;
     }
-    console.log("SE Info: Known seasonal event detected:", currentSeasonalType);
     this.replaceSeasonalNotifButton(this.EventInfoSeasonalLinks[currentSeasonalType - 1]);
   }
   replaceSeasonalNotifButton(link: string) {
