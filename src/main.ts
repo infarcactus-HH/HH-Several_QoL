@@ -19,6 +19,7 @@ import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
 
 class Userscript {
   constructor() {
+    if(location.pathname === "/integrations/"){return;} // do not run on integrations page otherwise it breaks on phone
     if (location.hostname.startsWith("nutaku")) {
       this.applySessionFix();
       this.allModules.push(FixSessID);
