@@ -19,6 +19,7 @@
 .pop-details-left img {
   height: 800px;
   mask-image: linear-gradient(to top, transparent 45%, black 60%);
+  -webkit-mask-image: linear-gradient(to top, transparent 45%, black 60%);
   overflow: clip;
   display: block;
 }
