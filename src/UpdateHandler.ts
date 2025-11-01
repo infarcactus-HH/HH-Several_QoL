@@ -67,7 +67,7 @@ export default class UpdateHandler {
   static addOptionToHHPlusPlusConfig() {
     let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup();
     HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".hh-plus-plus-config-button",
+      ".hh-plus-plus-config-button" + (unsafeWindow.hhPlusPlusConfig?.BoobStrapped ? '.boob-strapped' : ":not(.boob-strapped)" ),
       ($element) => {
         console.log("Adding click handler to HH++ config");
         $element.on("click.severalQoLAddConfig", () => {
