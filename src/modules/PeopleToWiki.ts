@@ -49,63 +49,35 @@ export default class People extends HHModule {
     }
     this.hasRun = true;
 
-    // Now TypeScript should know these are the correct keys
     if (subSettings.infoBubbleNameToWiki) {
+      GM_addStyle(`.new_girl_info .girl_name_wrap > h5 { cursor: pointer; }`);
       $(document).on(
         "click.InfoBubbleToWiki",
-        ".girl-information > .speech_bubble_info_icn",
-        () => {
-          this.applyInfoBubbleToWiki();
-          $(document).off("click.InfoBubbleToWiki")
-          setInterval(() => {
-            this.applyInfoBubbleToWiki();
-          }, 300);
-        }
-      ); // to avoid duplicate bindings
-    }
-    if (subSettings.portraitToWiki) {
-      setInterval(() => {
-        this.applyImageToWiki();
-      }, 500);
-    }
-  }
-  applyInfoBubbleToWiki() {
-    const self = this;
-    $(".new_girl_info .girl_name_wrap > h5[style!='cursor: pointer;']").each(
-      function () {
-        const $this = $(this);
-        $this.css("cursor", "pointer");
-        $this.on("click.InfoBubbleToWiki", function () {
-          const girlName = $this.attr("hh_title");
+        ".new_girl_info .girl_name_wrap > h5",
+        (event) => {
+          const girlName = event.currentTarget.getAttribute("hh_title");
           if (!girlName) return;
           const formattedName = girlName.replace(/ /g, "-");
-          GM_openInTab(self.getWikiPageForCurrentGame(formattedName), {
+          GM_openInTab(this.getWikiPageForCurrentGame(formattedName), {
             active: true,
           });
-        });
-      }
-    );
-  }
-  applyImageToWiki() {
-    const self = this;
-    $(
-      ".slot_girl_shards > [data-new-girl-tooltip][style!='cursor: pointer;']"
-    ).each(function () {
-      const $this = $(this);
-      const tooltip = $this.attr("data-new-girl-tooltip");
-      if (!tooltip) return;
-      const match = tooltip.match(/"name":"(.+)","rarity/);
-      if (match && match[1]) {
-        $this.css("cursor", "pointer");
-        $this.on("click.ImgToWiki", function (e) {
-          e.stopPropagation();
+        }
+      );
+    }
+    if (subSettings.portraitToWiki) {
+      GM_addStyle(`.slot_girl_shards > [data-new-girl-tooltip] { cursor: pointer; }`);
+      $(document).on("click.PortraitToWiki", ".slot_girl_shards > [data-new-girl-tooltip]", (event) => {
+        const tooltip = event.currentTarget.getAttribute("data-new-girl-tooltip");
+        if (!tooltip) return;
+        const match = tooltip.match(/"name":"(.+)","rarity/);
+        if (match && match[1]) {
           const formattedName = match[1].replace(/ /g, "-");
-          GM_openInTab(self.getWikiPageForCurrentGame(formattedName), {
+          GM_openInTab(this.getWikiPageForCurrentGame(formattedName), {
             active: true,
           });
-        });
-      }
-    });
+        }
+      })
+    }
   }
 
   getWikiPageForCurrentGame(formattedName: string) {
