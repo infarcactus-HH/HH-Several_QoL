@@ -1,3 +1,8 @@
+import type {
+  MythicTrackedGirl,
+  MythicTrackedGirlsMap,
+} from "../types/MythicTracking";
+
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
     GM_setValue("StoredScriptVersion", version);
@@ -127,5 +132,30 @@ export class sessionStorageHandler {
   }
   static clearSessID(): void {
     GM_deleteValue(location.hostname + "SessID");
+  }
+}
+
+
+export class mythicTrackingStorageHandler {
+  static setCurrentTrackingState(trollID: number,girlId?:number): void {
+    GM_setValue(HH_UNIVERSE + "MythicCurrentTrackingState", {trollID,girlId});
+  }
+  static getCurrentTrackingState(): {trollID:number,girlId?:number} {
+    return GM_getValue(HH_UNIVERSE + "MythicCurrentTrackingState", {trollID:-1});
+  }
+
+  static getTrackedGirls(): MythicTrackedGirlsMap {
+    return GM_getValue(HH_UNIVERSE + "MythicTrackedGirls", {});
+  }
+  static setTrackedGirls(records: MythicTrackedGirlsMap): void {
+    GM_setValue(HH_UNIVERSE + "MythicTrackedGirls", records);
+  }
+  static getTrackedGirl(id_girl: number): MythicTrackedGirl | undefined {
+    const records = this.getTrackedGirls();
+    return records[id_girl];
+  }
+  static upsertTrackedGirl(record: MythicTrackedGirl): void {
+    const records = this.getTrackedGirls();
+    this.setTrackedGirls({ ...records, [record.id_girl]: record });
   }
 }
