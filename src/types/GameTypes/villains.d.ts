@@ -10,6 +10,7 @@ export type villain_opponent_fighter_Pre_Battle_Incomplete = {
   rewards: {
     girls_plain: Array<GirlMinimalData> | [];
     data: {
+      // has_lively_scene: true // when there's a video
       loot: boolean; // Always false ?
       shards?: Array<Shards_Pre_Fight>;
     };
