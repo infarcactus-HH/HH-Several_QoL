@@ -78,7 +78,6 @@ export default class MythicTracking extends HHModule {
           if (MythicShardDrop.is_girl_owned) {
             mythicTrackingStorageHandler.setCurrentTrackingState(-1);
             this.shouldTrackMythicShards = false;
-            return;
           }
         }
         mythicTrackingStorageHandler.upsertTrackedGirl(trackedGirlRecord);
