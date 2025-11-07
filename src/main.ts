@@ -62,7 +62,6 @@ class Userscript {
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
     LeagueCorrectRankShowing,
-    LegendaryMythicTracker,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
