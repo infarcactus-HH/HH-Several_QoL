@@ -4,7 +4,7 @@ export default class NoAnnoyingPopups extends HHModule {
   readonly configSchema = {
     baseKey: "noAnnoyingPopups",
     label:
-      "<span tooltip='Tired of shop popups or news popup appearing randomly and breaking your flow ?'>Removes annoying popup appearing automatically for shops, paths, news</span>",
+      "<span tooltip='Does not work inside nutaku frame if you have violentmonkey'>Removes annoying popup appearing automatically for shops, paths, news</span>",
     default: false,
   } as const;
   static shouldRun() {
@@ -15,14 +15,18 @@ export default class NoAnnoyingPopups extends HHModule {
       return;
     }
     this.hasRun = true;
-    //document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
-    GM_cookie.set({
-      name: "disabledPopups",
-      value: "PassReminder,Bundles,News",
-      domain: location.hostname.split(".").slice(-2).join("."),
-      secure: true,
-      path: "/",
-      sameSite: "no_restriction",
-    });
+    //
+    try {
+      GM_cookie.set({
+        name: "disabledPopups",
+        value: "PassReminder,Bundles,News",
+        domain: location.hostname.split(".").slice(-2).join("."),
+        secure: true,
+        path: "/",
+        sameSite: "no_restriction",
+      });
+    } catch (e) {
+      document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
+    }
   }
 }
