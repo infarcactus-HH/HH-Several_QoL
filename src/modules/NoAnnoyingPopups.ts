@@ -15,6 +15,14 @@ export default class NoAnnoyingPopups extends HHModule {
       return;
     }
     this.hasRun = true;
-    document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
+    //document.cookie = "disabledPopups=PassReminder,Bundles,News; path=/";
+    GM_cookie.set({
+      name: "disabledPopups",
+      value: "PassReminder,Bundles,News",
+      domain: location.hostname.split(".").slice(-2).join("."),
+      secure: true,
+      path: "/",
+      sameSite: "no_restriction",
+    });
   }
 }
