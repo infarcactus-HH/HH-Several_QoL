@@ -9,8 +9,6 @@ import type {
 import { HHModule } from "../types/HH++";
 import { legendaryMythicTrackingStorageHandler } from "../utils/StorageHandler";
 
-const TRACKABLE_RARITIES: TrackableRarity[] = ["mythic", "legendary"];
-
 export default class LegendaryMythicTracker extends HHModule {
   readonly configSchema = {
     baseKey: "legendaryMythicTracking",
@@ -24,6 +22,7 @@ export default class LegendaryMythicTracker extends HHModule {
     );
   }
   shouldTrackShards = false;
+  readonly trackableRarities = ["mythic", "legendary"] as Array<TrackableRarity>;
   run() {
     if (this.hasRun || !LegendaryMythicTracker.shouldRun()) {
       return;
@@ -68,7 +67,7 @@ export default class LegendaryMythicTracker extends HHModule {
         const responseShards = (
           (response?.rewards?.data?.shards ?? []) as Shards_Post_Fight[]
         ).filter((shard) =>
-          TRACKABLE_RARITIES.includes(shard.rarity as TrackableRarity)
+          this.trackableRarities.includes(shard.rarity as TrackableRarity)
         );
         const dropsByGirlId = new Map<number, Shards_Post_Fight>();
         responseShards.forEach((shard) => {
@@ -147,7 +146,7 @@ export default class LegendaryMythicTracker extends HHModule {
       return;
     }
     const trackedShards = opponentFighter.rewards.data.shards?.filter(
-      (shard) => TRACKABLE_RARITIES.includes(shard.rarity as TrackableRarity)
+      (shard) => this.trackableRarities.includes(shard.rarity as TrackableRarity)
     );
     if (!trackedShards || trackedShards.length === 0) {
       legendaryMythicTrackingStorageHandler.setCurrentTrackingState(-1);
