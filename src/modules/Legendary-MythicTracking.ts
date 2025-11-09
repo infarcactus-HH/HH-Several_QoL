@@ -50,7 +50,7 @@ export default class LegendaryMythicTracker extends HHModule {
       return;
     }
     console.log("LegendaryMythicTracker module is running.");
-    $(document).ajaxComplete((event, xhr, settings) => {
+    $(document).ajaxComplete((_event, xhr, settings) => {
       if (
         this.shouldTrackShards &&
         typeof settings?.data === "string" &&
