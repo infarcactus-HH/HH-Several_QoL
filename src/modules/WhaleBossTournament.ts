@@ -15,8 +15,18 @@ export default class WhaleBossTournament extends HHModule {
       return;
     }
     this.hasRun = true;
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".world-boss .title", () => {
-      $(".world-boss .title").text("Whale Boss Tournament");
-    });
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      ".world-boss .title",
+      ($element) => {
+        $element.each((_, el) => {
+          const $el = $(el);
+          if ($el.text().toLowerCase().includes("co-op")) {
+            $el.text("Whale Boss Co-Op");
+          } else {
+            $el.text("Whale Boss Tournament");
+          }
+        });
+      }
+    );
   }
 }
