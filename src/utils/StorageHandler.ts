@@ -1,6 +1,6 @@
 import type {
-  LegendaryMythicTrackedGirlRecord,
-  MythicTrackedGirlsMap,
+  TrackedGirl,
+  TrackedGirlRecords,
 } from "../types/MythicTracking";
 
 export class GlobalStorageHandler {
@@ -135,6 +135,7 @@ export class sessionStorageHandler {
   }
 }
 
+// TODO: this name is getting trimmed too
 export class legendaryMythicTrackingStorageHandler {
   static setCurrentTrackingState(
     trollID: number,
@@ -152,19 +153,19 @@ export class legendaryMythicTrackingStorageHandler {
     }) as { trollID: number; girlIds: number[] };
   }
 
-  static getTrackedGirls(): MythicTrackedGirlsMap {
+  static getTrackedGirls(): TrackedGirlRecords {
     return GM_getValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", {});
   }
-  static setTrackedGirls(records: MythicTrackedGirlsMap): void {
+  static setTrackedGirls(records: TrackedGirlRecords): void {
     GM_setValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", records);
   }
-  static getTrackedGirl(id_girl: number): LegendaryMythicTrackedGirlRecord | undefined {
+  static getTrackedGirl(id_girl: number): TrackedGirl | undefined {
     const records = this.getTrackedGirls();
     return records[id_girl];
   }
   static upsertTrackedGirl(
     id_girl: number,
-    record: LegendaryMythicTrackedGirlRecord
+    record: TrackedGirl
   ): void {
     const records = this.getTrackedGirls();
     this.setTrackedGirls({ ...records, [id_girl]: record });
