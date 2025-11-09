@@ -36,6 +36,7 @@ export interface PlacesOfPowerData {
   base_power: number;
   class: Class;
   criteria: "carac_1" | "carac_2" | "carac_3";
+  // XXX: carac_1 missing?
   carac_2;
   carac_3;
   description: string;
@@ -123,6 +124,7 @@ export interface OpponentFighter {
 }
 
 export interface LeagueOpponentIncomplete {
+  // XXX  extends OpponentFighter
   // very very incomplete x)
   place: number;
   player: {
@@ -130,7 +132,7 @@ export interface LeagueOpponentIncomplete {
   };
   Several_QoL?: {
     // added by the script
-    checkExpiresAt: number;
+    chechExpiresAt: number; // XXX typo?
     bestPlace: number;
     timesReached: number;
   };

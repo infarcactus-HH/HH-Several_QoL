@@ -45,7 +45,7 @@ export default class PopupPlusPlus extends HHModule {
     };
     function customPopup(_objectivePopupthis: any, objective_points: any) {
       Object.keys(objective_points).map((n: string) => {
-        const currObjective = objective_points[n] as {
+        const currObjective = objective_points[n] as { // XXX: Objective from "../GameTypes"
           name: string;
           points_gained: number;
           title: string;
