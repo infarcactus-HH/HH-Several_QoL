@@ -1,6 +1,6 @@
 export type TrackableRarity = "mythic" | "legendary";
 
-export interface LegendaryMythicTrackedGirlRecord {
+export interface TrackedGirl {
   name: string;
   ico: string;
   rarity: TrackableRarity;
@@ -9,4 +9,4 @@ export interface LegendaryMythicTrackedGirlRecord {
   end_shards_count?: number;
 }
 
-export type MythicTrackedGirlsMap = Record<number, LegendaryMythicTrackedGirlRecord>;
+export type TrackedGirlRecords = Record<number, TrackedGirl>;

@@ -1,3 +1,9 @@
+export type Class = 1 | 2 | 3;
+
+export type Rarity = "mythic" | "legendary" | "epic" | "rare" | "common";
+
+export type GirlRarity = Rarity | "starting";
+
 export interface global_pop_hero_girls_incomplete {
   id_girl: number;
   carac1: number;
@@ -28,7 +34,7 @@ export interface PlacesOfPowerReward {
 
 export interface PlacesOfPowerData {
   base_power: number;
-  class: 1 | 2 | 3;
+  class: Class;
   criteria: "carac_1" | "carac_2" | "carac_3";
   carac_2;
   carac_3;
@@ -92,6 +98,30 @@ export interface MERankingLeaderboardEntryIncomplete {
   rewards: Array<any>;
 }
 
+export interface OpponentFighter {
+  player: {
+    burn: null;
+    chance: number;
+    class: Class;
+    club: {
+      id_club: number;
+      name: string;
+    } | null;
+    current_season_mojo: number;
+    damage: number;
+    defense: number;
+    ico: string;
+    id_fighter: number;
+    level: number;
+    nickname: string;
+    percent_remaining_ego: 100;
+    remaining_ego: number;
+    shield: null;
+    stun: null;
+    //team: Team; // not important for now
+  };
+}
+
 export interface LeagueOpponentIncomplete {
   // very very incomplete x)
   place: number;
@@ -108,4 +138,19 @@ export interface LeagueOpponentIncomplete {
 
 export interface sm_event_dataIncomplete {
   seconds_until_event_end: number;
+}
+
+export interface Objective {
+  name: string;
+  points_gained: number;
+  title: string;
+}
+
+export interface ObjectivePoints {
+  // incomplete, missing at least: LS, DP
+  contest?: Objective;
+  path_event?: Objective;
+  path_of_glory?: Objective;
+  path_of_valor?: Objective;
+  seasonal_event?: Objective;
 }
