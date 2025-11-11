@@ -20,7 +20,7 @@ export default class WhaleBossTournament extends HHModule {
       ($element) => {
         $element.each((_, el) => {
           const $el = $(el);
-          if ($el.text().toLowerCase().includes("co-op")) {
+          if ($el.parent().attr("rel")  === "world-boss-co-op") {
             $el.text("Whale Boss Co-Op");
           } else {
             $el.text("Whale Boss Tournament");
