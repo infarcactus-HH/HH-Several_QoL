@@ -4,6 +4,7 @@ import {
 } from "./girls";
 import {
   Class,
+  GirlID,
   GirlRarity,
   ObjectivePoints,
   OpponentFighter,
@@ -36,7 +37,7 @@ export interface Shard {
   };
   graded2: string; //'<g class="grey"></g><g class="grey"></g><g class="grey"></g>';
   ico: string; //'https://hh.hh-content.com/pictures/girls/10/ico0.png?v=3';
-  id_girl: number;
+  id_girl: GirlID;
   is_girl_owned: boolean;
   level: 1; // always 1 even if you own the girl and have leveled her up already
   name: string; //'Arcana';

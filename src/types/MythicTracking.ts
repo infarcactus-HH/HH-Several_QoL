@@ -1,4 +1,6 @@
 export type TrackableRarity = "mythic" | "legendary";
+import {GirlID} from "./GameTypes";
+
 
 export interface TrackedGirl {
   name: string;
@@ -9,4 +11,4 @@ export interface TrackedGirl {
   end_shards_count?: number;
 }
 
-export type TrackedGirlRecords = Record<number, TrackedGirl>;
+export type TrackedGirlRecords = Record<GirlID, TrackedGirl>;
