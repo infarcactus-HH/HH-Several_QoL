@@ -1,4 +1,4 @@
-import { GirlRarity } from "../GameTypes";
+import {GirlID, GirlRarity} from "../GameTypes";
 
 export interface PlainSkin {
   ico_path: string;
@@ -12,7 +12,7 @@ export interface GradeSkin {
   girl_grade_num: number;
   grade_skin_name: string;
   ico_path: string;
-  id_girl: number;
+  id_girl: GirlID;
   id_girl_grade_skin: number;
   image_path: string;
   is_owned: boolean;
@@ -33,7 +33,7 @@ export type GradeSkins = Array<GradeSkin>;
 
 export interface GirlMinimalData {
   ico: string;
-  id_girl: number;
+  id_girl: GirlID;
   rarity: GirlRarity;
 }
 

@@ -1,3 +1,5 @@
+export type GirlID = number;
+
 export type Class = 1 | 2 | 3;
 
 export type Rarity = "mythic" | "legendary" | "epic" | "rare" | "common";
@@ -5,7 +7,7 @@ export type Rarity = "mythic" | "legendary" | "epic" | "rare" | "common";
 export type GirlRarity = Rarity | "starting";
 
 export interface global_pop_hero_girls_incomplete {
-  id_girl: number;
+  id_girl: GirlID;
   carac1: number;
   carac2: number;
   carac3: number;
@@ -21,7 +23,7 @@ export interface PoPGirlData {
   carac_1_initial: number;
   carac_2_initial: number;
   carac_3_initial: number;
-  id_girl: number;
+  id_girl: GirlID;
   name: string;
   rarity: string;
 }
@@ -44,7 +46,7 @@ export interface PlacesOfPowerData {
   ends_in: number | null;
   girl?: any; // TODO ?
   girls: Array<PoPGirlData>;
-  id_girl: number;
+  id_girl: GirlID;
   id_places_of_power: number;
   id_world: number;
   image: string;

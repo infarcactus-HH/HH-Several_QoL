@@ -70,7 +70,7 @@ export default class LegendaryMythicTracker extends HHModule {
         ).filter((shard) =>
           this.trackableRarities.includes(shard.rarity as TrackableRarity)
         );
-        const dropsByGirlId = new Map<number, PostFightShard>();
+        const dropsByGirlId = new Map<GirlID, PostFightShard>();
         responseShards.forEach((shard) => {
           dropsByGirlId.set(shard.id_girl, shard);
         });
@@ -85,7 +85,7 @@ export default class LegendaryMythicTracker extends HHModule {
           return;
         }
 
-        const completedGirlIds: number[] = [];
+        const completedGirlIds: GirlID[] = [];
 
         trackedGirlIds.forEach((id_girl) => {
           const existingRecord =
@@ -154,7 +154,7 @@ export default class LegendaryMythicTracker extends HHModule {
       this.shouldTrackShards = false;
       return;
     }
-    const trackedGirlIds: number[] = [];
+    const trackedGirlIds: GirlID[] = [];
     trackedShards.forEach((shard) => {
       trackedGirlIds.push(shard.id_girl);
       const existingTrackedGirl =
