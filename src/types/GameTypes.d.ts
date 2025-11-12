@@ -100,7 +100,7 @@ export interface LeagueOpponentIncomplete {
   };
   Several_QoL?: {
     // added by the script
-    chechExpiresAt: number;
+    checkExpiresAt: number;
     bestPlace: number;
     timesReached: number;
   };

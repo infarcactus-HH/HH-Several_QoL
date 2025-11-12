@@ -56,7 +56,7 @@ export default class LeagueOpponentHistory extends HHModule {
       const record = this.leaguePlayerRecord![opponentId];
       if (record) {
         opponent.Several_QoL = {
-          chechExpiresAt: record.checkExpiresAt,
+          checkExpiresAt: record.checkExpiresAt,
           bestPlace: record.bestPlace,
           timesReached: record.timesReached,
         };
@@ -80,9 +80,11 @@ export default class LeagueOpponentHistory extends HHModule {
         }
         if (
           selectedOpponent.Several_QoL &&
-          selectedOpponent.Several_QoL.chechExpiresAt > server_now_ts
+          selectedOpponent.Several_QoL.checkExpiresAt > server_now_ts
         ) {
           return;
+        } else {
+          console.log("Record expired or not found, fetching new data...");
         }
         if (
           self.updatedPlayerRecordsThisSession.has(
@@ -125,14 +127,6 @@ export default class LeagueOpponentHistory extends HHModule {
             `Could not find league ${highestLeague} placement info for opponent id `,
             opponentId
           );
-          return;
-        }
-        const existingPlayerRecord = this.leaguePlayerRecord![opponentId];
-        if (
-          existingPlayerRecord &&
-          existingPlayerRecord.bestPlace === bestPlace &&
-          existingPlayerRecord.timesReached === timesReached
-        ) {
           return;
         }
 
