@@ -583,6 +583,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $(".pop-record.selected").append($timer);
     pop_data[popKeyInt].status = "in_progress";
     pop_data[popKeyInt].time_to_finish = timeToFinishSeconds;
+    pop_data[popKeyInt].remaining_time = timeToFinishSeconds;
     pop_data[popKeyInt].end_ts =
       timeToFinishSeconds + Math.floor(Date.now() / 1e3);
 
