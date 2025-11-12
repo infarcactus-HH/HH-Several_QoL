@@ -19,6 +19,14 @@ export default class NoMissionPopup extends HHModule {
     shared.reward_popup.Reward.handlePopup = function (t: any) {
       if (t.callback === "handleMissionPopup") {
         console.log("Blocked mission popup", t);
+        // Game handler
+        $(".missions_wrap > .mission_object").length ||
+          (t.isGiftClaimed
+            ? (t.displayAfterGift(), $(".end_gift").hide())
+            : (t.displayGift(), $("#missions_counter").hide())),
+          $('#missions button[rel="claim"]')
+            .addClass("button_glow")
+            .prop("disabled", !1);
         return;
       }
       console.log("Allowed reward popup", t);
