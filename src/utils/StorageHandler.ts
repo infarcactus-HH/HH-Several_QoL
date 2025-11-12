@@ -1,7 +1,8 @@
 import type {
-  LegendaryMythicTrackedGirlRecord,
-  MythicTrackedGirlsMap,
+  TrackedGirl,
+  TrackedGirlRecords,
 } from "../types/MythicTracking";
+import {GirlID} from "../types/GameTypes";
 
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
@@ -135,41 +136,42 @@ export class sessionStorageHandler {
   }
 }
 
+// TODO: this name is getting trimmed too
 export class legendaryMythicTrackingStorageHandler {
   static setCurrentTrackingState(
     trollID: number,
-    girlIds: number[] = []
+    girlIds: GirlID[] = []
   ): void {
     GM_setValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
       trollID,
       girlIds,
     });
   }
-  static getCurrentTrackingState(): { trollID: number; girlIds: number[] } {
+  static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
       trollID: -1,
       girlIds: [],
-    }) as { trollID: number; girlIds: number[] };
+    }) as { trollID: number; girlIds: GirlID[] };
   }
 
-  static getTrackedGirls(): MythicTrackedGirlsMap {
+  static getTrackedGirls(): TrackedGirlRecords {
     return GM_getValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", {});
   }
-  static setTrackedGirls(records: MythicTrackedGirlsMap): void {
+  static setTrackedGirls(records: TrackedGirlRecords): void {
     GM_setValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", records);
   }
-  static getTrackedGirl(id_girl: number): LegendaryMythicTrackedGirlRecord | undefined {
+  static getTrackedGirl(id_girl: GirlID): TrackedGirl | undefined {
     const records = this.getTrackedGirls();
     return records[id_girl];
   }
   static upsertTrackedGirl(
-    id_girl: number,
-    record: LegendaryMythicTrackedGirlRecord
+    id_girl: GirlID,
+    record: TrackedGirl
   ): void {
     const records = this.getTrackedGirls();
     this.setTrackedGirls({ ...records, [id_girl]: record });
   }
-  static removeTrackedGirl(id_girl: number): void {
+  static removeTrackedGirl(id_girl: GirlID): void {
     const records = this.getTrackedGirls();
     if (records[id_girl]) {
       const { [id_girl]: _removed, ...rest } = records;

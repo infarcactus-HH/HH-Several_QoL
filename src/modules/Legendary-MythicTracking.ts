@@ -1,9 +1,10 @@
 import type {
-  Shards_Post_Fight,
-  villain_opponent_fighter_Pre_Battle_Incomplete,
+  PostFightShard,
+  PostFightShards,
+  VillainPreBattle,
 } from "../types/GameTypes/villains";
 import type {
-  LegendaryMythicTrackedGirlRecord,
+  TrackedGirl,
   TrackableRarity,
 } from "../types/MythicTracking";
 import { HHModule } from "../types/HH++";
@@ -49,7 +50,7 @@ export default class LegendaryMythicTracker extends HHModule {
       return;
     }
     console.log("LegendaryMythicTracker module is running.");
-    $(document).ajaxComplete((event, xhr, settings) => {
+    $(document).ajaxComplete((_event, xhr, settings) => {
       if (
         this.shouldTrackShards &&
         typeof settings?.data === "string" &&
@@ -65,11 +66,11 @@ export default class LegendaryMythicTracker extends HHModule {
           ? parseInt(battlesMatch[1], 10)
           : 1;
         const responseShards = (
-          (response?.rewards?.data?.shards ?? []) as Shards_Post_Fight[]
+          (response?.rewards?.data?.shards ?? []) as PostFightShards
         ).filter((shard) =>
           this.trackableRarities.includes(shard.rarity as TrackableRarity)
         );
-        const dropsByGirlId = new Map<number, Shards_Post_Fight>();
+        const dropsByGirlId = new Map<GirlID, PostFightShard>();
         responseShards.forEach((shard) => {
           dropsByGirlId.set(shard.id_girl, shard);
         });
@@ -84,7 +85,7 @@ export default class LegendaryMythicTracker extends HHModule {
           return;
         }
 
-        const completedGirlIds: number[] = [];
+        const completedGirlIds: GirlID[] = [];
 
         trackedGirlIds.forEach((id_girl) => {
           const existingRecord =
@@ -95,7 +96,7 @@ export default class LegendaryMythicTracker extends HHModule {
             return;
           }
 
-          const updatedRecord: LegendaryMythicTrackedGirlRecord = {
+          const updatedRecord: TrackedGirl = {
             name: existingRecord.name,
             ico: existingRecord.ico,
             rarity: existingRecord.rarity,
@@ -141,7 +142,7 @@ export default class LegendaryMythicTracker extends HHModule {
   }
   handlePreBattlePage() {
     const opponentFighter =
-      unsafeWindow.opponent_fighter as villain_opponent_fighter_Pre_Battle_Incomplete;
+      unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter) {
       return;
     }
@@ -153,7 +154,7 @@ export default class LegendaryMythicTracker extends HHModule {
       this.shouldTrackShards = false;
       return;
     }
-    const trackedGirlIds: number[] = [];
+    const trackedGirlIds: GirlID[] = [];
     trackedShards.forEach((shard) => {
       trackedGirlIds.push(shard.id_girl);
       const existingTrackedGirl =
@@ -161,7 +162,7 @@ export default class LegendaryMythicTracker extends HHModule {
       if (existingTrackedGirl) {
         return;
       }
-      const updatedRecord: LegendaryMythicTrackedGirlRecord = {
+      const updatedRecord: TrackedGirl = {
         name: shard.name,
         ico: shard.ico,
         rarity: shard.rarity as TrackableRarity,

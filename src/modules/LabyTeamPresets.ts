@@ -60,7 +60,7 @@ export default class LabyTeamPresets extends HHModule {
     WBTTeamStorageHandler.setWBTId(currentWBTId);
   }
   editTeamPageRun() {
-    const $centralPannel = $(".boss-bang-panel");
+    const $centralPanel = $(".boss-bang-panel");
     const $savePresetBtn = $(
       `<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`
     );
@@ -68,7 +68,7 @@ export default class LabyTeamPresets extends HHModule {
       this.saveCurrentPreset();
       $FillPresetBtn.removeAttr("disabled");
     });
-    $centralPannel.append($savePresetBtn);
+    $centralPanel.append($savePresetBtn);
 
     const $FillPresetBtn = $(
       `<button class="green_button_L" tooltip="Use previously saved preset & leave page" ${
