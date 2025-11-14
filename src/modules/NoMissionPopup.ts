@@ -21,9 +21,9 @@ export default class NoMissionPopup extends HHModule {
         console.log("Blocked mission popup", t);
         // Game handler
         $(".missions_wrap > .mission_object").length ||
-          (t.isGiftClaimed
-            ? (t.displayAfterGift(), $(".end_gift").hide())
-            : (t.displayGift(), $("#missions_counter").hide())),
+          (t.callbackArgs.isGiftClaimed
+            ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
+            : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
           $('#missions button[rel="claim"]')
             .addClass("button_glow")
             .prop("disabled", !1);
