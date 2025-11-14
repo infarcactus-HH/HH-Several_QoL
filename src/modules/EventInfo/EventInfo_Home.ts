@@ -17,7 +17,7 @@ export default class EventInfo_Home implements SubModule {
   SMEventHandler() {
     const SMShopRefreshTime =
       EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
-    const $smEventTimerBox = $("[rel='sm_event']").find(".timer-box");
+    const $smEventTimerBox = $("[rel='sm_event'][href!='#']").find(".timer-box");
     if (SMShopRefreshTime != 0 && !$smEventTimerBox) {
       EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(0);
       return;
