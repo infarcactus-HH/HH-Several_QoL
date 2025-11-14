@@ -2,7 +2,6 @@ import type { HHModule, HHModule_ConfigSchema } from "./types/HH++";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
-import NoAnnoyingPopups from "./modules/NoAnnoyingPopups";
 import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
@@ -17,6 +16,7 @@ import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
 import LegendaryMythicTracker from "./modules/Legendary-MythicTracking";
+import PopupMinusMinus from "./modules/Popup--";
 
 class Userscript {
   constructor() {
@@ -48,12 +48,12 @@ class Userscript {
   }
 
   allModules = [
-    PlacesOfPowerPlusPlus,
+    PopupMinusMinus,
     PopupPlusPlus,
-    LabyTeamPresets,
-    NoAnnoyingPopups,
-    People,
+    PlacesOfPowerPlusPlus,
     NoReloadFromClaimingDailyChests,
+    People,
+    LabyTeamPresets,
     MERankingInfo,
     WhaleBossTournament,
     LeagueOpponentHistory,
