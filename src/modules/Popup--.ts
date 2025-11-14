@@ -27,7 +27,7 @@ type Popupminusminus_ConfigSchema = {
   ];
 };
 
-export default class PopupMinusMinus extends HHModule {
+export default class PopupMinusMinus extends HHModule { // Singleton because it will prolly be useful later to know what to stop or not, to add new handlers etc
   private static instance: PopupMinusMinus;
 
   public constructor() {
