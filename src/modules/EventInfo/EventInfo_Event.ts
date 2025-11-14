@@ -13,7 +13,9 @@ type EventInfo_EventsList =
   | "legendary_contest"
   | "mythic_event"
   | "path_event" // Path of Renaissance
-  | "crazy_cumback_contest";
+  | "crazy_cumback_contest"
+  | "lively_scene_event"
+  | "dpg_event"; // double date
 
 type WeirdKKShitEvent = "classic_event" | "org_days";
 
@@ -40,6 +42,10 @@ export default class EventInfo_Event implements SubModule {
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304661",
     classic_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304648",
+    lively_scene_event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304656",
+    dpg_event:
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-309997",
   };
   run() {
     const eventInSearchParams = new URLSearchParams(location.search).get("tab");
@@ -96,6 +102,8 @@ export default class EventInfo_Event implements SubModule {
       case "legendary_contest":
       case "path_event":
       case "crazy_cumback_contest":
+      case "lively_scene_event":
+      case "dpg_event":
         this.helperCreateNotifButton(eventType);
         return;
       case "mythic_event":
