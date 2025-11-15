@@ -9,6 +9,7 @@ import {
   ObjectivePoints,
   OpponentFighter,
 } from "../GameTypes";
+import { battleLostItem, gemsItem, itemDropItem, orbsItem, progressionItem, softCurrencyItem, ticketItem } from "./items";
 
 export interface Shard {
   animated_grades: Array<any> | [];
@@ -69,13 +70,7 @@ export interface PostFightShard extends Shard {
 
 export type PostFightShards = Array<PostFightShard>;
 
-export interface BasicReward {
-  battle_lost_name?: string; // basically "Lost" but localized
-  gem_tooltip?: string; // "Voyeur Gem"
-  gem_type?: string; // "psychic"
-  type: "battle_lost" | "gems" | "soft_currency" | "ticket" ; // TODO: add lively scene
-  value: number | string; // number for gems, money is formatted like "5,500" or "753K", "1" for tickets for no reason
-}
+export type BasicReward = softCurrencyItem | gemsItem | ticketItem | itemDropItem | battleLostItem | orbsItem | progressionItem;
 
 export type BasicRewards = Array<BasicReward>;
 
@@ -103,7 +98,7 @@ export interface DoBattlesTrollsResponse {
   },
   objective_points: ObjectivePoints;
   result: "won"; // even when losing
-  rewards: {
+  rewards?: {
     data: {
       girls?: PostFightShards; // if girl is obtained
       grade_skins?: GradeSkins; // if a skin is obtained
@@ -112,7 +107,7 @@ export interface DoBattlesTrollsResponse {
       shards?: PostFightShards; // if shards are obtained
     },
     heroChangesUpdate: {
-      currency: {
+      currency?: {
         soft_currency?: number; // owned total amount
         ticket?: number; // owned total amount
       }
@@ -124,4 +119,5 @@ export interface DoBattlesTrollsResponse {
     title: string; // for reward popup
   }
   success: boolean; // of the request, not the battle itself
+  rounds : any;
 }
