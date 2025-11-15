@@ -134,7 +134,7 @@ export interface LeagueOpponentIncomplete {
   };
   Several_QoL?: {
     // added by the script
-    chechExpiresAt: number; // XXX typo?
+    checkExpiresAt: number;
     bestPlace: number;
     timesReached: number;
   };
