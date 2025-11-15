@@ -4,6 +4,7 @@ node_modules/
 
 # Build outputs (but keep the userscript)
 *.tsbuildinfo
+dist/
 
 # Environment files
 .env
