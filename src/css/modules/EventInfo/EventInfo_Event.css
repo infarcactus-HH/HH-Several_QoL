@@ -49,8 +49,11 @@
 }
 
 .severalQoL-event-shop-timer {
-  margin-left: 10px;
-  width: min-content;
+  width: 4rem;
+  display: block;
+  position: absolute;
+  left: -3px;
+  bottom: -3px;
 }
 
 .severalQoL-event-shop-timer > span {
