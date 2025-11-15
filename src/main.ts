@@ -123,7 +123,7 @@ class Userscript {
         "sess=" +
         storedSessID;
       console.log("FixSessID: reloading page with stored sessID:", newURL);
-      window.location.href = newURL;
+      window.location.replace(newURL);
     }
   }
   run() {
