@@ -27,19 +27,7 @@ type Popupminusminus_ConfigSchema = {
   ];
 };
 
-export default class PopupMinusMinus extends HHModule { // Singleton because it will prolly be useful later to know what to stop or not, to add new handlers etc
-  private static instance: PopupMinusMinus;
-
-  public constructor() {
-    super();
-  }
-
-  static getInstance(): PopupMinusMinus {
-    if (!PopupMinusMinus.instance) {
-      PopupMinusMinus.instance = new PopupMinusMinus();
-    }
-    return PopupMinusMinus.instance;
-  }
+export default class PopupMinusMinus extends HHModule {
 
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "popupMinusMinus",
@@ -72,9 +60,6 @@ export default class PopupMinusMinus extends HHModule { // Singleton because it 
       return;
     }
     this.hasRun = true;
-    if (!PopupMinusMinus.instance) {
-      PopupMinusMinus.instance = this;
-    }
     if (subSettings.noLevelUpPopup) {
       const originalPopupQueuManagerAdd = shared.PopupQueueManager.add;
       shared.PopupQueueManager.add = function ({ popup: t }) {
