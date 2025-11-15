@@ -68,7 +68,7 @@ export default class PopupPlusPlus extends HHModule {
           .map((n) => {
             const currObjective = lastPoints[n];
             const animateClass = "row animate";
-            let title = `<div class="${animateClass}" style="transition: all 20ms;"><div class="contest_name">${n}:</div>`;
+            let title = `<div class="${animateClass}" style="transition: all 20ms;" style="animation: slide_left 200ms ease-out;"><div class="contest_name">${n}:</div>`;
             for (const key in currObjective) {
               const value = currObjective[key];
               title += `<div class="contest_points"><div class="points_name" style="animation:none;">${key}: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
