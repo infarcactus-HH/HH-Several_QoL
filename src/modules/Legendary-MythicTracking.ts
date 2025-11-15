@@ -9,6 +9,7 @@ import type {
 } from "../types/MythicTracking";
 import { HHModule } from "../types/HH++";
 import { legendaryMythicTrackingStorageHandler } from "../utils/StorageHandler";
+import type { GirlID } from "../types/GameTypes";
 
 export default class LegendaryMythicTracker extends HHModule {
   readonly configSchema = {
