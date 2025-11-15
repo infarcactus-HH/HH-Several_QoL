@@ -131,12 +131,13 @@ const createCssTextPlugin = ({ minify }) => ({
 
 async function build() {
   const isWatch = process.argv.includes("--watch");
+  const outputFile = `dist/userscript.${process.argv.includes("--dev") ? "dev" : "user"}.js`;
 
   try {
     const buildOptions = {
       entryPoints: ["src/main.ts"],
       bundle: true,
-      outfile: "dist/userscript.user.js",
+      outfile: outputFile,
       format: "iife", // Immediately Invoked Function Expression
       target: "es2021",
       minify: !isWatch, // Don't minify in watch mode for easier debugging
