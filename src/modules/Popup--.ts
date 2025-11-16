@@ -161,6 +161,7 @@ export default class PopupMinusMinus extends HHModule {
     this.reward_popupRewardHandlePopupOverrides.push((t: any) => {
       if (t.callback === "handleMissionPopup") {
         console.log("Blocked mission popup", t);
+        shared.Hero.updates(t.heroChangesUpdate, false);
         // Game handler
         $(".missions_wrap > .mission_object").length ||
           (t.callbackArgs.isGiftClaimed
