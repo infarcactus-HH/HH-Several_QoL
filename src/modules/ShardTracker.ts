@@ -3,10 +3,10 @@ import type {
   PostFightShards,
   VillainPreBattle,
 } from "../types/GameTypes/villains";
-import type { TrackedGirl, TrackableRarity } from "../types/ShardTracker";
+import type { TrackedGirl } from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
-import type { GirlID } from "../types/GameTypes";
+import type { GirlID, GirlRarity } from "../types/GameTypes";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -22,7 +22,8 @@ export default class ShardTracker extends HHModule {
     );
   }
   shouldTrackShards = false;
-  readonly trackedRarities: Array<TrackableRarity> = ["mythic", "legendary"];
+  // XXX could be made configurable
+  readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
       return;
@@ -67,7 +68,7 @@ export default class ShardTracker extends HHModule {
         const responseShards = (
           (response?.rewards?.data?.shards ?? []) as PostFightShards
         ).filter((shard) =>
-          this.trackedRarities.includes(shard.rarity as TrackableRarity)
+          this.trackedRarities.includes(shard.rarity)
         );
         const dropsByGirlId = new Map<GirlID, PostFightShard>();
         responseShards.forEach((shard) => {
@@ -141,7 +142,7 @@ export default class ShardTracker extends HHModule {
     const trackedGirlsPlain = opponentFighter.rewards.girls_plain.filter(
       (girl) => {
         return (
-          this.trackedRarities.includes(girl.rarity as TrackableRarity) && // check rarity
+          this.trackedRarities.includes(girl.rarity) && // check rarity
           (!girl.is_girl_owned || // check if girl is not owned or has unowned skins
             girl.grade_skins?.some((skin) => skin.is_owned === false))
         );
@@ -171,7 +172,7 @@ export default class ShardTracker extends HHModule {
       const updatedRecord: TrackedGirl = {
         name: girlShards.name,
         ico: girlShards.ico,
-        rarity: girlShards.rarity as TrackableRarity,
+        rarity: girlShards.rarity,
         number_fight: 0,
         dropped_shards: 0,
         grade: girlShards.grade_offsets.static.length - 1,

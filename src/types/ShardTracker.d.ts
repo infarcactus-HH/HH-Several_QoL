@@ -1,11 +1,9 @@
-export type TrackableRarity = "mythic" | "legendary";
-import {GirlID} from "./GameTypes";
-
+import {GirlID, GirlRarity} from "./GameTypes";
 
 export interface TrackedGirl {
   name: string;
   ico: string;
-  rarity: TrackableRarity;
+  rarity: GirlRarity;
   number_fight: number;
   grade : number;
   dropped_shards : number;
