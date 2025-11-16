@@ -15,7 +15,7 @@ import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLas
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
-import LegendaryMythicTracker from "./modules/Legendary-MythicTracking";
+import ShardTracker from "./modules/ShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
 
 class Userscript {
