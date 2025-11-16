@@ -4,6 +4,7 @@ import {
   SubSettingsType,
 } from "../types/HH++";
 import { popupForQueue } from "../types/GameTypes";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 type Popupminusminus_ConfigSchema = {
   baseKey: "popupMinusMinus";
@@ -24,6 +25,11 @@ type Popupminusminus_ConfigSchema = {
       key: "noLevelUpPopup";
       default: false;
       label: "No Level Up Popup";
+    },
+    {
+      key: "noPoVPoGClaimPopup";
+      default: false;
+      label: "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>";
     }
   ];
 };
@@ -50,14 +56,24 @@ export default class PopupMinusMinus extends HHModule {
         default: false,
         label: "No Level Up Popup",
       },
+      {
+        key: "noPoVPoGClaimPopup",
+        default: false,
+        label: "No PoV/PoG, Season Popup",
+      },
     ],
   };
   static shouldRun() {
     return true;
   }
-  popupQueueManagerAddOverrides: Array<(t: popupForQueue["popup"]) => boolean> =
-    [];
-  reward_popupRewardHandlePopupOverrides: Array<(t: any) => boolean> = []; // carefull with this one
+  popupQueueManagerAddOverrides: Array<{
+    fn: (t: popupForQueue["popup"]) => boolean;
+    usagesRemaining: number;
+  }> = [];
+  reward_popupRewardHandlePopupOverrides: Array<{
+    fn: (t: any) => boolean;
+    usagesRemaining: number;
+  }> = []; // carefull with this one
   run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
     if (this.hasRun || !PopupMinusMinus.shouldRun()) {
       return;
@@ -77,15 +93,25 @@ export default class PopupMinusMinus extends HHModule {
     if (subSettings.noAnnoyingReminders) {
       this.noAnnoyingReminders();
     }
+    if (subSettings.noPoVPoGClaimPopup) {
+      this.noPoVPoGClaimPopup();
+    }
   }
   overridePopups() {
     const self = this;
     const originalPopupQueuManagerAdd = shared.PopupQueueManager.add;
     shared.PopupQueueManager.add = function ({ popup: t }) {
-      for (const override of self.popupQueueManagerAddOverrides) {
-        const shouldBlock = override(t);
+      for (let i = self.popupQueueManagerAddOverrides.length - 1; i >= 0; i--) {
+        const overrideData = self.popupQueueManagerAddOverrides[i];
+        const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked popup by override", t);
+          // Decrement usage count
+          overrideData.usagesRemaining--;
+          // Remove if no more usages left
+          if (overrideData.usagesRemaining <= 0) {
+            self.popupQueueManagerAddOverrides.splice(i, 1);
+          }
           return; // blocked by override
         }
       }
@@ -95,10 +121,21 @@ export default class PopupMinusMinus extends HHModule {
 
     const originalRewardHandlePopup = shared.reward_popup.Reward.handlePopup;
     shared.reward_popup.Reward.handlePopup = function (t: any) {
-      for (const override of self.reward_popupRewardHandlePopupOverrides) {
-        const shouldBlock = override(t);
+      for (
+        let i = self.reward_popupRewardHandlePopupOverrides.length - 1;
+        i >= 0;
+        i--
+      ) {
+        const overrideData = self.reward_popupRewardHandlePopupOverrides[i];
+        const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked reward popup by override", t);
+          // Decrement usage count
+          overrideData.usagesRemaining--;
+          // Remove if no more usages left
+          if (overrideData.usagesRemaining <= 0) {
+            self.reward_popupRewardHandlePopupOverrides.splice(i, 1);
+          }
           return; // blocked by override
         }
       }
@@ -158,32 +195,57 @@ export default class PopupMinusMinus extends HHModule {
     }
   }
   noMissionPopup() {
-    this.reward_popupRewardHandlePopupOverrides.push((t: any) => {
-      if (t.callback === "handleMissionPopup") {
-        console.log("Blocked mission popup", t);
-        shared.Hero.updates(t.heroChangesUpdate, false);
-        // Game handler
-        $(".missions_wrap > .mission_object").length ||
-          (t.callbackArgs.isGiftClaimed
-            ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
-            : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
-          $('#missions button[rel="claim"]')
-            .addClass("button_glow")
-            .prop("disabled", !1);
-        return true;
-      }
-      return false;
+    this.reward_popupRewardHandlePopupOverrides.push({
+      fn: (t: any) => {
+        if (t.callback === "handleMissionPopup") {
+          console.log("Blocked mission popup", t);
+          shared.Hero.updates(t.heroChangesUpdate, false);
+          // Game handler
+          $(".missions_wrap > .mission_object").length ||
+            (t.callbackArgs.isGiftClaimed
+              ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
+              : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
+            $('#missions button[rel="claim"]')
+              .addClass("button_glow")
+              .prop("disabled", !1);
+          return true;
+        }
+        return false;
+      },
+      usagesRemaining: Infinity,
     });
   }
   noLevelUpPopup() {
-    this.popupQueueManagerAddOverrides.push((t: popupForQueue["popup"]) => {
-      if (
-        t.type === "common" &&
-        t.$dom_element.children().filter("#level_up.hero_leveling").length === 1
-      ) {
-        return true;
-      }
-      return false;
+    this.popupQueueManagerAddOverrides.push({
+      fn: (t: popupForQueue["popup"]) => {
+        if (
+          t.type === "common" &&
+          t.$dom_element.children().filter("#level_up.hero_leveling").length ===
+            1
+        ) {
+          return true;
+        }
+        return false;
+      },
+      usagesRemaining: Infinity,
+    });
+  }
+  noPoVPoGClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim']", ($el) => {
+      console.log("Setting up PoV/PoG popup blocker");
+      $el.on("click.noPovPoGPopup", () => {
+        this.popupQueueManagerAddOverrides.push({
+          fn: (t: popupForQueue["popup"]) => {
+            if (t.type === "common" && t.popup_name === "rewards") {
+              t.onClose();
+              console.log("Blocked PoV/PoG popup", t);
+              return true;
+            }
+            return false;
+          },
+          usagesRemaining: 1,
+        });
+      });
     });
   }
 }
