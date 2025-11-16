@@ -59,7 +59,8 @@ export default class PopupMinusMinus extends HHModule {
       {
         key: "noPoVPoGClaimPopup",
         default: false,
-        label: "No PoV/PoG, Season Popup",
+        label:
+          "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>",
       },
     ],
   };
