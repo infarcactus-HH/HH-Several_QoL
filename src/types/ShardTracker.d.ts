@@ -7,8 +7,14 @@ export interface TrackedGirl {
   ico: string;
   rarity: TrackableRarity;
   number_fight: number;
-  begin_shards_count?: number;
-  end_shards_count?: number;
+  grade : number;
+  dropped_shards : number;
+  last_shards_count?: number;
+  skins? : Record<number,{
+    ico: string;
+    number_fight: number;
+    last_shards_count?: number;
+  }>;
 }
 
 export type TrackedGirlRecords = Record<GirlID, TrackedGirl>;

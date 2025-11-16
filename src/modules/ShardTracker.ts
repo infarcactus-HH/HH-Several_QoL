@@ -102,15 +102,13 @@ export default class ShardTracker extends HHModule {
             ico: existingRecord.ico,
             rarity: existingRecord.rarity,
             number_fight: existingRecord.number_fight + number_of_battles,
-            begin_shards_count: existingRecord?.begin_shards_count,
-            end_shards_count: existingRecord?.end_shards_count,
+            dropped_shards : existingRecord.dropped_shards, // will be handled later
+            grade: existingRecord.grade,
+            last_shards_count: existingRecord.last_shards_count 
           };
 
           if (shardDrop) {
-            if (updatedRecord.begin_shards_count === undefined) {
-              updatedRecord.begin_shards_count = shardDrop.previous_value;
-            }
-            updatedRecord.end_shards_count = shardDrop.value;
+            updatedRecord.last_shards_count = shardDrop.value;
 
             if (shardDrop.is_girl_owned) {
               completedGirlIds.push(id_girl);
@@ -168,6 +166,8 @@ export default class ShardTracker extends HHModule {
         ico: shard.ico,
         rarity: shard.rarity as TrackableRarity,
         number_fight: 0,
+        dropped_shards : 0,
+        grade : shard.grade_offsets.static.length - 1,
       };
       ShardTrackerStorageHandler.upsertTrackedGirl(
         shard.id_girl,
