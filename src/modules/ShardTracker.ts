@@ -95,15 +95,9 @@ export default class ShardTracker extends HHModule {
             return;
           }
 
-          const updatedRecord: TrackedGirl = {
-            name: existingRecord.name,
-            ico: existingRecord.ico,
-            rarity: existingRecord.rarity,
-            number_fight: existingRecord.number_fight + number_of_battles,
-            dropped_shards: existingRecord.dropped_shards, // will be handled later
-            grade: existingRecord.grade,
-            last_shards_count: existingRecord.last_shards_count,
-          };
+          const updatedRecord: TrackedGirl = {...existingRecord};
+          // TODO: (partially) add fights to skin if girl is owned (or just obtained)
+          updatedRecord.number_fight += number_of_battles;
 
           if (shardDrop) {
             updatedRecord.last_shards_count = shardDrop.value;
