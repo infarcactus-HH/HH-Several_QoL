@@ -3,10 +3,7 @@ import type {
   PostFightShards,
   VillainPreBattle,
 } from "../types/GameTypes/villains";
-import type {
-  TrackedGirl,
-  TrackableRarity,
-} from "../types/ShardTracker";
+import type { TrackedGirl, TrackableRarity } from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import type { GirlID } from "../types/GameTypes";
@@ -14,7 +11,8 @@ import type { GirlID } from "../types/GameTypes";
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
     baseKey: "shardTracker",
-    label: "<span tooltip='No way to see what you tracked for now,will be released later'>Tracks your Legendary & Mythic drops from Villains</span>",
+    label:
+      "<span tooltip='No way to see what you tracked for now,will be released later'>Tracks your Legendary & Mythic drops from Villains</span>",
     default: true,
   };
   static shouldRun() {
@@ -24,7 +22,7 @@ export default class ShardTracker extends HHModule {
     );
   }
   shouldTrackShards = false;
-  readonly trackedRarities : Array<TrackableRarity> = ["mythic", "legendary"];
+  readonly trackedRarities: Array<TrackableRarity> = ["mythic", "legendary"];
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
       return;
@@ -76,8 +74,7 @@ export default class ShardTracker extends HHModule {
           dropsByGirlId.set(shard.id_girl, shard);
         });
 
-        const state =
-          ShardTrackerStorageHandler.getCurrentTrackingState();
+        const state = ShardTrackerStorageHandler.getCurrentTrackingState();
         const trackedGirlIds = Array.isArray(state.girlIds)
           ? [...state.girlIds]
           : [];
@@ -102,9 +99,9 @@ export default class ShardTracker extends HHModule {
             ico: existingRecord.ico,
             rarity: existingRecord.rarity,
             number_fight: existingRecord.number_fight + number_of_battles,
-            dropped_shards : existingRecord.dropped_shards, // will be handled later
+            dropped_shards: existingRecord.dropped_shards, // will be handled later
             grade: existingRecord.grade,
-            last_shards_count: existingRecord.last_shards_count 
+            last_shards_count: existingRecord.last_shards_count,
           };
 
           if (shardDrop) {
@@ -115,10 +112,7 @@ export default class ShardTracker extends HHModule {
             }
           }
 
-          ShardTrackerStorageHandler.upsertTrackedGirl(
-            id_girl,
-            updatedRecord
-          );
+          ShardTrackerStorageHandler.upsertTrackedGirl(id_girl, updatedRecord);
         });
 
         if (completedGirlIds.length) {
@@ -140,37 +134,63 @@ export default class ShardTracker extends HHModule {
     });
   }
   handlePreBattlePage() {
-    const opponentFighter =
-      unsafeWindow.opponent_fighter as VillainPreBattle;
+    const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
     }
-    const trackedShards = opponentFighter.rewards.data.shards?.filter(
-      (shard) => shard.rarity in this.trackedRarities
+    const trackedGirlsPlain = opponentFighter.rewards.girls_plain.filter(
+      (girl) => {
+        return (
+          this.trackedRarities.includes(girl.rarity as TrackableRarity) && // check rarity
+          (!girl.is_girl_owned || // check if girl is not owned or has unowned skins
+            girl.grade_skins?.some((skin) => skin.is_owned === false))
+        );
+      }
     );
-    if (!trackedShards || trackedShards.length === 0) {
+    if (!trackedGirlsPlain || trackedGirlsPlain.length === 0) {
       ShardTrackerStorageHandler.setCurrentTrackingState(-1);
       this.shouldTrackShards = false;
       return;
     }
     const trackedGirlIds: GirlID[] = [];
-    trackedShards.forEach((shard) => {
-      trackedGirlIds.push(shard.id_girl);
-      const existingTrackedGirl =
-        ShardTrackerStorageHandler.getTrackedGirl(shard.id_girl);
-      if (existingTrackedGirl) {
+    trackedGirlsPlain.forEach((girl_plain) => {
+      trackedGirlIds.push(girl_plain.id_girl);
+      // have to get girl shard info for name etc
+      const girlShards = opponentFighter.rewards.data.shards?.find(
+        (shard) => shard.id_girl === girl_plain.id_girl
+      );
+      if (!girlShards) {
+        return;
+      }
+      const existingTrackedGirl = ShardTrackerStorageHandler.getTrackedGirl(
+        girl_plain.id_girl
+      );
+      if (existingTrackedGirl) { // this will need to change as they can add skins to an existing girl
         return;
       }
       const updatedRecord: TrackedGirl = {
-        name: shard.name,
-        ico: shard.ico,
-        rarity: shard.rarity as TrackableRarity,
+        name: girlShards.name,
+        ico: girlShards.ico,
+        rarity: girlShards.rarity as TrackableRarity,
         number_fight: 0,
-        dropped_shards : 0,
-        grade : shard.grade_offsets.static.length - 1,
+        dropped_shards: 0,
+        grade: girlShards.grade_offsets.static.length - 1,
       };
+      if (girl_plain.grade_skins) {
+        girl_plain.grade_skins.forEach((skin, idx) => {
+          if (skin.is_owned === false) {
+            if (!updatedRecord.skins) {
+              updatedRecord.skins = {};
+            }
+            updatedRecord.skins[idx] = {
+              ico: skin.ico_path,
+              number_fight: 0,
+            };
+          }
+        });
+      }
       ShardTrackerStorageHandler.upsertTrackedGirl(
-        shard.id_girl,
+        girl_plain.id_girl,
         updatedRecord
       );
     });
