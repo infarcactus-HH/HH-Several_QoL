@@ -13,7 +13,7 @@ export interface TrackedGirl {
   skins? : Record<number,{
     ico: string;
     number_fight: number;
-    last_shards_count?: number;
+    dropped_shards?: number;
   }>;
 }
 
