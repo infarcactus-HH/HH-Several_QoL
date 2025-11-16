@@ -1,7 +1,7 @@
 import type {
   TrackedGirl,
   TrackedGirlRecords,
-} from "../types/MythicTracking";
+} from "../types/ShardTracker";
 import {GirlID} from "../types/GameTypes";
 
 export class GlobalStorageHandler {
@@ -137,7 +137,7 @@ export class sessionStorageHandler {
 }
 
 // TODO: this name is getting trimmed too
-export class legendaryMythicTrackingStorageHandler {
+export class ShardTrackerStorageHandler {
   static setCurrentTrackingState(
     trollID: number,
     girlIds: GirlID[] = []

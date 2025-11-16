@@ -6,14 +6,14 @@ import type {
 import type {
   TrackedGirl,
   TrackableRarity,
-} from "../types/MythicTracking";
+} from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
-import { legendaryMythicTrackingStorageHandler } from "../utils/StorageHandler";
+import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import type { GirlID } from "../types/GameTypes";
 
-export default class LegendaryMythicTracker extends HHModule {
+export default class ShardTracker extends HHModule {
   readonly configSchema = {
-    baseKey: "legendaryMythicTracking",
+    baseKey: "shardTracker",
     label: "<span tooltip='No way to see what you tracked for now,will be released later'>Tracks your Legendary & Mythic drops from Villains</span>",
     default: true,
   };
@@ -24,9 +24,9 @@ export default class LegendaryMythicTracker extends HHModule {
     );
   }
   shouldTrackShards = false;
-  readonly trackableRarities = ["mythic", "legendary"] as Array<TrackableRarity>;
+  readonly trackedRarities : Array<TrackableRarity> = ["mythic", "legendary"];
   run() {
-    if (this.hasRun || !LegendaryMythicTracker.shouldRun()) {
+    if (this.hasRun || !ShardTracker.shouldRun()) {
       return;
     }
     this.hasRun = true;
@@ -34,7 +34,7 @@ export default class LegendaryMythicTracker extends HHModule {
       this.handlePreBattlePage();
     } else {
       const currentTrackedTrollID =
-        legendaryMythicTrackingStorageHandler.getCurrentTrackingState().trollID;
+        ShardTrackerStorageHandler.getCurrentTrackingState().trollID;
       if (location.search.includes(`id_opponent=${currentTrackedTrollID}`)) {
         this.shouldTrackShards = true;
       }
@@ -43,21 +43,21 @@ export default class LegendaryMythicTracker extends HHModule {
       return;
     }
     const currentTrackedGirlIds =
-      legendaryMythicTrackingStorageHandler.getCurrentTrackingState().girlIds;
+      ShardTrackerStorageHandler.getCurrentTrackingState().girlIds;
     if (
       !Array.isArray(currentTrackedGirlIds) ||
       !currentTrackedGirlIds.length
     ) {
       return;
     }
-    console.log("LegendaryMythicTracker module is running.");
+    console.log("ShardTracker module is running.");
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (
         this.shouldTrackShards &&
         typeof settings?.data === "string" &&
         settings.data.includes("action=do_battles_trolls")
       ) {
-        console.log("LegendaryMythicTracker AJAX complete detected:", {
+        console.log("ShardTracker AJAX complete detected:", {
           settings,
           xhr,
         });
@@ -69,7 +69,7 @@ export default class LegendaryMythicTracker extends HHModule {
         const responseShards = (
           (response?.rewards?.data?.shards ?? []) as PostFightShards
         ).filter((shard) =>
-          this.trackableRarities.includes(shard.rarity as TrackableRarity)
+          this.trackedRarities.includes(shard.rarity as TrackableRarity)
         );
         const dropsByGirlId = new Map<GirlID, PostFightShard>();
         responseShards.forEach((shard) => {
@@ -77,7 +77,7 @@ export default class LegendaryMythicTracker extends HHModule {
         });
 
         const state =
-          legendaryMythicTrackingStorageHandler.getCurrentTrackingState();
+          ShardTrackerStorageHandler.getCurrentTrackingState();
         const trackedGirlIds = Array.isArray(state.girlIds)
           ? [...state.girlIds]
           : [];
@@ -90,7 +90,7 @@ export default class LegendaryMythicTracker extends HHModule {
 
         trackedGirlIds.forEach((id_girl) => {
           const existingRecord =
-            legendaryMythicTrackingStorageHandler.getTrackedGirl(id_girl);
+            ShardTrackerStorageHandler.getTrackedGirl(id_girl);
           const shardDrop = dropsByGirlId.get(id_girl);
 
           if (!existingRecord) {
@@ -117,7 +117,7 @@ export default class LegendaryMythicTracker extends HHModule {
             }
           }
 
-          legendaryMythicTrackingStorageHandler.upsertTrackedGirl(
+          ShardTrackerStorageHandler.upsertTrackedGirl(
             id_girl,
             updatedRecord
           );
@@ -129,10 +129,10 @@ export default class LegendaryMythicTracker extends HHModule {
           );
 
           if (remainingGirlIds.length === 0) {
-            legendaryMythicTrackingStorageHandler.setCurrentTrackingState(-1);
+            ShardTrackerStorageHandler.setCurrentTrackingState(-1);
             this.shouldTrackShards = false;
           } else {
-            legendaryMythicTrackingStorageHandler.setCurrentTrackingState(
+            ShardTrackerStorageHandler.setCurrentTrackingState(
               state.trollID,
               remainingGirlIds
             );
@@ -144,14 +144,14 @@ export default class LegendaryMythicTracker extends HHModule {
   handlePreBattlePage() {
     const opponentFighter =
       unsafeWindow.opponent_fighter as VillainPreBattle;
-    if (!opponentFighter) {
+    if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
     }
     const trackedShards = opponentFighter.rewards.data.shards?.filter(
-      (shard) => this.trackableRarities.includes(shard.rarity as TrackableRarity)
+      (shard) => shard.rarity in this.trackedRarities
     );
     if (!trackedShards || trackedShards.length === 0) {
-      legendaryMythicTrackingStorageHandler.setCurrentTrackingState(-1);
+      ShardTrackerStorageHandler.setCurrentTrackingState(-1);
       this.shouldTrackShards = false;
       return;
     }
@@ -159,7 +159,7 @@ export default class LegendaryMythicTracker extends HHModule {
     trackedShards.forEach((shard) => {
       trackedGirlIds.push(shard.id_girl);
       const existingTrackedGirl =
-        legendaryMythicTrackingStorageHandler.getTrackedGirl(shard.id_girl);
+        ShardTrackerStorageHandler.getTrackedGirl(shard.id_girl);
       if (existingTrackedGirl) {
         return;
       }
@@ -169,13 +169,13 @@ export default class LegendaryMythicTracker extends HHModule {
         rarity: shard.rarity as TrackableRarity,
         number_fight: 0,
       };
-      legendaryMythicTrackingStorageHandler.upsertTrackedGirl(
+      ShardTrackerStorageHandler.upsertTrackedGirl(
         shard.id_girl,
         updatedRecord
       );
     });
     this.shouldTrackShards = true;
-    legendaryMythicTrackingStorageHandler.setCurrentTrackingState(
+    ShardTrackerStorageHandler.setCurrentTrackingState(
       opponentFighter.player.id_fighter,
       trackedGirlIds
     );
