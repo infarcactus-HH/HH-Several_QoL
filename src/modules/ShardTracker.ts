@@ -32,24 +32,20 @@ export default class ShardTracker extends HHModule {
     if (location.pathname === "/troll-pre-battle.html") {
       this.handlePreBattlePage();
     } else {
-      const currentTrackedTrollID =
-        ShardTrackerStorageHandler.getCurrentTrackingState().trollID;
-      if (location.search.includes(`id_opponent=${currentTrackedTrollID}`)) {
-        this.shouldTrackShards = true;
-      }
+      this.handleBattlePage();
     }
     if (!this.shouldTrackShards) {
       return;
     }
     const currentTrackedGirlIds =
       ShardTrackerStorageHandler.getCurrentTrackingState().girlIds;
-    if (
-      !Array.isArray(currentTrackedGirlIds) ||
-      !currentTrackedGirlIds.length
-    ) {
+    if (!currentTrackedGirlIds.length) {
       return;
     }
     console.log("ShardTracker module is running.");
+    this.hookTrollAjaxComplete();
+  }
+  hookTrollAjaxComplete() {
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (
         this.shouldTrackShards &&
@@ -145,6 +141,7 @@ export default class ShardTracker extends HHModule {
       this.shouldTrackShards = false;
       return;
     }
+    this.shouldTrackShards = true;
     const trackedGirlIds: GirlID[] = [];
     trackedGirlsPlain.forEach((girl_plain) => {
       trackedGirlIds.push(girl_plain.id_girl);
@@ -227,10 +224,16 @@ export default class ShardTracker extends HHModule {
         trackedGirlRecord
       );
     });
-    this.shouldTrackShards = true;
     ShardTrackerStorageHandler.setCurrentTrackingState(
       opponentFighter.player.id_fighter,
       trackedGirlIds
     );
+  }
+  handleBattlePage() {
+    const currentTrackingState =
+      ShardTrackerStorageHandler.getCurrentTrackingState();
+    if (location.search.includes(`id_opponent=${currentTrackingState.trollID}`) && currentTrackingState.girlIds.length !== 0) {
+      this.shouldTrackShards = true;
+    }
   }
 }
