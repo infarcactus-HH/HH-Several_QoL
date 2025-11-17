@@ -67,9 +67,7 @@ export default class ShardTracker extends HHModule {
           : 1;
         const responseShards = (
           (response?.rewards?.data?.shards ?? []) as PostFightShards
-        ).filter((shard) =>
-          this.trackedRarities.includes(shard.rarity)
-        );
+        ).filter((shard) => this.trackedRarities.includes(shard.rarity));
         const dropsByGirlId = new Map<GirlID, PostFightShard>();
         responseShards.forEach((shard) => {
           dropsByGirlId.set(shard.id_girl, shard);
@@ -95,7 +93,7 @@ export default class ShardTracker extends HHModule {
             return;
           }
 
-          const updatedRecord: TrackedGirl = {...existingRecord};
+          const updatedRecord: TrackedGirl = { ...existingRecord };
           // TODO: (partially) add fights to skin if girl is owned (or just obtained)
           updatedRecord.number_fight += number_of_battles;
 
@@ -160,10 +158,33 @@ export default class ShardTracker extends HHModule {
       const existingTrackedGirl = ShardTrackerStorageHandler.getTrackedGirl(
         girl_plain.id_girl
       );
-      if (existingTrackedGirl) { // this will need to change as they can add skins to an existing girl
+      if (existingTrackedGirl) {
+        if (girl_plain.grade_skins) {
+          const newSkinsTracked: TrackedGirl["skins"] = [];
+          girl_plain.grade_skins.forEach((skin) => { // important to keep the shown order
+            const isSkinTracked =
+              existingTrackedGirl.skins &&
+              existingTrackedGirl.skins.find(
+                (trackedSkin) => trackedSkin.ico_path === skin.ico_path
+              );
+            if (!isSkinTracked && skin.is_owned === false) {
+              newSkinsTracked.push({
+                ico_path: skin.ico_path,
+                number_fight: 0,
+              });
+            }
+            else if(isSkinTracked){
+              newSkinsTracked.push(existingTrackedGirl.skins!.find((trackedSkin) => trackedSkin.ico_path === skin.ico_path)!);
+            }
+          });
+          if (newSkinsTracked.length) {
+            existingTrackedGirl.skins = newSkinsTracked;
+            ShardTrackerStorageHandler.upsertTrackedGirl(girl_plain.id_girl,existingTrackedGirl)
+          }
+        }
         return;
       }
-      const updatedRecord: TrackedGirl = {
+      const trackedGirlRecord: TrackedGirl = {
         name: girlShards.name,
         ico: girlShards.ico,
         rarity: girlShards.rarity,
@@ -172,21 +193,19 @@ export default class ShardTracker extends HHModule {
         grade: girlShards.grade_offsets.static.length - 1,
       };
       if (girl_plain.grade_skins) {
-        girl_plain.grade_skins.forEach((skin, idx) => {
-          if (skin.is_owned === false) {
-            if (!updatedRecord.skins) {
-              updatedRecord.skins = {};
-            }
-            updatedRecord.skins[idx] = {
-              ico: skin.ico_path,
-              number_fight: 0,
-            };
-          }
+        const girlSkins = girl_plain.grade_skins.filter((skin) => {
+          return skin.is_owned === false;
         });
+        if (girlSkins.length) {
+          trackedGirlRecord.skins = girlSkins.map((skin) => ({
+            ico_path: skin.ico_path,
+            number_fight: 0,
+          }));
+        }
       }
       ShardTrackerStorageHandler.upsertTrackedGirl(
         girl_plain.id_girl,
-        updatedRecord
+        trackedGirlRecord
       );
     });
     this.shouldTrackShards = true;

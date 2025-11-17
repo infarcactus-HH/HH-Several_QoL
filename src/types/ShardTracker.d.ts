@@ -8,8 +8,8 @@ export interface TrackedGirl {
   grade : number;
   dropped_shards : number;
   last_shards_count?: number;
-  skins? : Record<number,{
-    ico: string;
+  skins? : Array<{
+    ico_path: string;
     number_fight: number;
     dropped_shards?: number;
   }>;
