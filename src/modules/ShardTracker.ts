@@ -160,8 +160,21 @@ export default class ShardTracker extends HHModule {
       );
       if (existingTrackedGirl) {
         if (girl_plain.grade_skins) {
+          if (
+            // check if all skins are already tracked/owned
+            girl_plain.grade_skins.every((skin) => {
+              return (
+                existingTrackedGirl.skins?.some(
+                  (trackedSkin) => trackedSkin.ico_path === skin.ico_path
+                ) || skin.is_owned
+              );
+            })
+          ) {
+            return;
+          }
           const newSkinsTracked: TrackedGirl["skins"] = [];
-          girl_plain.grade_skins.forEach((skin) => { // important to keep the shown order
+          girl_plain.grade_skins.forEach((skin) => {
+            // important to keep the shown order
             const isSkinTracked =
               existingTrackedGirl.skins &&
               existingTrackedGirl.skins.find(
@@ -172,14 +185,20 @@ export default class ShardTracker extends HHModule {
                 ico_path: skin.ico_path,
                 number_fight: 0,
               });
-            }
-            else if(isSkinTracked){
-              newSkinsTracked.push(existingTrackedGirl.skins!.find((trackedSkin) => trackedSkin.ico_path === skin.ico_path)!);
+            } else if (isSkinTracked) {
+              newSkinsTracked.push(
+                existingTrackedGirl.skins!.find(
+                  (trackedSkin) => trackedSkin.ico_path === skin.ico_path
+                )!
+              );
             }
           });
           if (newSkinsTracked.length) {
             existingTrackedGirl.skins = newSkinsTracked;
-            ShardTrackerStorageHandler.upsertTrackedGirl(girl_plain.id_girl,existingTrackedGirl)
+            ShardTrackerStorageHandler.upsertTrackedGirl(
+              girl_plain.id_girl,
+              existingTrackedGirl
+            );
           }
         }
         return;
