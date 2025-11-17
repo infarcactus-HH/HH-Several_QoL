@@ -181,6 +181,7 @@ export default class ShardTracker extends HHModule {
               newSkinsTracked.push({
                 ico_path: skin.ico_path,
                 number_fight: 0,
+                is_owned: skin.is_owned,
               });
             } else if (isSkinTracked) {
               newSkinsTracked.push(
@@ -208,6 +209,9 @@ export default class ShardTracker extends HHModule {
         dropped_shards: 0,
         grade: girlShards.grade_offsets.static.length - 1,
       };
+      if(girlShards.is_girl_owned){
+        trackedGirlRecord.last_shards_count = 100;
+      }
       if (girl_plain.grade_skins) {
         const girlSkins = girl_plain.grade_skins.filter((skin) => {
           return skin.is_owned === false;
@@ -216,6 +220,7 @@ export default class ShardTracker extends HHModule {
           trackedGirlRecord.skins = girlSkins.map((skin) => ({
             ico_path: skin.ico_path,
             number_fight: 0,
+            is_owned: skin.is_owned, // will be false here
           }));
         }
       }
