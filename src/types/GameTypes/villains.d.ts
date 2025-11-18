@@ -96,7 +96,7 @@ export interface DoBattlesTrollsResponse {
     energy_fight_recharge_time: number;
     ts_fight: number;
   },
-  objective_points: ObjectivePoints;
+  objective_points?: ObjectivePoints;
   result: "won"; // even when losing
   rewards?: {
     data: {
