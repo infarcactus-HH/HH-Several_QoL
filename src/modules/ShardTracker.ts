@@ -69,9 +69,8 @@ export default class ShardTracker extends HHModule {
           responseShards.map((shard) => [shard.id_girl, shard])
         );
 
-        const state = ShardTrackerStorageHandler.getCurrentTrackingState();
-        const trackedGirlIds = state.girlIds;
-        if (!trackedGirlIds.length) {
+        const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+        if (!currentTrackingState.girlIds.length) {
           this.shouldTrackShards = false;
           return;
         }
@@ -79,7 +78,7 @@ export default class ShardTracker extends HHModule {
         const completedGirlIds: GirlID[] = [];
         // Too complicated to know how many fights are for 1 girl when there are multiple tracked at the same time
         // so we just add all fights to all tracked
-        trackedGirlIds.forEach((girlID) => {
+        currentTrackingState.girlIds.forEach((girlID) => {
           const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girlID);
           if (!trackedGirl) {
             return;
@@ -142,8 +141,8 @@ export default class ShardTracker extends HHModule {
           }
         });
         if (completedGirlIds.length) {
-          const state = ShardTrackerStorageHandler.getCurrentTrackingState();
-          const newTrackedGirlIds = state.girlIds.filter(
+          const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+          const newTrackedGirlIds = currentTrackingState.girlIds.filter(
             (id) => !completedGirlIds.includes(id)
           );
           if (newTrackedGirlIds.length === 0) {
@@ -151,7 +150,7 @@ export default class ShardTracker extends HHModule {
             ShardTrackerStorageHandler.setCurrentTrackingState(-1);
           } else {
             ShardTrackerStorageHandler.setCurrentTrackingState(
-              state.trollID,
+              currentTrackingState.trollID,
               newTrackedGirlIds
             );
           }
