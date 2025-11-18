@@ -17,10 +17,13 @@ import { sessionStorageHandler } from "./utils/StorageHandler";
 import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
 import LegendaryMythicTracker from "./modules/Legendary-MythicTracking";
 import PopupMinusMinus from "./modules/Popup--";
+import CustomCSS from "./customCSS";
 
 class Userscript {
   constructor() {
-    if(location.pathname === "/integrations/"){return;} // do not run on integrations page otherwise it breaks on phone
+    if (location.pathname === "/integrations/") {
+      return;
+    } // do not run on integrations page otherwise it breaks on phone
     if (location.hostname.startsWith("nutaku")) {
       this.applySessionFix();
       this.allModules.push(FixSessID);
@@ -45,6 +48,7 @@ class Userscript {
       this.runWithBDSM();
     }
     this.run();
+    CustomCSS.applyCustomCSS();
   }
 
   allModules = [
