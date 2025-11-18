@@ -30,6 +30,11 @@ type Popupminusminus_ConfigSchema = {
       key: "noPoVPoGClaimPopup";
       default: false;
       label: "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>";
+    },
+    {
+      key: "noMEClaimPopup";
+      default: false;
+      label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>";
     }
   ];
 };
@@ -61,6 +66,12 @@ export default class PopupMinusMinus extends HHModule {
         default: false,
         label:
           "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>",
+      },
+      {
+        key: "noMEClaimPopup",
+        default: false,
+        label:
+          "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>",
       },
     ],
   };
@@ -94,8 +105,14 @@ export default class PopupMinusMinus extends HHModule {
     if (subSettings.noAnnoyingReminders) {
       this.noAnnoyingReminders();
     }
-    if (subSettings.noPoVPoGClaimPopup && ["/path-of-glory.html", "/path-of-valor.html"].includes(location.pathname)) {
+    if (
+      subSettings.noPoVPoGClaimPopup &&
+      ["/path-of-glory.html", "/path-of-valor.html"].includes(location.pathname)
+    ) {
       this.noPoVPoGClaimPopup();
+    }
+    if (subSettings.noMEClaimPopup && location.pathname === "/seasonal.html") {
+      this.noMEClaimPopup();
     }
   }
   overridePopups() {
@@ -244,5 +261,26 @@ export default class PopupMinusMinus extends HHModule {
         });
       });
     });
+  }
+  noMEClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      "button[rel='claim'].mega-claim-reward",
+      ($el) => {
+        console.log("Setting up ME popup blocker");
+        $el.on("click.noPovPoGPopup", () => {
+          this.popupQueueManagerAddOverrides.push({
+            fn: (t: popupForQueue["popup"]) => {
+              if (t.type === "common" && t.popup_name === "rewards") {
+                t.onClose();
+                console.log("Blocked ME claim popup", t);
+                return true;
+              }
+              return false;
+            },
+            permanent: false,
+          });
+        });
+      }
+    );
   }
 }
