@@ -94,7 +94,7 @@ export default class PopupMinusMinus extends HHModule {
     if (subSettings.noAnnoyingReminders) {
       this.noAnnoyingReminders();
     }
-    if (subSettings.noPoVPoGClaimPopup) {
+    if (subSettings.noPoVPoGClaimPopup && ["/path-of-glory.html", "/path-of-valor.html"].includes(location.pathname)) {
       this.noPoVPoGClaimPopup();
     }
   }
