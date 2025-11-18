@@ -69,11 +69,11 @@ export default class PopupMinusMinus extends HHModule {
   }
   popupQueueManagerAddOverrides: Array<{
     fn: (t: popupForQueue["popup"]) => boolean;
-    usagesRemaining: number;
+    permanent: boolean;
   }> = [];
   reward_popupRewardHandlePopupOverrides: Array<{
     fn: (t: any) => boolean;
-    usagesRemaining: number;
+    permanent: boolean;
   }> = []; // carefull with this one
   run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
     if (this.hasRun || !PopupMinusMinus.shouldRun()) {
@@ -107,10 +107,8 @@ export default class PopupMinusMinus extends HHModule {
         const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked popup by override", t);
-          // Decrement usage count
-          overrideData.usagesRemaining--;
           // Remove if no more usages left
-          if (overrideData.usagesRemaining <= 0) {
+          if (!overrideData.permanent) {
             self.popupQueueManagerAddOverrides.splice(i, 1);
           }
           return; // blocked by override
@@ -131,10 +129,8 @@ export default class PopupMinusMinus extends HHModule {
         const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked reward popup by override", t);
-          // Decrement usage count
-          overrideData.usagesRemaining--;
           // Remove if no more usages left
-          if (overrideData.usagesRemaining <= 0) {
+          if (!overrideData.permanent) {
             self.reward_popupRewardHandlePopupOverrides.splice(i, 1);
           }
           return; // blocked by override
@@ -213,7 +209,7 @@ export default class PopupMinusMinus extends HHModule {
         }
         return false;
       },
-      usagesRemaining: Infinity,
+      permanent: true,
     });
   }
   noLevelUpPopup() {
@@ -228,7 +224,7 @@ export default class PopupMinusMinus extends HHModule {
         }
         return false;
       },
-      usagesRemaining: Infinity,
+      permanent: true,
     });
   }
   noPoVPoGClaimPopup() {
@@ -244,7 +240,7 @@ export default class PopupMinusMinus extends HHModule {
             }
             return false;
           },
-          usagesRemaining: 1,
+          permanent: false,
         });
       });
     });
