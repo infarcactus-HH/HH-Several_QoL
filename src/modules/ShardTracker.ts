@@ -7,6 +7,7 @@ import type { TrackedGirl } from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import type { GirlID, GirlRarity } from "../types/GameTypes";
+import { GradeSkins } from "../types/GameTypes/girls";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -88,42 +89,70 @@ export default class ShardTracker extends HHModule {
             addFightsToTrackedGirl(trackedGirl, number_of_battles, girlID);
             return;
           }
-
+          let updatedTrackedGirl: TrackedGirl | undefined;
           if (dropInfo.value !== 100 || !trackedGirl.skins) {
             // No checks needed for skins or anything :D
             noSkinUpdateTrackedGirl(trackedGirl, dropInfo, number_of_battles);
             return;
-          }
-          if (
-            dropInfo.value === 100 &&
-            !response.rewards?.data.girls?.find(
+          } else if (
+            response.rewards?.data.girls?.find(
               (girl) => girl.id_girl === girlID
             )
           ) {
+            updatedTrackedGirl = girlAndMaybeSkinUpdateTrackedGirl(
+              trackedGirl,
+              dropInfo,
+              number_of_battles
+            );
+          } else {
             // 100% sure it's only skin shards
-            if (!response.rewards?.data.grade_skins) {
+            if (
+              !response.rewards?.data.grade_skins?.filter((skin) => {
+                return skin.id_girl === girlID;
+              })
+            ) {
               // No skin dropped, just update obtained shards count
-              simpleSkinUpdateTrackedGirl(
+              updatedTrackedGirl = simpleSkinUpdateTrackedGirl(
                 trackedGirl,
                 dropInfo,
                 number_of_battles
               );
+            } else {
+              const skinsDropped = response.rewards.data.grade_skins.filter(
+                (skin) => {
+                  return skin.id_girl === girlID;
+                }
+              );
+              updatedTrackedGirl = updateMultipleSkinsTrackedGirl(
+                trackedGirl,
+                dropInfo,
+                number_of_battles,
+                skinsDropped
+              );
+            }
+          }
+          if (updatedTrackedGirl) {
+            if (
+              updatedTrackedGirl.last_shards_count === 100 &&
+              (!updatedTrackedGirl.skins ||
+                updatedTrackedGirl.skins.every((skin) => skin.is_owned))
+            ) {
+              completedGirlIds.push(girlID);
             }
           }
         });
-
         if (completedGirlIds.length) {
-          const remainingGirlIds = trackedGirlIds.filter(
+          const state = ShardTrackerStorageHandler.getCurrentTrackingState();
+          const newTrackedGirlIds = state.girlIds.filter(
             (id) => !completedGirlIds.includes(id)
           );
-
-          if (remainingGirlIds.length === 0) {
-            ShardTrackerStorageHandler.setCurrentTrackingState(-1);
+          if (newTrackedGirlIds.length === 0) {
             this.shouldTrackShards = false;
+            ShardTrackerStorageHandler.setCurrentTrackingState(-1);
           } else {
             ShardTrackerStorageHandler.setCurrentTrackingState(
               state.trollID,
-              remainingGirlIds
+              newTrackedGirlIds
             );
           }
         }
@@ -134,9 +163,6 @@ export default class ShardTracker extends HHModule {
       nbFights: number,
       girlID: GirlID
     ) {
-      if (!trackedGirl) {
-        return;
-      }
       if (trackedGirl.last_shards_count === 100) {
         if (
           !trackedGirl.skins ||
@@ -149,6 +175,7 @@ export default class ShardTracker extends HHModule {
       }
       trackedGirl.number_fight += nbFights;
       ShardTrackerStorageHandler.upsertTrackedGirl(girlID, trackedGirl);
+      return trackedGirl;
     }
     function noSkinUpdateTrackedGirl(
       trackedGirl: TrackedGirl,
@@ -163,6 +190,7 @@ export default class ShardTracker extends HHModule {
         dropInfo.id_girl,
         trackedGirl
       );
+      return trackedGirl;
     }
     function simpleSkinUpdateTrackedGirl(
       trackedGirl: TrackedGirl,
@@ -182,6 +210,122 @@ export default class ShardTracker extends HHModule {
         dropInfo.id_girl,
         trackedGirl
       );
+      return trackedGirl;
+    }
+    function girlAndMaybeSkinUpdateTrackedGirl(
+      trackedGirl: TrackedGirl,
+      dropInfo: PostFightShard,
+      number_of_battles: number
+    ) {
+      const lastShardCount = getGirlLastShardCount(trackedGirl, dropInfo);
+      if (lastShardCount !== undefined) {
+        const gainedGirlShards = 100 - lastShardCount;
+        let skinShardsPool = lastShardCount - dropInfo.previous_value;
+        const totalShards = gainedGirlShards + skinShardsPool;
+        trackedGirl.dropped_shards = 100;
+        trackedGirl.number_fight +=
+          number_of_battles === 1
+            ? 1
+            : Math.round((number_of_battles * gainedGirlShards) / totalShards);
+        while (skinShardsPool > 0) {
+          // in case of multi skin drops, shouldn't be an issue doing it like this
+          const skinsShardsToFill = Math.min(33, skinShardsPool);
+          skinShardsPool -= skinsShardsToFill;
+          const currentTrackedSkin = trackedGirl.skins!.find(
+            (skin) => !skin.is_owned
+          )!;
+          currentTrackedSkin.dropped_shards = skinsShardsToFill;
+          currentTrackedSkin.number_fight +=
+            number_of_battles === 1
+              ? 0
+              : number_of_battles -
+                Math.round(
+                  (number_of_battles * skinsShardsToFill) / totalShards
+                );
+        }
+      } else {
+        // Not yet implemented
+      }
+      return trackedGirl;
+    }
+    function getGirlLastShardCount(
+      trackedGirl: TrackedGirl,
+      dropInfo: PostFightShard
+    ): number | undefined {
+      //for an eventual future use ?, maybe even asking the user if we need to fetch the harem page to see the shard count ?
+      // Or make an option for the user to have a fetch option on battle page to update last shard count
+      if (trackedGirl.last_shards_count !== undefined) {
+        if (trackedGirl.last_shards_count >= dropInfo.previous_value) {
+          return trackedGirl.last_shards_count;
+        }
+        // This here is a problem, as we can assume our record is old :(
+      }
+      return;
+    }
+    function updateMultipleSkinsTrackedGirl(
+      trackedGirl: TrackedGirl,
+      dropInfo: PostFightShard,
+      number_of_battles: number,
+      skinsDropped: GradeSkins
+    ) {
+      let skinShardsPool = dropInfo.value - dropInfo.previous_value;
+      const totalSkinShardsDropped = skinShardsPool;
+      skinsDropped.forEach((skinDrop) => {
+        const currentTrackedSkin = trackedGirl.skins!.find(
+          (s) => s.ico_path === skinDrop.ico_path
+        );
+        const droppedShardsForThisSkin =
+          skinDrop.shards_added - skinDrop.previous_skin_shards;
+        const nbFightsForThisSkin = Math.round(
+          number_of_battles *
+            (droppedShardsForThisSkin / totalSkinShardsDropped)
+        );
+        skinShardsPool -= droppedShardsForThisSkin;
+        if (!currentTrackedSkin) {
+          alert(
+            "ShardTracker: encountered a skin drop that is not tracked, this should not happen."
+          );
+          const newSkinTracked = {
+            ico_path: skinDrop.ico_path,
+            number_fight: nbFightsForThisSkin,
+            is_owned: skinDrop.is_owned,
+            dropped_shards: droppedShardsForThisSkin,
+          };
+          trackedGirl.skins!.push(newSkinTracked);
+          return;
+        } else {
+          currentTrackedSkin.number_fight += nbFightsForThisSkin;
+          currentTrackedSkin.dropped_shards =
+            (currentTrackedSkin.dropped_shards ?? 0) + droppedShardsForThisSkin;
+        }
+      });
+      if (skinShardsPool > 33) {
+        alert(
+          "ShardTracker: encountered more skin shards dropped than possible, this should not happen."
+        );
+      }
+      while (skinShardsPool > 0) {
+        const currentTrackedSkin = trackedGirl.skins!.find((s) => !s.is_owned);
+        if (!currentTrackedSkin) {
+          break;
+        }
+        const shardsToAdd = Math.min(
+          33 - (currentTrackedSkin.dropped_shards ?? 0),
+          skinShardsPool
+        );
+        currentTrackedSkin.dropped_shards =
+          (currentTrackedSkin.dropped_shards ?? 0) + shardsToAdd;
+        const fightsToAdd = Math.round(
+          number_of_battles * (shardsToAdd / totalSkinShardsDropped)
+        );
+        currentTrackedSkin.number_fight += fightsToAdd;
+        skinShardsPool -= shardsToAdd;
+      }
+      ShardTrackerStorageHandler.upsertTrackedGirl(
+        dropInfo.id_girl,
+        trackedGirl
+      );
+      return trackedGirl;
     }
   }
   handlePreBattlePage() {
