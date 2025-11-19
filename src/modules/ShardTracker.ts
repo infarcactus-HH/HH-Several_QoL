@@ -69,7 +69,8 @@ export default class ShardTracker extends HHModule {
           responseShards.map((shard) => [shard.id_girl, shard])
         );
 
-        const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+        const currentTrackingState =
+          ShardTrackerStorageHandler.getCurrentTrackingState();
         if (!currentTrackingState.girlIds.length) {
           this.shouldTrackShards = false;
           return;
@@ -141,7 +142,8 @@ export default class ShardTracker extends HHModule {
           }
         });
         if (completedGirlIds.length) {
-          const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+          const currentTrackingState =
+            ShardTrackerStorageHandler.getCurrentTrackingState();
           const newTrackedGirlIds = currentTrackingState.girlIds.filter(
             (id) => !completedGirlIds.includes(id)
           );
@@ -226,21 +228,19 @@ export default class ShardTracker extends HHModule {
           number_of_battles === 1
             ? 1
             : Math.round((number_of_battles * gainedGirlShards) / totalShards);
-        while (skinShardsPool > 0) {
-          // in case of multi skin drops, shouldn't be an issue doing it like this
-          const skinsShardsToFill = Math.min(33, skinShardsPool);
-          skinShardsPool -= skinsShardsToFill;
-          const currentTrackedSkin = trackedGirl.skins!.find(
-            (skin) => !skin.is_owned
-          )!;
-          currentTrackedSkin.dropped_shards = skinsShardsToFill;
-          currentTrackedSkin.number_fight +=
-            number_of_battles === 1
-              ? 0
-              : number_of_battles -
-                Math.round(
-                  (number_of_battles * skinsShardsToFill) / totalShards
-                );
+        if (number_of_battles > 1) {
+          while (skinShardsPool > 0) {
+            // in case of multi skin drops, shouldn't be an issue doing it like this
+            const skinsShardsToFill = Math.min(33, skinShardsPool);
+            skinShardsPool -= skinsShardsToFill;
+            const currentTrackedSkin = trackedGirl.skins!.find(
+              (skin) => !skin.is_owned
+            )!;
+            currentTrackedSkin.dropped_shards = skinsShardsToFill;
+            currentTrackedSkin.number_fight +=
+              number_of_battles -
+              Math.round((number_of_battles * skinsShardsToFill) / totalShards);
+          }
         }
       } else {
         // Not yet implemented
@@ -361,49 +361,7 @@ export default class ShardTracker extends HHModule {
         girl_plain.id_girl
       );
       if (existingTrackedGirl) {
-        if (girl_plain.grade_skins) {
-          if (
-            // check if all skins are already tracked/owned
-            girl_plain.grade_skins.every((skin) => {
-              return (
-                existingTrackedGirl.skins?.some(
-                  (trackedSkin) => trackedSkin.ico_path === skin.ico_path
-                ) || skin.is_owned
-              );
-            })
-          ) {
-            return;
-          }
-          const newSkinsTracked: TrackedGirl["skins"] = [];
-          girl_plain.grade_skins.forEach((skin) => {
-            // important to keep the shown order
-            const isSkinTracked =
-              existingTrackedGirl.skins &&
-              existingTrackedGirl.skins.find(
-                (trackedSkin) => trackedSkin.ico_path === skin.ico_path
-              );
-            if (!isSkinTracked && skin.is_owned === false) {
-              newSkinsTracked.push({
-                ico_path: skin.ico_path,
-                number_fight: 0,
-                is_owned: skin.is_owned,
-              });
-            } else if (isSkinTracked) {
-              newSkinsTracked.push(
-                existingTrackedGirl.skins!.find(
-                  (trackedSkin) => trackedSkin.ico_path === skin.ico_path
-                )!
-              );
-            }
-          });
-          if (newSkinsTracked.length) {
-            existingTrackedGirl.skins = newSkinsTracked;
-            ShardTrackerStorageHandler.upsertTrackedGirl(
-              girl_plain.id_girl,
-              existingTrackedGirl
-            );
-          }
-        }
+        updateExistingTrackedGirl(existingTrackedGirl, girl_plain);
         return;
       }
       const trackedGirlRecord: TrackedGirl = {
@@ -438,6 +396,57 @@ export default class ShardTracker extends HHModule {
       opponentFighter.player.id_fighter,
       trackedGirlIds
     );
+    function updateExistingTrackedGirl(
+      existingTrackedGirl: TrackedGirl,
+      girl_plain: (typeof trackedGirlsPlain)[number]
+    ) {
+      let hasChanges = false; // to avoid unnecessary writes
+      if (
+        existingTrackedGirl.last_shards_count !== 100 &&
+        girl_plain.is_girl_owned
+      ) {
+        existingTrackedGirl.last_shards_count = 100;
+        hasChanges = true;
+      }
+      // The case where the girl and all skins are owned will never appear as the server won't send it
+      if (girl_plain.grade_skins) {
+        const newSkinsTracked: TrackedGirl["skins"] = []; // Also needs to include previously tracked skins
+        girl_plain.grade_skins.forEach((skin) => {
+          // important to keep the shown order
+          const skinTracked =
+            existingTrackedGirl.skins &&
+            existingTrackedGirl.skins.find(
+              (trackedSkin) => trackedSkin.ico_path === skin.ico_path
+            );
+          if (!skinTracked && skin.is_owned === false) {
+            newSkinsTracked.push({
+              ico_path: skin.ico_path,
+              number_fight: 0,
+              is_owned: skin.is_owned,
+            });
+          } else if (skinTracked) {
+            if (skinTracked.is_owned !== skin.is_owned) {
+              skinTracked.is_owned = skin.is_owned;
+              hasChanges = true;
+            }
+            newSkinsTracked.push(
+              existingTrackedGirl.skins!.find(
+                (trackedSkin) => trackedSkin.ico_path === skin.ico_path
+              )!
+            );
+          }
+        });
+        if (hasChanges && newSkinsTracked.length) {
+          existingTrackedGirl.skins = newSkinsTracked;
+        }
+      }
+      if (hasChanges) {
+        ShardTrackerStorageHandler.upsertTrackedGirl(
+          girl_plain.id_girl,
+          existingTrackedGirl
+        );
+      }
+    }
   }
   handleBattlePage() {
     const currentTrackingState =
