@@ -118,6 +118,7 @@ export default class ShardTracker extends HHModule {
             //   break anything. it would only undercount shards slightly since
             //   it won't know the real overflow similar to what I suggested in
             //   `getGirlLastShardCount`
+            return;
           }
 
           let updatedTrackedGirl: TrackedGirl | undefined;
