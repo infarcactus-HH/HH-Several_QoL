@@ -1,8 +1,4 @@
-import type {
-  DoBattlesTrollsResponse,
-  PostFightShard,
-  VillainPreBattle,
-} from "../types/GameTypes/villains";
+import type { DoBattlesTrollsResponse, PostFightShard, VillainPreBattle } from "../types/GameTypes/villains";
 import type { TrackedGirl } from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
@@ -79,6 +75,11 @@ export default class ShardTracker extends HHModule {
         const completedGirlIds: GirlID[] = [];
         // Too complicated to know how many fights are for 1 girl when there are multiple tracked at the same time
         // so we just add all fights to all tracked
+        // XXX: this makes it sound like a workaround but it isn't. if you do 10
+        //   fights and get 3 shards for two girls each, both of them had a drop
+        //   rate of 3 in 10. with the same luck and only one girl on the villain
+        //   you'd have still gotten 3 shards for her and the fights that dropped
+        //   shards for the other girl would have been money. so still 3 in 10.
         currentTrackingState.girlIds.forEach((girlID) => {
           const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girlID);
           if (!trackedGirl) {
@@ -86,9 +87,22 @@ export default class ShardTracker extends HHModule {
           }
           const dropInfo = dropsByGirlId.get(girlID);
           if (!dropInfo) {
+            // no drops for this girl so only increase number of fights
             addFightsToTrackedGirl(trackedGirl, number_of_battles, girlID);
             return;
           }
+
+          if (dropInfo.previous_value > 100) {
+            // shard drop is bugged and unusable
+            console.warn('unusable shard drop info:', dropInfo);
+            // XXX: this could maybe be salvaged, so far I've only seen it on
+            //   rewards where the girl dropped so we could set `previous_value`
+            //   to `last_shards_count` if it is known and `value` to 100 to
+            //   assume it was just enough to get her (and subtract some more
+            //   from `previous_value` in case any skins dropped)
+            return;
+          }
+
           let updatedTrackedGirl: TrackedGirl | undefined;
           if (dropInfo.value !== 100 || !trackedGirl.skins) {
             // No checks needed for skins or anything :D
@@ -173,8 +187,9 @@ export default class ShardTracker extends HHModule {
         }
         trackedGirl.skins.find((skin) => !skin.is_owned)!.number_fight +=
           nbFights;
+      } else {
+        trackedGirl.number_fight += nbFights;
       }
-      trackedGirl.number_fight += nbFights;
       ShardTrackerStorageHandler.upsertTrackedGirl(girlID, trackedGirl);
       return trackedGirl;
     }
@@ -183,7 +198,8 @@ export default class ShardTracker extends HHModule {
       dropInfo: PostFightShard,
       number_of_battles: number
     ) {
-      trackedGirl.last_shards_count = dropInfo.value;
+      // value can exceed 100 with a 100 drop so it needs to be capped
+      trackedGirl.last_shards_count = Math.min(dropInfo.value, 100);
       trackedGirl.number_fight += number_of_battles;
       const gainedShards = dropInfo.value - dropInfo.previous_value;
       trackedGirl.dropped_shards += gainedShards;
@@ -205,8 +221,7 @@ export default class ShardTracker extends HHModule {
         return;
       }
       currentTrackedSkin.number_fight += number_of_battles;
-      const gainedShards = dropInfo.value - dropInfo.previous_value;
-      currentTrackedSkin.dropped_shards = gainedShards;
+      currentTrackedSkin.dropped_shards = dropInfo.value - dropInfo.previous_value;
       ShardTrackerStorageHandler.upsertTrackedGirl(
         dropInfo.id_girl,
         trackedGirl
@@ -224,22 +239,32 @@ export default class ShardTracker extends HHModule {
         let skinShardsPool = lastShardCount - dropInfo.previous_value;
         const totalShards = gainedGirlShards + skinShardsPool;
         trackedGirl.dropped_shards = 100;
-        trackedGirl.number_fight +=
+        const fightsGirl =
           number_of_battles === 1
             ? 1
             : Math.round((number_of_battles * gainedGirlShards) / totalShards);
+        trackedGirl.number_fight += fightsGirl;
         if (number_of_battles > 1) {
+          let fightsAccounted = fightsGirl;
           while (skinShardsPool > 0) {
             // in case of multi skin drops, shouldn't be an issue doing it like this
-            const skinsShardsToFill = Math.min(33, skinShardsPool);
-            skinShardsPool -= skinsShardsToFill;
-            const currentTrackedSkin = trackedGirl.skins!.find(
+            const i = trackedGirl.skins!.findIndex(
               (skin) => !skin.is_owned
             )!;
+            const lastSkin = i === trackedGirl.skins!.length;
+            const currentTrackedSkin = trackedGirl.skins![i];
+
+            const skinsShardsToFill = lastSkin
+              ? skinShardsPool
+              : Math.min(33, skinShardsPool);
+            skinShardsPool -= skinsShardsToFill;
             currentTrackedSkin.dropped_shards = skinsShardsToFill;
-            currentTrackedSkin.number_fight +=
-              number_of_battles -
-              Math.round((number_of_battles * skinsShardsToFill) / totalShards);
+
+            const fightsSkin = lastSkin
+              ? number_of_battles - fightsAccounted
+              : number_of_battles - Math.round((number_of_battles * skinsShardsToFill) / totalShards);
+            currentTrackedSkin.number_fight += fightsSkin;
+            fightsAccounted += fightsSkin;
           }
         }
       } else {
@@ -259,6 +284,8 @@ export default class ShardTracker extends HHModule {
         }
         // This here is a problem, as we can assume our record is old :(
       }
+      // XXX: in this case we could probably just return `previous_value` plus
+      //   whatever info about skin drops we get if `grade_skins` is available
       return;
     }
     function updateMultipleSkinsTrackedGirl(
@@ -299,10 +326,17 @@ export default class ShardTracker extends HHModule {
         }
       });
       if (skinShardsPool > 33) {
+        // XXX: is this necessarily an error? I don't remember if `previous_value`
+        //   includes overflow to flowers or not. if it does this is certainly
+        //   possible and would only be an error if there is still an unowned
+        //   skin left
         alert(
           "ShardTracker: encountered more skin shards dropped than possible, this should not happen."
         );
       }
+      // XXX: this `while` should be an `if` as it should never run more than
+      //   once. if it did we would have an additional completed skin that
+      //   should have appeared in `skinsDropped`
       while (skinShardsPool > 0) {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => !s.is_owned);
         if (!currentTrackedSkin) {
@@ -337,7 +371,7 @@ export default class ShardTracker extends HHModule {
         return (
           this.trackedRarities.includes(girl.rarity) && // check rarity
           (!girl.is_girl_owned || // check if girl is not owned or has unowned skins
-            girl.grade_skins?.some((skin) => skin.is_owned === false))
+            girl.grade_skins?.some((skin) => !skin.is_owned))
         );
       }
     );
