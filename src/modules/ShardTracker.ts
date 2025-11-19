@@ -19,8 +19,9 @@ export default class ShardTracker extends HHModule {
     );
   }
   shouldTrackShards = false;
-  // XXX could be made configurable
+  // XXX: could be made configurable
   // YYY: it could, but maybe later x)
+  // XXX: just saying it could :D
   readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
@@ -74,17 +75,23 @@ export default class ShardTracker extends HHModule {
         }
 
         const completedGirlIds: GirlID[] = [];
-        // Too complicated to know how many fights are for 1 girl when there are multiple tracked at the same time
-        // so we just add all fights to all tracked
+        // Too complicated to know how many fights are for 1 girl when there are
+        // multiple tracked at the same time so we just add all fights to all
+        // tracked
         // XXX: this makes it sound like a workaround but it isn't. if you do 10
         //   fights and get 3 shards for two girls each, both of them had a drop
         //   rate of 3 in 10. with the same luck and only one girl on the villain
         //   you'd have still gotten 3 shards for her and the fights that dropped
         //   shards for the other girl would have been money. so still 3 in 10.
         // YYY: it is kind of a workaround though, because if you track multiple drops
-        //   the rate is still 3/10 for each girls. But you would count the drop for the 
-        //   other girl too, in the fights you didn't gain shard for the girl, 
+        //   the rate is still 3/10 for each girls. But you would count the drop for the
+        //   other girl too, in the fights you didn't gain shard for the girl,
         //   which doesn't make sense. Especially with how the game drops shards
+        // XXX: maybe I'm misunderstanding what the complication is. in my mind
+        //   from each girl's point of view she got 3 shards and "other stuff"
+        //   out of the 10 fights and it does not affect the personal drop rate
+        //   at all if there are shards in the other stuff or not. so it seems
+        //   natural to me to count all fights for each of them.
         currentTrackingState.girlIds.forEach((girlID) => {
           const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girlID);
           if (!trackedGirl) {
@@ -106,7 +113,11 @@ export default class ShardTracker extends HHModule {
             //   assume it was just enough to get her (and subtract some more
             //   from `previous_value` in case any skins dropped)
             // YYY: maybe, but it would be annoying if it broke the rest of the logic
-            return;
+            // XXX: we don't need to, I'm just saying we could in case this turn
+            //   out to be a much more common bug. I don't see how this could
+            //   break anything. it would only undercount shards slightly since
+            //   it won't know the real overflow similar to what I suggested in
+            //   `getGirlLastShardCount`
           }
 
           let updatedTrackedGirl: TrackedGirl | undefined;
@@ -293,6 +304,10 @@ export default class ShardTracker extends HHModule {
       // XXX: in this case we could probably just return `previous_value` plus
       //   whatever info about skin drops we get if `grade_skins` is available
       // YYY: maybe, unsure of how reliable it would be
+      // XXX: it might miss a couple shards but we can't handle this case any
+      //   better. this is the rare event where a girl is obtained on the first
+      //   fight before we can know the last count so I'd say it's acceptable.
+      //   this will also get rid of the undefined branch above.
       return;
     }
     function updateMultipleSkinsTrackedGirl(
@@ -348,6 +363,20 @@ export default class ShardTracker extends HHModule {
       //   once. if it did we would have an additional completed skin that
       //   should have appeared in `skinsDropped`
       // YYY: that's true but it's to cover for the case above
+      // XXX: what I mean is this can only find an unowned skin if the leftover
+      //   shards are < 33 (or rather less than what the next skin still needs)
+      //   so the loop will either not run at all because `break` is called
+      //   immediately since everything is overflow or there will only be so few
+      //   shards left that it runs only once.
+      //   this would actually be an infinite loop if there was a situation in
+      //   between those two options: if there are more shards than needed. in
+      //   the second round it will find the same skin, so it won't `break`,
+      //   `shardsToAdd` will be then be 0 since `dropped_shards` was just filled
+      //   up tp 33 so the pool won't reduce any further and it'll keep looping.
+      //   so this can simply be an `if` and in the `forEach` above should be a
+      //   check for the last skin like I did in `girlAndMaybeSkinUpdateTrackedGirl`
+      //   which then just dumps the remaining shards and fights into that last
+      //   skin
       while (skinShardsPool > 0) {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => !s.is_owned);
         if (!currentTrackedSkin) {

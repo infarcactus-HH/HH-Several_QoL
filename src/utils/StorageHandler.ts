@@ -136,12 +136,14 @@ export class sessionStorageHandler {
   }
 }
 
-// TODO: this name is getting trimmed too
+// XXX: it'll be more like a villain tracker if we start tracking boosters or
+//   other bonus stuff too
 export class ShardTrackerStorageHandler {
   static setCurrentTrackingState(
     trollID: number,
     girlIds: GirlID[] = []
   ): void {
+    // XXX: we forgot to rename the key
     GM_setValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
       trollID,
       girlIds,
