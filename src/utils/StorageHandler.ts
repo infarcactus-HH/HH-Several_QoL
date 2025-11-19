@@ -147,7 +147,7 @@ export class ShardTrackerStorageHandler {
       girlIds,
     });
   }
-  static currentStoredRecords : TrackedGirlRecords | null = null;
+  private static currentStoredRecords : TrackedGirlRecords | null = null;
   static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
       trollID: -1,
