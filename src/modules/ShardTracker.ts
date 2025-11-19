@@ -20,6 +20,7 @@ export default class ShardTracker extends HHModule {
   }
   shouldTrackShards = false;
   // XXX could be made configurable
+  // YYY: it could, but maybe later x)
   readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
@@ -80,6 +81,10 @@ export default class ShardTracker extends HHModule {
         //   rate of 3 in 10. with the same luck and only one girl on the villain
         //   you'd have still gotten 3 shards for her and the fights that dropped
         //   shards for the other girl would have been money. so still 3 in 10.
+        // YYY: it is kind of a workaround though, because if you track multiple drops
+        //   the rate is still 3/10 for each girls. But you would count the drop for the 
+        //   other girl too, in the fights you didn't gain shard for the girl, 
+        //   which doesn't make sense. Especially with how the game drops shards
         currentTrackingState.girlIds.forEach((girlID) => {
           const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girlID);
           if (!trackedGirl) {
@@ -100,6 +105,7 @@ export default class ShardTracker extends HHModule {
             //   to `last_shards_count` if it is known and `value` to 100 to
             //   assume it was just enough to get her (and subtract some more
             //   from `previous_value` in case any skins dropped)
+            // YYY: maybe, but it would be annoying if it broke the rest of the logic
             return;
           }
 
@@ -286,6 +292,7 @@ export default class ShardTracker extends HHModule {
       }
       // XXX: in this case we could probably just return `previous_value` plus
       //   whatever info about skin drops we get if `grade_skins` is available
+      // YYY: maybe, unsure of how reliable it would be
       return;
     }
     function updateMultipleSkinsTrackedGirl(
@@ -330,6 +337,9 @@ export default class ShardTracker extends HHModule {
         //   includes overflow to flowers or not. if it does this is certainly
         //   possible and would only be an error if there is still an unowned
         //   skin left
+        // YYY: you can't say is this necessarily an error and on the while loop
+        //   below that it should only run once. Because it will only run more than once
+        //   When skinShardsPool >= 33 here
         alert(
           "ShardTracker: encountered more skin shards dropped than possible, this should not happen."
         );
@@ -337,6 +347,7 @@ export default class ShardTracker extends HHModule {
       // XXX: this `while` should be an `if` as it should never run more than
       //   once. if it did we would have an additional completed skin that
       //   should have appeared in `skinsDropped`
+      // YYY: that's true but it's to cover for the case above
       while (skinShardsPool > 0) {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => !s.is_owned);
         if (!currentTrackedSkin) {
