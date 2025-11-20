@@ -144,14 +144,14 @@ export class ShardTrackerStorageHandler {
     girlIds: GirlID[] = []
   ): void {
     // XXX: we forgot to rename the key
-    GM_setValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
+    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID,
       girlIds,
     });
   }
   private static currentStoredRecords : TrackedGirlRecords | null = null;
   static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
-    return GM_getValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
+    return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID: -1,
       girlIds: [],
     }) as { trollID: number; girlIds: GirlID[] };
@@ -159,13 +159,13 @@ export class ShardTrackerStorageHandler {
 
   static getTrackedGirls(): TrackedGirlRecords {
     if(this.currentStoredRecords === null) {
-      this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", {});
+      this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
     }
     return this.currentStoredRecords!;
   }
   static setTrackedGirls(records: TrackedGirlRecords): void {
     this.currentStoredRecords = records;
-    GM_setValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", this.currentStoredRecords);
+    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", this.currentStoredRecords);
   }
   static getTrackedGirl(id_girl: GirlID): TrackedGirl | undefined {
     const records = this.getTrackedGirls();
