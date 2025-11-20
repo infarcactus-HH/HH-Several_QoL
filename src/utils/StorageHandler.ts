@@ -149,7 +149,7 @@ export class ShardTrackerStorageHandler {
       girlIds,
     });
   }
-  private static currentStoredRecords : TrackedGirlRecords | null = null;
+  private static currentStoredRecords : TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
   static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID: -1,
