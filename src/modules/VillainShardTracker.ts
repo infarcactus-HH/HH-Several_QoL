@@ -20,8 +20,6 @@ export default class ShardTracker extends HHModule {
   }
   shouldTrackShards = false;
   // XXX: could be made configurable
-  // YYY: it could, but maybe later x)
-  // XXX: just saying it could :D
   readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
@@ -236,49 +234,45 @@ export default class ShardTracker extends HHModule {
       number_of_battles: number
     ) {
       const lastShardCount = getGirlLastShardCount(trackedGirl, dropInfo);
-      if (lastShardCount !== undefined) {
-        const totalShards = dropInfo.value - dropInfo.previous_value;
-        const gainedGirlShards = 100 - lastShardCount;
-        let skinShardsPool = totalShards - gainedGirlShards;
-        trackedGirl.dropped_shards += gainedGirlShards;
-        trackedGirl.last_shards_count = 100;
-        const fightsGirl =
-          number_of_battles === 1
-            ? 1
-            : Math.round((number_of_battles * gainedGirlShards) / totalShards);
-        trackedGirl.number_fight += fightsGirl;
-        if (number_of_battles > 1) {
-          let fightsAccounted = fightsGirl;
-          while (skinShardsPool > 0) {
-            // in case of multi skin drops, shouldn't be an issue doing it like this
-            const i = trackedGirl.skins!.findIndex(
-              (skin) => !skin.is_owned
-            )!;
-            const lastSkin = i === trackedGirl.skins!.length;
-            const currentTrackedSkin = trackedGirl.skins![i];
+      const totalShards = dropInfo.value - dropInfo.previous_value;
+      const gainedGirlShards = 100 - lastShardCount;
+      let skinShardsPool = totalShards - gainedGirlShards;
+      trackedGirl.dropped_shards += gainedGirlShards;
+      trackedGirl.last_shards_count = 100;
+      const fightsGirl =
+        number_of_battles === 1
+          ? 1
+          : Math.round((number_of_battles * gainedGirlShards) / totalShards);
+      trackedGirl.number_fight += fightsGirl;
+      if (number_of_battles > 1) {
+        let fightsAccounted = fightsGirl;
+        while (skinShardsPool > 0) {
+          // in case of multi skin drops, shouldn't be an issue doing it like this
+          const i = trackedGirl.skins!.findIndex(
+            (skin) => !skin.is_owned
+          )!;
+          const lastSkin = i === trackedGirl.skins!.length;
+          const currentTrackedSkin = trackedGirl.skins![i];
 
-            const skinsShardsToFill = lastSkin
-              ? skinShardsPool
-              : Math.min(33, skinShardsPool);
-            skinShardsPool -= skinsShardsToFill;
-            currentTrackedSkin.dropped_shards = skinsShardsToFill;
+          const skinsShardsToFill = lastSkin
+            ? skinShardsPool
+            : Math.min(33, skinShardsPool);
+          skinShardsPool -= skinsShardsToFill;
+          currentTrackedSkin.dropped_shards = skinsShardsToFill;
 
-            const fightsSkin = lastSkin
-              ? number_of_battles - fightsAccounted
-              : number_of_battles - Math.round((number_of_battles * skinsShardsToFill) / totalShards);
-            currentTrackedSkin.number_fight += fightsSkin;
-            fightsAccounted += fightsSkin;
-          }
+          const fightsSkin = lastSkin
+            ? number_of_battles - fightsAccounted
+            : number_of_battles - Math.round((number_of_battles * skinsShardsToFill) / totalShards);
+          currentTrackedSkin.number_fight += fightsSkin;
+          fightsAccounted += fightsSkin;
         }
-      } else {
-        // Not yet implemented
       }
       return trackedGirl;
     }
     function getGirlLastShardCount(
       trackedGirl: TrackedGirl,
       dropInfo: PostFightShard
-    ): number | undefined {
+    ): number {
       //for an eventual future use ?, maybe even asking the user if we need to fetch the harem page to see the shard count ?
       // Or make an option for the user to have a fetch option on battle page to update last shard count
       if (trackedGirl.last_shards_count !== undefined) {
