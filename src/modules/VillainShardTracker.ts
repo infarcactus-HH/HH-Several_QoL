@@ -79,6 +79,9 @@ export default class ShardTracker extends HHModule {
           if (!trackedGirl) {
             return;
           }
+
+          trackedGirl.last_fight_time = Date.now();
+
           const dropInfo = dropsByGirlId.get(girlID);
           if (!dropInfo) {
             // no drops for this girl so only increase number of fights
