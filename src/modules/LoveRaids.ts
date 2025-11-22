@@ -33,7 +33,7 @@ export default class LoveRaids extends HHModule {
       {
         key: "hideRaidCardsUntillStart",
         default: false,
-        label: `<span tooltip="Hides raids until they start (5min before starting they'll appear)">Hide raids cards until they start</span>`,
+        label: `<span tooltip="Hides raids (on season, champion etc) until they start (5min before starting they'll appear)">Hide raids cards until they start</span>`,
       },
     ],
   };
