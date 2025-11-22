@@ -1,6 +1,27 @@
 import { popupForQueue } from "../types/GameTypes";
 
 export default class GameHelpers {
+  static createPopup(
+    type: popupForQueue['popup']['type'],
+    popupID: string,
+    $content: JQuery<HTMLElement>,
+    title?: string,
+  ) {
+    switch (type) {
+      case "common":
+        this.createCommonPopup(popupID, (popup, _t) => {
+          const $container = popup.$dom_element.find(".container-special-bg");
+          if (title) {
+            $container.append(`<div class="title">${title}</div>`);
+          }
+          $container.append($content);
+        });
+        break;
+      default:
+        throw `type ${type} not implemented yet`;
+    }
+  }
+
   static createCommonPopup(
     popupID: string,
     Finit: (popup: popupForQueue["popup"], t: boolean) => void
