@@ -1,7 +1,8 @@
 import type {
-  LegendaryMythicTrackedGirlRecord,
-  MythicTrackedGirlsMap,
-} from "../types/MythicTracking";
+  TrackedGirl,
+  TrackedGirlRecords,
+} from "../types/ShardTracker";
+import {GirlID} from "../types/GameTypes";
 
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
@@ -135,41 +136,49 @@ export class sessionStorageHandler {
   }
 }
 
-export class legendaryMythicTrackingStorageHandler {
+// XXX: it'll be more like a villain tracker if we start tracking boosters or
+//   other bonus stuff too
+export class ShardTrackerStorageHandler {
   static setCurrentTrackingState(
     trollID: number,
-    girlIds: number[] = []
+    girlIds: GirlID[] = []
   ): void {
-    GM_setValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
+    // XXX: we forgot to rename the key
+    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID,
       girlIds,
     });
   }
-  static getCurrentTrackingState(): { trollID: number; girlIds: number[] } {
-    return GM_getValue(HH_UNIVERSE + "LegendaryMythicCurrentTrackingState", {
+  private static currentStoredRecords : TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
+  static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
+    return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID: -1,
       girlIds: [],
-    }) as { trollID: number; girlIds: number[] };
+    }) as { trollID: number; girlIds: GirlID[] };
   }
 
-  static getTrackedGirls(): MythicTrackedGirlsMap {
-    return GM_getValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", {});
+  static getTrackedGirls(): TrackedGirlRecords {
+    if(this.currentStoredRecords === null) {
+      this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
+    }
+    return this.currentStoredRecords!;
   }
-  static setTrackedGirls(records: MythicTrackedGirlsMap): void {
-    GM_setValue(HH_UNIVERSE + "LegendaryMythicTrackedGirls", records);
+  static setTrackedGirls(records: TrackedGirlRecords): void {
+    this.currentStoredRecords = records;
+    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", this.currentStoredRecords);
   }
-  static getTrackedGirl(id_girl: number): LegendaryMythicTrackedGirlRecord | undefined {
+  static getTrackedGirl(id_girl: GirlID): TrackedGirl | undefined {
     const records = this.getTrackedGirls();
     return records[id_girl];
   }
   static upsertTrackedGirl(
-    id_girl: number,
-    record: LegendaryMythicTrackedGirlRecord
+    id_girl: GirlID,
+    record: TrackedGirl
   ): void {
     const records = this.getTrackedGirls();
     this.setTrackedGirls({ ...records, [id_girl]: record });
   }
-  static removeTrackedGirl(id_girl: number): void {
+  static removeTrackedGirl(id_girl: GirlID): void {
     const records = this.getTrackedGirls();
     if (records[id_girl]) {
       const { [id_girl]: _removed, ...rest } = records;

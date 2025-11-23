@@ -15,7 +15,7 @@ import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLas
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
-import LegendaryMythicTracker from "./modules/Legendary-MythicTracking";
+import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
 import CustomCSS from "./customCSS";
 
@@ -66,6 +66,7 @@ class Userscript {
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
     LeagueCorrectRankShowing,
+    ShardTracker,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
