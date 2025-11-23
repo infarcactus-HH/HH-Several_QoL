@@ -518,7 +518,7 @@ export default class ShardTracker extends HHModule {
   createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
     const shards = girl.dropped_shards + (girl.skins ?? []).reduce((sum, skin) => { return sum + (skin.dropped_shards ?? 0) },0);
     const fights = girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0);
-    const percent = (fights == 0 ? 0 : 100 * shards / fights).toFixed(2);
+    const percent = (fights == 0 ? 0 : 100 * shards / fights).toFixed(2) + '%';
 
     return $(`
       <div id_girl="${id_girl}">
@@ -544,7 +544,6 @@ export default class ShardTracker extends HHModule {
               </div>
               <div class="drop-rate">
                 <span class="label">${percent}</span>
-                <span class="icon percent"></span>
               </div>
             </div>
           </div>
