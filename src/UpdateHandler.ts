@@ -22,7 +22,7 @@ export default class UpdateHandler {
     //  .split(".")
     //  .map(Number);
 
-    if (storedMinor === 19 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor === 20 && GlobalStorageHandler.getShowUpdatePopup()) {
       if(!location.hostname.startsWith("nutaku")) {
         return; // only show update popup on nutaku for this update
       }
@@ -37,24 +37,15 @@ export default class UpdateHandler {
         $container.append(
           $(
             `<div class="changelog-content hh-scroll">
-              <h2> New Feature : Popup-- (OFF BY DEFAULT!)</h2>
+              <h2> New Feature : Villain SHard Tracker !</h2>
               <p>
-                This feature makes less popup appear (also No annoying popup got merged into it).<br>
-                - No popup on claiming daily missions<br>
-                - No popup on level up (that would also redirect you somewhere random sometimes)
+                This feature automaticly tracks your drop rates for Legendary & Mythic shards <br>
+                Will soon include some stats crunching etc... <br>
+                Interface is still a WIP but basic features are here ! <br>
               </p>
-              <h3> Event Info </h3>
+              <h3>Popup-- </h3>
               <p>
-                - Added new events : ME, SM, Double Date, OD<br>
-                - Moved SM event timer in SM page to below the chest
-              </p>
-              <h3> Bug fixes </h3>
-              <p>
-                - WBC was shown as WBT instead<br>
-                - PoP++ was not updating correctly HH++ PoP tracker<br>
-                - Fix for SM "Restock Now" appearing before event started<br>
-                - More reliable No annoying Popups<br>
-                And various small fixes & performance improvements
+                Some New Features, go check them out
               </p>
             </div>`
           )
