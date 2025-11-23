@@ -518,7 +518,7 @@ export default class ShardTracker extends HHModule {
   createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
     const shards = girl.dropped_shards + (girl.skins ?? []).reduce((sum, skin) => { return sum + (skin.dropped_shards ?? 0) },0);
     const fights = girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0);
-    const percent = fights == 0 ? 0 : 100 * shards / fights;
+    const percent = (fights == 0 ? 0 : 100 * shards / fights).toFixed(2);
 
     return $(`
       <div id_girl="${id_girl}">
@@ -556,7 +556,7 @@ export default class ShardTracker extends HHModule {
   createGirlList(): JQuery<HTMLElement> {
     const $girlList = $('<div class="girl-grid hh-scroll"></div>');
     Object.entries(ShardTrackerStorageHandler.getTrackedGirls())
-      // .filter(([_, girl]) => girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0) > 0)
+      .filter(([_, girl]) => girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0) > 0)
       .sort(([_, a], [__, b]) => b.last_fight_time - a.last_fight_time)
       .map(([id, girl]) => this.createGirlEntry(+id, girl))
       .forEach($girlEntry => { $girlList.append($girlEntry) });
