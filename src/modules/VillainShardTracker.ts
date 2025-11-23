@@ -283,6 +283,10 @@ export default class ShardTracker extends HHModule {
           fightsAccounted += fightsSkin;
         }
       }
+      ShardTrackerStorageHandler.upsertTrackedGirl(
+        dropInfo.id_girl,
+        trackedGirl
+      );
       return trackedGirl;
     }
     function getGirlLastShardCount(
