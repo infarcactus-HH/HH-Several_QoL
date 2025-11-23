@@ -4,6 +4,9 @@ import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import type { GirlID, GirlRarity } from "../types/GameTypes";
 import { GradeSkins } from "../types/GameTypes/girls";
+import GameHelpers from "../utils/GameHelpers";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import villainShardTrackerCss from "../css/modules/VillainShardTracker.css";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -12,15 +15,22 @@ export default class ShardTracker extends HHModule {
       "<span tooltip='No way to see what you tracked for now,will be released later'>Tracks your Legendary & Mythic drops from Villains</span>",
     default: true,
   };
+
   static shouldRun() {
     return (
       location.pathname.includes("/troll-pre-battle.html") ||
       location.pathname.includes("/troll-battle.html")
     );
   }
+
+  static async injectCSS() {
+    GM_addStyle(villainShardTrackerCss);
+  }
+
   shouldTrackShards = false;
   // XXX: could be made configurable
   readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
+
   run() {
     if (this.hasRun || !ShardTracker.shouldRun()) {
       return;
@@ -28,6 +38,8 @@ export default class ShardTracker extends HHModule {
     this.hasRun = true;
     if (location.pathname === "/troll-pre-battle.html") {
       this.handlePreBattlePage();
+      ShardTracker.injectCSS().then(_ => {/* don't care */});
+      this.makeLogPopup();
     } else {
       this.handleBattlePage();
     }
@@ -42,6 +54,7 @@ export default class ShardTracker extends HHModule {
     console.log("ShardTracker module is running.");
     this.hookTrollAjaxComplete();
   }
+
   hookTrollAjaxComplete() {
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (
@@ -357,6 +370,7 @@ export default class ShardTracker extends HHModule {
       return trackedGirl;
     }
   }
+
   handlePreBattlePage() {
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
@@ -420,6 +434,7 @@ export default class ShardTracker extends HHModule {
       number_fight: 0,
       dropped_shards: 0,
       grade: girlShards.grade_offsets.static.length - 1,
+      last_fight_time: 0,
     };
     if (girlShards.is_girl_owned) {
       trackedGirlRecord.last_shards_count = 100;
@@ -488,6 +503,7 @@ export default class ShardTracker extends HHModule {
       );
     }
   }
+
   handleBattlePage() {
     const currentTrackingState =
       ShardTrackerStorageHandler.getCurrentTrackingState();
@@ -497,5 +513,70 @@ export default class ShardTracker extends HHModule {
     ) {
       this.shouldTrackShards = true;
     }
+  }
+
+  createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
+    const shards = girl.dropped_shards + (girl.skins ?? []).reduce((sum, skin) => { return sum + (skin.dropped_shards ?? 0) },0);
+    const fights = girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0);
+    const percent = fights == 0 ? 0 : 100 * shards / fights;
+
+    return $(`
+      <div id_girl="${id_girl}">
+        <div girl="${id_girl}" class="harem-girl">
+          <div class="left">
+            <img class="${girl.rarity}" src="${girl.ico}" alt="">
+          </div>
+          <div class="right">
+            <h4>${girl.name}</h4>
+            <div class="g_infos">
+              <div class="graded">
+                ${'<g></g>'.repeat(girl.grade)}
+              </div>
+            </div>
+            <div class="drop-display">
+              <div class="total-shards">
+                <span class="label">${shards}</span>
+                <span class="icon shards"></span>
+              </div>
+              <div class="total-fights">
+                <span class="label">${fights}</span>
+                <span class="icon fights"></span>
+              </div>
+              <div class="drop-rate">
+                <span class="label">${percent}</span>
+                <span class="icon percent"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  createGirlList(): JQuery<HTMLElement> {
+    const $girlList = $('<div class="girl-grid hh-scroll"></div>');
+    Object.entries(ShardTrackerStorageHandler.getTrackedGirls())
+      // .filter(([_, girl]) => girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0) > 0)
+      .sort(([_, a], [__, b]) => b.last_fight_time - a.last_fight_time)
+      .map(([id, girl]) => this.createGirlEntry(+id, girl))
+      .forEach($girlEntry => { $girlList.append($girlEntry) });
+    return $girlList;
+  }
+
+  makeLogPopup() {
+    const title = `Shard Drop Log`;
+    const $dropLog = $('<div class="drop-log"></div>');
+    $dropLog.append(this.createGirlList())
+    HHPlusPlusReplacer.doWhenSelectorAvailable('#pre-battle .opponent .personal_info', ($opp) => {
+      const $showLogButton = $(`
+        <span id="show-drop-log-several-qol">
+          <img tooltip hh_title="show drop log" src="https://hh.hh-content.com/design/ic_books_gray.svg" alt="show log">
+        </span>
+      `);
+      $opp.append($showLogButton);
+      $showLogButton.on('click', function () {
+        GameHelpers.createPopup('common', 'drop-log-several-qol', $dropLog, title);
+      });
+    });
   }
 }
