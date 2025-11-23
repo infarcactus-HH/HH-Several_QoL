@@ -237,7 +237,7 @@ export default class ShardTracker extends HHModule {
         return;
       }
       currentTrackedSkin.number_fight += number_of_battles;
-      currentTrackedSkin.dropped_shards = dropInfo.value - dropInfo.previous_value;
+      currentTrackedSkin.dropped_shards += dropInfo.value - dropInfo.previous_value;
       ShardTrackerStorageHandler.upsertTrackedGirl(
         dropInfo.id_girl,
         trackedGirl
@@ -274,7 +274,7 @@ export default class ShardTracker extends HHModule {
             ? skinShardsPool
             : Math.min(33, skinShardsPool);
           skinShardsPool -= skinsShardsToFill;
-          currentTrackedSkin.dropped_shards = skinsShardsToFill;
+          currentTrackedSkin.dropped_shards += skinsShardsToFill;
 
           const fightsSkin = lastSkin
             ? number_of_battles - fightsAccounted
@@ -333,8 +333,7 @@ export default class ShardTracker extends HHModule {
           return;
         } else {
           currentTrackedSkin.number_fight += nbFightsForThisSkin;
-          currentTrackedSkin.dropped_shards =
-            (currentTrackedSkin.dropped_shards ?? 0) + droppedShardsForThisSkin;
+          currentTrackedSkin.dropped_shards += droppedShardsForThisSkin;
         }
       });
       if (skinShardsPool > 33) {
@@ -355,8 +354,7 @@ export default class ShardTracker extends HHModule {
           33 - (currentTrackedSkin.dropped_shards ?? 0),
           skinShardsPool
         );
-        currentTrackedSkin.dropped_shards =
-          (currentTrackedSkin.dropped_shards ?? 0) + shardsToAdd;
+        currentTrackedSkin.dropped_shards += shardsToAdd;
         const fightsToAdd = Math.round(
           number_of_battles * (shardsToAdd / totalSkinShardsDropped)
         );
@@ -446,6 +444,7 @@ export default class ShardTracker extends HHModule {
           ico_path: skin.ico_path,
           number_fight: 0,
           is_owned: skin.is_owned, // will be false here
+          dropped_shards: 0,
         }));
       }
     }
@@ -479,6 +478,7 @@ export default class ShardTracker extends HHModule {
             ico_path: skin.ico_path,
             number_fight: 0,
             is_owned: skin.is_owned,
+            dropped_shards: 0,
           });
         } else if (skinTracked) {
           if (skinTracked.is_owned !== skin.is_owned) {

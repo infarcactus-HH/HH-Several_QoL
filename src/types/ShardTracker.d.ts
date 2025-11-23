@@ -12,7 +12,7 @@ export interface TrackedGirl {
   skins?: Array<{
     ico_path: string;
     number_fight: number;
-    dropped_shards?: number;
+    dropped_shards: number;
     is_owned: boolean;
   }>;
 }
