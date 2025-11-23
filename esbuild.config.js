@@ -2,6 +2,7 @@ const esbuild = require("esbuild");
 const fs = require("fs");
 const path = require("path");
 const terser = require("terser");
+const csso = require("csso");
 
 // Read package.json for metadata
 const packageJson = JSON.parse(
@@ -66,13 +67,14 @@ const userscriptPlugin = {
           if (terserResult.code) {
             content = terserResult.code;
 
-            const jqueryTemplateRegex = /\$\(`(.+)`\)/g;
+            const jqueryTemplateRegex = /\$\(`(.+?)`\)/gs;
             content = content.replace(jqueryTemplateRegex, (match, p1) => {
-              const singleLine = p1.replace(/\\n\s+/g, "").trim();
+              const singleLine = p1.replace(/\\n\s+/g, " ").trim();
               return `$(\`${singleLine}\`)`;
             });
 
             console.log("✅ Minified with Terser:", content.length, "bytes");
+            
           } else {
             console.warn(
               "⚠️ Terser did not return code, skipping minification."
@@ -93,7 +95,7 @@ const userscriptPlugin = {
   },
 };
 
-// Plugin to load CSS files as text strings using esbuild's CSS parser
+// Plugin to load CSS files as text strings using csso for minification
 const createCssTextPlugin = ({ minify }) => ({
   name: "css-text",
   setup(build) {
@@ -101,23 +103,23 @@ const createCssTextPlugin = ({ minify }) => ({
       console.log("📦 Loading CSS file:", args.path);
       const css = await fs.promises.readFile(args.path, "utf8");
 
-      const { code } = await esbuild.transform(css, {
-        loader: "css",
-        minify,
-        target: "es2021",
-        logLevel: "silent",
-      });
-
-      const output = code.trim();
+      let output = css;
 
       if (minify) {
-        console.log(
-          "📦 CSS minified:",
-          css.length,
-          "→",
-          output.length,
-          "bytes"
-        );
+        try {
+          const result = csso.minify(css);
+          output = result.css;
+          console.log(
+            "📦 CSS minified:",
+            css.length,
+            "→",
+            output.length,
+            "bytes"
+          );
+        } catch (error) {
+          console.warn("⚠️ CSS minification failed, using unminified CSS:", error.message);
+          output = css;
+        }
       }
 
       return {
