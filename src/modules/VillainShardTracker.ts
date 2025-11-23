@@ -23,7 +23,7 @@ export default class ShardTracker extends HHModule {
     );
   }
 
-  static async injectCSS() {
+  async injectCSS() {
     GM_addStyle(villainShardTrackerCss);
   }
 
@@ -38,7 +38,7 @@ export default class ShardTracker extends HHModule {
     this.hasRun = true;
     if (location.pathname === "/troll-pre-battle.html") {
       this.handlePreBattlePage();
-      ShardTracker.injectCSS().then(_ => {/* don't care */});
+      this.injectCSS();
       this.makeLogPopup();
     } else {
       this.handleBattlePage();
