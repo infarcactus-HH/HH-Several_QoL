@@ -1,4 +1,8 @@
-import type { DoBattlesTrollsResponse, PostFightShard, VillainPreBattle } from "../types/GameTypes/villains";
+import type {
+  DoBattlesTrollsResponse,
+  PostFightShard,
+  VillainPreBattle,
+} from "../types/GameTypes/villains";
 import type { TrackedGirl } from "../types/ShardTracker";
 import { HHModule } from "../types/HH++";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
@@ -66,6 +70,10 @@ export default class ShardTracker extends HHModule {
         if (!response || !response.rewards) {
           return;
         }
+        if (location.pathname === "/troll-pre-battle.html") {
+          // Avoids double clicks leading to sending and immediatly refreshing leading to lost data
+          $("button.battle-action-button").prop("disabled", true);
+        }
         console.log("ShardTracker response data:", { response });
         const battlesMatch = settings.data.match(/number_of_battles=(\d+)/);
         const number_of_battles = battlesMatch
@@ -104,7 +112,7 @@ export default class ShardTracker extends HHModule {
 
           if (dropInfo.previous_value > 100) {
             // shard drop is bugged and unusable
-            console.warn('unusable shard drop info:', dropInfo);
+            console.warn("unusable shard drop info:", dropInfo);
             // XXX: this could maybe be salvaged, so far I've only seen it on
             //   rewards where the girl dropped so we could set `previous_value`
             //   to `last_shards_count` if it is known and `value` to 100 to
@@ -237,7 +245,8 @@ export default class ShardTracker extends HHModule {
         return;
       }
       currentTrackedSkin.number_fight += number_of_battles;
-      currentTrackedSkin.dropped_shards += dropInfo.value - dropInfo.previous_value;
+      currentTrackedSkin.dropped_shards +=
+        dropInfo.value - dropInfo.previous_value;
       ShardTrackerStorageHandler.upsertTrackedGirl(
         dropInfo.id_girl,
         trackedGirl
@@ -264,9 +273,7 @@ export default class ShardTracker extends HHModule {
         let fightsAccounted = fightsGirl;
         while (skinShardsPool > 0) {
           // in case of multi skin drops, shouldn't be an issue doing it like this
-          const i = trackedGirl.skins!.findIndex(
-            (skin) => !skin.is_owned
-          )!;
+          const i = trackedGirl.skins!.findIndex((skin) => !skin.is_owned)!;
           const lastSkin = i === trackedGirl.skins!.length;
           const currentTrackedSkin = trackedGirl.skins![i];
 
@@ -278,7 +285,8 @@ export default class ShardTracker extends HHModule {
 
           const fightsSkin = lastSkin
             ? number_of_battles - fightsAccounted
-            : number_of_battles - Math.round((number_of_battles * skinsShardsToFill) / totalShards);
+            : number_of_battles -
+              Math.round((number_of_battles * skinsShardsToFill) / totalShards);
           currentTrackedSkin.number_fight += fightsSkin;
           fightsAccounted += fightsSkin;
         }
@@ -374,10 +382,6 @@ export default class ShardTracker extends HHModule {
   }
 
   handlePreBattlePage() {
-    $("button.battle-action-button").on("click.DisableAfterClick", () => {
-      // Avoids double clicks leading to sending and immediatly refreshing leading to lost data
-      $("button.battle-action-button").prop("disabled", true);
-    });
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
@@ -430,7 +434,9 @@ export default class ShardTracker extends HHModule {
   }
 
   private createTrackedGirlRecord(
-    girlShards: NonNullable<VillainPreBattle["rewards"]["data"]["shards"]>[number],
+    girlShards: NonNullable<
+      VillainPreBattle["rewards"]["data"]["shards"]
+    >[number],
     girl_plain: VillainPreBattle["rewards"]["girls_plain"][number]
   ): TrackedGirl {
     const trackedGirlRecord: TrackedGirl = {
@@ -524,9 +530,18 @@ export default class ShardTracker extends HHModule {
   }
 
   createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
-    const shards = girl.dropped_shards + (girl.skins ?? []).reduce((sum, skin) => { return sum + (skin.dropped_shards ?? 0) },0);
-    const fights = girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0);
-    const percent = (fights == 0 ? 0 : 100 * shards / fights).toFixed(2) + '%';
+    const shards =
+      girl.dropped_shards +
+      (girl.skins ?? []).reduce((sum, skin) => {
+        return sum + (skin.dropped_shards ?? 0);
+      }, 0);
+    const fights =
+      girl.number_fight +
+      (girl.skins ?? []).reduce((sum, skin) => {
+        return sum + skin.number_fight;
+      }, 0);
+    const percent =
+      (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
 
     return $(`
       <div id_girl="${id_girl}">
@@ -538,7 +553,7 @@ export default class ShardTracker extends HHModule {
             <h4>${girl.name}</h4>
             <div class="g_infos">
               <div class="graded">
-                ${'<g></g>'.repeat(girl.grade)}
+                ${"<g></g>".repeat(girl.grade)}
               </div>
             </div>
             <div class="drop-display">
@@ -563,27 +578,44 @@ export default class ShardTracker extends HHModule {
   createGirlList(): JQuery<HTMLElement> {
     const $girlList = $('<div class="girl-grid hh-scroll"></div>');
     Object.entries(ShardTrackerStorageHandler.getTrackedGirls())
-      .filter(([_, girl]) => girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => { return sum + skin.number_fight },0) > 0)
+      .filter(
+        ([_, girl]) =>
+          girl.number_fight +
+            (girl.skins ?? []).reduce((sum, skin) => {
+              return sum + skin.number_fight;
+            }, 0) >
+          0
+      )
       .sort(([_, a], [__, b]) => b.last_fight_time - a.last_fight_time)
       .map(([id, girl]) => this.createGirlEntry(+id, girl))
-      .forEach($girlEntry => { $girlList.append($girlEntry) });
+      .forEach(($girlEntry) => {
+        $girlList.append($girlEntry);
+      });
     return $girlList;
   }
 
   makeLogPopup() {
     const title = `Shard Drop Log`;
     const $dropLog = $('<div class="drop-log"></div>');
-    $dropLog.append(this.createGirlList())
-    HHPlusPlusReplacer.doWhenSelectorAvailable('#pre-battle .opponent .personal_info', ($opp) => {
-      const $showLogButton = $(`
+    $dropLog.append(this.createGirlList());
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      "#pre-battle .opponent .personal_info",
+      ($opp) => {
+        const $showLogButton = $(`
         <span id="show-drop-log-several-qol">
           <img tooltip hh_title="show drop log" src="https://hh.hh-content.com/design/ic_books_gray.svg" alt="show log">
         </span>
       `);
-      $opp.append($showLogButton);
-      $showLogButton.on('click', function () {
-        GameHelpers.createPopup('common', 'drop-log-several-qol', $dropLog, title);
-      });
-    });
+        $opp.append($showLogButton);
+        $showLogButton.on("click", function () {
+          GameHelpers.createPopup(
+            "common",
+            "drop-log-several-qol",
+            $dropLog,
+            title
+          );
+        });
+      }
+    );
   }
 }
