@@ -374,6 +374,10 @@ export default class ShardTracker extends HHModule {
   }
 
   handlePreBattlePage() {
+    $("button.battle-action-button").on("click.DisableAfterClick", () => {
+      // Avoids double clicks leading to sending and immediatly refreshing leading to lost data
+      $("button.battle-action-button").prop("disabled", true);
+    });
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
