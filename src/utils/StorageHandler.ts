@@ -149,6 +149,7 @@ export class ShardTrackerStorageHandler {
       girlIds,
     });
   }
+
   private static currentStoredRecords : TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
   static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
@@ -163,14 +164,17 @@ export class ShardTrackerStorageHandler {
     }
     return this.currentStoredRecords!;
   }
+
   static setTrackedGirls(records: TrackedGirlRecords): void {
     this.currentStoredRecords = records;
     GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", this.currentStoredRecords);
   }
+
   static getTrackedGirl(id_girl: GirlID): TrackedGirl | undefined {
     const records = this.getTrackedGirls();
     return records[id_girl];
   }
+
   static upsertTrackedGirl(
     id_girl: GirlID,
     record: TrackedGirl
@@ -178,6 +182,7 @@ export class ShardTrackerStorageHandler {
     const records = this.getTrackedGirls();
     this.setTrackedGirls({ ...records, [id_girl]: record });
   }
+
   static removeTrackedGirl(id_girl: GirlID): void {
     const records = this.getTrackedGirls();
     if (records[id_girl]) {

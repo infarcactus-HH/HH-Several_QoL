@@ -2,6 +2,7 @@ import GameHelpers from "./utils/GameHelpers";
 import { HHPlusPlusReplacer } from "./utils/HHPlusPlusreplacer";
 import { GlobalStorageHandler } from "./utils/StorageHandler";
 import updateHandlerCss from "./css/UpdateHandler.css";
+import type { TrackedGirlRecords } from "./types/ShardTracker";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
@@ -21,9 +22,29 @@ export default class UpdateHandler {
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
+    if (storedMinor === 20 && storedPatch < 4) {
+      //Fix Broken Shard tracked girls storage from between v1.20.3 to 1.20.0
+      const values = GM_listValues().filter((v) =>
+        v.includes("VillainShardTrackerTrackedGirls")
+      );
+      values.forEach((v) => {
+        const data = GM_getValue(v, {}) as TrackedGirlRecords;
+        Object.values(data).forEach((girlRecord) => {
+          if (girlRecord.skins) {
+            girlRecord.skins.forEach((skin) => {
+              if (skin.dropped_shards === null) {
+                skin.dropped_shards = 0;
+                skin.number_fight = 0;
+              }
+            });
+          }
+        });
+        GM_setValue(v, data);
+      });
+    }
 
     if (storedMinor === 20 && GlobalStorageHandler.getShowUpdatePopup()) {
-      if(!location.hostname.startsWith("nutaku")) {
+      if (!location.hostname.startsWith("nutaku")) {
         return; // only show update popup on nutaku for this update
       }
       UpdateHandler.injectCSS();
@@ -53,7 +74,9 @@ export default class UpdateHandler {
         const $footer = $(`<div class="footer">
               <span>Thank you for using Several QoL! </span> <span style="margin-left:10px" tooltip="Won't be show often only on new features"> Show this popup:</span>
             </div>`);
-        const $toggleUpdatePopup = $(`<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked></input>`);
+        const $toggleUpdatePopup = $(
+          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked></input>`
+        );
         $toggleUpdatePopup.on("change", () => {
           const show = $toggleUpdatePopup.prop("checked");
           console.log("Setting show update popup to ", show);
@@ -73,7 +96,10 @@ export default class UpdateHandler {
   static addOptionToHHPlusPlusConfig() {
     let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup();
     HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".hh-plus-plus-config-button" + (unsafeWindow.hhPlusPlusConfig?.BoobStrapped ? '.boob-strapped' : ":not(.boob-strapped)" ),
+      ".hh-plus-plus-config-button" +
+        (unsafeWindow.hhPlusPlusConfig?.BoobStrapped
+          ? ".boob-strapped"
+          : ":not(.boob-strapped)"),
       ($element) => {
         console.log("Adding click handler to HH++ config");
         $element.on("click.severalQoLAddConfig", () => {
