@@ -161,7 +161,6 @@ export class ShardTrackerStorageHandler {
   static getTrackedGirls(): TrackedGirlRecords {
     if(this.currentStoredRecords === null) {
       this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
-      this.fixRecords();
     }
     return this.currentStoredRecords!;
   }
@@ -190,16 +189,5 @@ export class ShardTrackerStorageHandler {
       const { [id_girl]: _removed, ...rest } = records;
       this.setTrackedGirls(rest);
     }
-  }
-
-  private static fixRecords() {
-    Object(this.currentStoredRecords).values().forEach((girl: TrackedGirl) => {
-      girl.skins?.forEach((skin)=>{
-        if (skin.dropped_shards === null) {
-          skin.dropped_shards = 0;
-          skin.number_fight = 0;
-        }
-      });
-    });
   }
 }
