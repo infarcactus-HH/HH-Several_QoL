@@ -7,6 +7,7 @@ import {
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import loveRaidsCss from "../css/modules/LoveRaids.css";
+import GameHelpers from "../utils/GameHelpers";
 
 declare const love_raids: Array<love_raids> | undefined;
 
@@ -135,11 +136,8 @@ export default class LoveRaids extends HHModule {
         const haremLink = shared.general.getDocumentHref(
           `/characters/${id_girl}`
         );
-        const wikiLink = unsafeWindow.HHPlusPlus.Helpers.getWikiLink(
-          name,
-          id_girl,
-          unsafeWindow.HHPlusPlus.I18n.getLang()
-        );
+        const wikiLink = GameHelpers.getWikiPageForCurrentGame(name);
+
         if (
           grade_skins.length &&
           !raidCard.classList.contains("multiple-girl") &&
@@ -210,9 +208,11 @@ export default class LoveRaids extends HHModule {
               .find(".raid-name > span > span")
               .first()
               .text(`${name} ${GT.design.love_raid}`);
-            $raidCard
-              .find(".girl-name")
-              .html(`<a href="${wikiLink}" target="_blank">${name}</a>`);
+            if (wikiLink) {
+              $raidCard
+                .find(".girl-name")
+                .html(`<a href="${wikiLink}" target="_blank">${name}</a>`);
+            }
           }
         );
 
@@ -305,7 +305,9 @@ export default class LoveRaids extends HHModule {
           if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
             $raidName.attr("data-notify", "true");
           }
-          const $notifyToggle = $(`<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`);
+          const $notifyToggle = $(
+            `<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`
+          );
           $notifyToggle.on("click", (event) => {
             event.stopPropagation();
             if (currentLoveRaidNotifs.includes(raidData.id_raid)) {

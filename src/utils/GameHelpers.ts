@@ -63,4 +63,16 @@ export default class GameHelpers {
     shared.PopupQueueManager.add({ popup: generatedPopup });
     return generatedPopup;
   }
+
+  static getWikiPageForCurrentGame(name: string) : string | undefined {
+    const formattedName = name.replace(/ /g, "-");
+    if (location.host.includes("heroes.com")) {
+      return `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedName}`;
+    } else if (location.host.includes("gayharem")) {
+      return `https://harem-battle.club/wiki/Gay-Harem/GH:${formattedName}`;
+    } else if (location.host.includes("gaypornstarharem")) {
+      return `https://harem-battle.club/wiki/Gay-Pornstar-Harem/GPSH:${formattedName}`;
+    } 
+    return undefined;
+  }
 }
