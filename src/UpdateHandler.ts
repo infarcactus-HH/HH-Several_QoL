@@ -123,7 +123,7 @@ export default class UpdateHandler {
               <span>Thank you for using Several QoL! </span> <span style="margin-left:10px" tooltip="Won't be show often only on new features"> Show this popup:</span>
             </div>`);
         const $toggleUpdatePopup = $(
-          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked></input>`
+          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked>`
         );
         $toggleUpdatePopup.on("change", () => {
           const show = $toggleUpdatePopup.prop("checked");
