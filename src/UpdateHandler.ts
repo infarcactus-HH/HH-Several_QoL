@@ -106,9 +106,9 @@ export default class UpdateHandler {
         $container.append(
           $(
             `<div class="changelog-content hh-scroll">
-              <h2> New Feature : Villain SHard Tracker !</h2>
+              <h2> New Feature : Villain Shard Tracker !</h2>
               <p>
-                This feature automaticly tracks your drop rates for Legendary & Mythic shards <br>
+                This feature automatically tracks your drop rates for Legendary & Mythic shards <br>
                 Will soon include some stats crunching etc... <br>
                 Interface is still a WIP but basic features are here ! <br>
               </p>
