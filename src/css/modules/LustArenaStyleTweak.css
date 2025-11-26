@@ -1,0 +1,100 @@
+.lust-arena-style-tweak-wrapper {
+  width: 100%;
+  height: 54px;
+}
+
+.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] p,
+.lust-arena-style-tweak-wrapper > [rel="leagues"],
+.lust-arena-style-tweak-wrapper > [rel="season"] {
+  background-color: var(--lust-arena-left-side-bg-color);
+  color: var(--lust-arena-left-side-color);
+  border: 1px solid var(--lust-arena-left-side-color);
+  z-index: 1;
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+.lust-arena-style-tweak-wrapper > [rel] {
+  position: relative;
+  text-decoration: none;
+}
+
+.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] {
+  display: block;
+  width: min-content;
+  height: min-content;
+  transform: rotate(-90deg);
+  top: 10px;
+  left: -19px; 
+}
+.lust-arena-style-tweak-wrapper
+  > [rel="pvp-arena"]
+  > .button-notification-reward {
+  display: none;
+}
+
+.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] span > p {
+  width: 55px;
+  font-size: 9px;
+  height: 17px;
+  padding: 0px;
+  top: 8px;
+  align-content: center;
+  text-align: center; 
+}
+
+.lust-arena-style-tweak-wrapper > [rel="leagues"] {
+  top: -35px;
+  left: 18px;
+  display: inline-block;
+}
+.lust-arena-style-tweak-wrapper > [rel="leagues"] img {
+  width: 53px;
+  height: 53px;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+}
+.lust-arena-style-tweak-wrapper > [rel="leagues"] p {
+  position: relative;
+  z-index: 1;
+  width: 53px;
+  height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+   text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000,
+    1px -1px 0 #000;
+}
+
+.lust-arena-style-tweak-wrapper > [rel="season"] {
+  top: -35px;
+  left: 20px;
+  display: inline-block;
+}
+.lust-arena-style-tweak-wrapper > [rel="season"] img {
+  width: 53px;
+  height: 53px;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+}
+.lust-arena-style-tweak-wrapper > [rel="season"] p {
+  position: relative;
+  z-index: 1;
+  width: 53px;
+  height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000,
+    1px -1px 0 #000;
+}
