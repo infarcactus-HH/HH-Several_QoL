@@ -263,7 +263,7 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
           console.log(`${"=".repeat(60)}`);
           
           debugInfo.forEach((info, idx) => {
-            const savedBytes = info.beforeLen - 4 - info.afterLen;
+            const savedBytes = info.beforeLen - 4 - info.afterLen; // Subtract 4 for the removed html tag
             const savedPercent = ((savedBytes / info.beforeLen) * 100).toFixed(1);
             
             console.log(`\n--- Template #${idx + 1} (saved ${savedBytes} bytes, ${savedPercent}%) ---`);
