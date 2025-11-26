@@ -446,7 +446,7 @@ export default class ShardTracker extends HHModule {
       rarity: girlShards.rarity,
       number_fight: 0,
       dropped_shards: 0,
-      grade: /<g/g.exec(girlShards.graded2)!.length,
+      grade: girlShards.graded2.match(/<g/g)!.length,
       last_fight_time: 0,
     };
     if (girlShards.is_girl_owned) {
