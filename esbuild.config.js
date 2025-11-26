@@ -3,6 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const terser = require("terser");
 const csso = require("csso");
+const htmlMinifier = require("html-minifier-terser");
+const babelParser = require("@babel/parser");
+const babelTraverse = require("@babel/traverse").default;
 
 // Read package.json for metadata
 const packageJson = JSON.parse(
@@ -66,15 +69,7 @@ const userscriptPlugin = {
           });
           if (terserResult.code) {
             content = terserResult.code;
-
-            const jqueryTemplateRegex = /\$\(`(.+?)`\)/gs;
-            content = content.replace(jqueryTemplateRegex, (match, p1) => {
-              const singleLine = p1.replace(/\\n\s+/g, " ").trim();
-              return `$(\`${singleLine}\`)`;
-            });
-
             console.log("✅ Minified with Terser:", content.length, "bytes");
-            
           } else {
             console.warn(
               "⚠️ Terser did not return code, skipping minification."
@@ -100,21 +95,16 @@ const createCssTextPlugin = ({ minify }) => ({
   name: "css-text",
   setup(build) {
     build.onLoad({ filter: /\.css$/ }, async (args) => {
-      console.log("📦 Loading CSS file:", args.path);
       const css = await fs.promises.readFile(args.path, "utf8");
 
       let output = css;
 
       if (minify) {
-        try {
+          try {
           const result = csso.minify(css);
           output = result.css;
           console.log(
-            "📦 CSS minified:",
-            css.length,
-            "→",
-            output.length,
-            "bytes"
+            `📦 ${path.basename(args.path)} minified`
           );
         } catch (error) {
           console.warn("⚠️ CSS minification failed, using unminified CSS:", error.message);
@@ -127,6 +117,129 @@ const createCssTextPlugin = ({ minify }) => ({
         loader: "js",
         resolveDir: path.dirname(args.path),
       };
+    });
+  },
+});
+
+// Plugin to minify HTML in tagged template literals using html`...`
+// Uses proper AST parsing via Babel for reliability
+const createHtmlMinifyPlugin = ({ minify }) => ({
+  name: "html-minify",
+  setup(build) {
+    build.onLoad({ filter: /\.ts$/ }, async (args) => {
+      const source = await fs.promises.readFile(args.path, "utf8");
+      if (!minify) {
+        return null; // In dev mode, don't transform
+      }
+
+      // Skip if no html tagged templates
+      if (!source.includes("html`")) {
+        return null;
+      }
+
+      try {
+        // Parse the source code into an AST
+        const ast = babelParser.parse(source, {
+          sourceType: "module",
+          plugins: ["typescript"],
+        });
+
+        // Collect all html tagged template literals with their positions
+        const replacements = [];
+
+        babelTraverse(ast, {
+          TaggedTemplateExpression(nodePath) {
+            const { node } = nodePath;
+
+            // Check if this is an html`` tagged template
+            if (node.tag.type !== "Identifier" || node.tag.name !== "html") {
+              return;
+            }
+
+            const { quasis, expressions } = node.quasi;
+
+            // Build the template content with placeholders for expressions
+            let templateContent = "";
+            const expressionTexts = [];
+
+            quasis.forEach((quasi, i) => {
+              templateContent += quasi.value.raw;
+              if (i < expressions.length) {
+                // Store the original expression source code
+                const expr = expressions[i];
+                const exprSource = source.slice(expr.start, expr.end);
+                expressionTexts.push(exprSource);
+                templateContent += `__HTML_EXPR_${i}__`;
+              }
+            });
+
+            replacements.push({
+              start: node.start,
+              end: node.end,
+              templateContent,
+              expressionTexts,
+            });
+          },
+        });
+
+        if (replacements.length === 0) {
+          return null;
+        }
+
+        // Process replacements in reverse order to preserve positions
+        let output = source;
+        for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
+          try {
+            // Minify the HTML content
+            const minified = await htmlMinifier.minify(replacement.templateContent, {
+              collapseWhitespace: true,
+              removeComments: true,
+              removeRedundantAttributes: true,
+              removeEmptyAttributes: false,
+              collapseBooleanAttributes: true,
+              minifyCSS: true,
+              minifyJS: false, // Don't minify JS in attributes - could break interpolations
+              conservativeCollapse: true,
+            });
+
+            // Restore expressions (case-insensitive because html-minifier can lowercase attributes)
+            let finalContent = minified;
+            replacement.expressionTexts.forEach((exprText, i) => {
+              finalContent = finalContent.replace(
+                new RegExp(`__HTML_EXPR_${i}__`, 'gi'),
+                `\${${exprText}}`
+              );
+            });
+
+            // Replace the tagged template with just a regular template literal
+            output =
+              output.slice(0, replacement.start) +
+              `\`${finalContent}\`` +
+              output.slice(replacement.end);
+          } catch (error) {
+            console.warn(
+              `⚠️ HTML minification failed for template in ${args.path}:`,
+              error.message
+            );
+          }
+        }
+
+        console.log(
+          `🗜️ ${path.basename(args.path)} ${replacements.length} HTML template(s) minified`
+        );
+
+        return {
+          contents: output,
+          loader: "ts",
+        };
+      } catch (parseError) {
+        // If parsing fails, return null to let esbuild handle it normally
+        console.warn(
+          `⚠️ AST parsing failed for ${args.path}, skipping HTML minification:`,
+          parseError.message
+        );
+        return null;
+      }
     });
   },
 });
@@ -144,7 +257,11 @@ async function build() {
       minify: !isWatch, // Don't minify in watch mode for easier debugging
       sourcemap: false,
       external: ["jquery"], // jQuery is available globally as $
-  plugins: [createCssTextPlugin({ minify: !isWatch }), userscriptPlugin],
+      plugins: [
+        createHtmlMinifyPlugin({ minify: !isWatch }),
+        createCssTextPlugin({ minify: !isWatch }),
+        userscriptPlugin,
+      ],
       define: {
         // Replace any build-time constants
         "process.env.NODE_ENV": isWatch ? '"development"' : '"production"',

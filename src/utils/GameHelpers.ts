@@ -1,4 +1,5 @@
 import { popupForQueue } from "../types/GameTypes";
+import html from "./html";
 
 export default class GameHelpers {
   static createPopup(
@@ -12,7 +13,7 @@ export default class GameHelpers {
         this.createCommonPopup(popupID, (popup, _t) => {
           const $container = popup.$dom_element.find(".container-special-bg");
           if (title) {
-            $container.append(`<div class="title">${title}</div>`);
+            $container.append(html`<div class="title">${title}</div>`);
           }
           $container.append($content);
         });
@@ -26,15 +27,15 @@ export default class GameHelpers {
     popupID: string,
     Finit: (popup: popupForQueue["popup"], t: boolean) => void
   ) {
-    const generatePopupDOM = $(
-      `<div class="popup_wrapper">` +
-        `<div class="popup_background clickable"></div>` +
-        `<div class="popup several-qol-popup" id="popup-${popupID}">` +
-        `<div class="container-special-bg" id="container-${popupID}"></div>` +
-        `<close class="closable"></close>` +
-        `</div>` +
-        `</div>`
-    );
+    const generatePopupDOM = $(html`
+      <div class="popup_wrapper">
+        <div class="popup_background clickable"></div>
+        <div class="popup several-qol-popup" id="popup-${popupID}">
+          <div class="container-special-bg" id="container-${popupID}"></div>
+          <close class="closable"></close>
+        </div>
+      </div>
+    `);
     let generatedPopup: popupForQueue["popup"] = {
       init: function (t: boolean) {
         $(`#common-popups`).prepend(this.$dom_element); // has to append to it ourselves

@@ -4,6 +4,7 @@ import { GlobalStorageHandler } from "./utils/StorageHandler";
 import updateHandlerCss from "./css/UpdateHandler.css";
 import { TrackedGirlRecords } from "./types/ShardTracker";
 import { GirlID, Grade } from "./types/GameTypes";
+import html from "./utils/html";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
@@ -101,8 +102,8 @@ export default class UpdateHandler {
           )
         );
         $container.append(
-          $(
-            `<div class="changelog-content hh-scroll">
+          $(html`
+            <div class="changelog-content hh-scroll">
               <h2> New Feature : Villain Shard Tracker !</h2>
               <p>
                 This feature automatically tracks your drop rates for Legendary & Mythic shards <br>
@@ -113,12 +114,15 @@ export default class UpdateHandler {
               <p>
                 Some New Features, go check them out
               </p>
-            </div>`
-          )
+            </div>
+          `)
         );
-        const $footer = $(`<div class="footer">
-              <span>Thank you for using Several QoL! </span> <span style="margin-left:10px" tooltip="Won't be show often only on new features"> Show this popup:</span>
-            </div>`);
+        const $footer = $(html`
+          <div class="footer">
+            <span>Thank you for using Several QoL! </span>
+            <span style="margin-left:10px" tooltip="Won't be show often only on new features"> Show this popup:</span>
+          </div>
+        `);
         const $toggleUpdatePopup = $(
           `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked>`
         );

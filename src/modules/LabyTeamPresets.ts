@@ -4,6 +4,7 @@ import {
   LabyTeamStorageHandler,
   WBTTeamStorageHandler,
 } from "../utils/StorageHandler";
+import html from "../utils/html";
 
 export default class LabyTeamPresets extends HHModule {
   readonly configSchema = {
@@ -61,20 +62,18 @@ export default class LabyTeamPresets extends HHModule {
   }
   editTeamPageRun() {
     const $centralPanel = $(".boss-bang-panel");
-    const $savePresetBtn = $(
-      `<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`
-    );
+    const $savePresetBtn = $(html`<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`);
     $savePresetBtn.on("click", () => {
       this.saveCurrentPreset();
       $FillPresetBtn.removeAttr("disabled");
     });
     $centralPanel.append($savePresetBtn);
 
-    const $FillPresetBtn = $(
-      `<button class="green_button_L" tooltip="Use previously saved preset & leave page" ${
-        !this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""
-      }>Fill Preset</button>`
-    );
+    const $FillPresetBtn = $(html`
+      <button class="green_button_L" tooltip="Use previously saved preset & leave page" ${!this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""}>
+        Fill Preset
+      </button>
+    `);
     $FillPresetBtn.on("click", () => {
       this.loadSavedPreset();
     });

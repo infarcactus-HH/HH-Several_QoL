@@ -11,6 +11,7 @@ import { GradeSkins } from "../types/GameTypes/girls";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import villainShardTrackerCss from "../css/modules/VillainShardTracker.css";
+import html from "../utils/html";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -543,7 +544,7 @@ export default class ShardTracker extends HHModule {
     const percent =
       (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
 
-    return $(`
+    return $( html`
       <div id_girl="${id_girl}">
         <div girl="${id_girl}" class="harem-girl">
           <div class="left">
@@ -601,11 +602,11 @@ export default class ShardTracker extends HHModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       "#pre-battle .opponent .personal_info",
       ($opp) => {
-        const $showLogButton = $(`
-        <span id="show-drop-log-several-qol">
-          <img tooltip hh_title="show drop log" src="https://hh.hh-content.com/design/ic_books_gray.svg" alt="show log">
-        </span>
-      `);
+        const $showLogButton = $(html`
+          <span id="show-drop-log-several-qol">
+            <img tooltip hh_title="show drop log" src="https://hh.hh-content.com/design/ic_books_gray.svg" alt="show log">
+          </span>
+        `);
         $opp.append($showLogButton);
         $showLogButton.on("click", function () {
           GameHelpers.createPopup(

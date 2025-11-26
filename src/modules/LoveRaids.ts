@@ -8,6 +8,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import loveRaidsCss from "../css/modules/LoveRaids.css";
 import GameHelpers from "../utils/GameHelpers";
+import html from "../utils/html";
 
 declare const love_raids: Array<love_raids> | undefined;
 
@@ -162,19 +163,15 @@ export default class LoveRaids extends HHModule {
           $raidCard
             .find("div.raid-content")
             .append(
-              $(
-                `<div class="right-girl-container">` +
-                  `<img class="girl-img right" src="${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin${
-                    nextSkin.num_order
-                  }.png" alt="Right" style="margin-top: ${leftImage.css(
-                    "marginTop"
-                  )}">` +
-                  `</div>`
-              )
+              $(html`
+                <div class="right-girl-container">
+                  <img class="girl-img right" src="${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin${nextSkin.num_order}.png" alt="Right" style="margin-top: ${leftImage.css("marginTop")}">
+                </div>
+              `)
             );
           $raidCard.find(".info-box .info-container .classic-girl").after(
-            $(
-              `<div class="classic-girl">
+            $(html`
+              <div class="classic-girl">
                 <div class="shards-container">
                   <div class="progress-container">
                     <div class="shards_bar_wrapper">
@@ -183,17 +180,15 @@ export default class LoveRaids extends HHModule {
                         <p><span>${nextSkin.shards_count}/33</span></p>
                       </div>
                       <div class="shards_bar skins-shards">
-                        <div class="bar basic-progress-bar-fill pink" style="width: ${
-                          (nextSkin.shards_count / 33) * 100
-                        }%"></div>
+                        <div class="bar basic-progress-bar-fill pink" style="width: ${(nextSkin.shards_count / 33) * 100}%"></div>
                       </div>
                     </div>
                   </div>
                   <a href="" class="redirect_button blue_button_L" disabled="">Go</a>
                 </div>
                 <div class="border-bottom"></div>
-              </div>`
-            )
+              </div>
+            `)
           );
         }
         const objectives = raidCard.querySelectorAll(".classic-girl");
@@ -211,7 +206,7 @@ export default class LoveRaids extends HHModule {
             if (wikiLink) {
               $raidCard
                 .find(".girl-name")
-                .html(`<a href="${wikiLink}" target="_blank">${name}</a>`);
+                .html(html`<a href="${wikiLink}" target="_blank">${name}</a>`);
             }
           }
         );
@@ -305,9 +300,7 @@ export default class LoveRaids extends HHModule {
           if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
             $raidName.attr("data-notify", "true");
           }
-          const $notifyToggle = $(
-            `<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`
-          );
+          const $notifyToggle = $(html`<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`);
           $notifyToggle.on("click", (event) => {
             event.stopPropagation();
             if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
@@ -331,7 +324,7 @@ export default class LoveRaids extends HHModule {
       if (element && !$(element).find(".redirect_button").length) {
         $(element)
           .find(".shards-container")
-          .append(`<a class="redirect_button blue_button_L" disabled>Go</a>`);
+          .append(html`<a class="redirect_button blue_button_L" disabled>Go</a>`);
       }
     }
     async function injectCSS() {
@@ -376,13 +369,11 @@ export default class LoveRaids extends HHModule {
       HHPlusPlusReplacer.doWhenSelectorAvailable(
         ".head-section > a",
         ($element) => {
-          const $toggle = $(
-            `<div class="eye btn-control love-raids-hide-completed-btn" tooltip="Toggle hiding completed raids">
-              <img src="${IMAGES_URL}/quest/${
-              shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"
-            }.svg">
-            </div>`
-          );
+          const $toggle = $(html`
+            <div class="eye btn-control love-raids-hide-completed-btn" tooltip="Toggle hiding completed raids">
+              <img src="${IMAGES_URL}/quest/${shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"}.svg">
+            </div>
+          `);
           $element.after($toggle);
           $toggle.on("click", () => {
             shouldHideCompletedRaids = !shouldHideCompletedRaids;
@@ -446,18 +437,10 @@ export default class LoveRaids extends HHModule {
       console.log("raid amounts:", $raidAmounts);
       $raidAmounts
         .first()
-        .html(
-          `<span ${outdated ? 'style="color:pink"' : ""}>${ongoing}</span> ${
-            GT.design.love_raid
-          }`
-        );
+        .html(html`<span ${outdated ? 'style="color:pink"' : ""}>${ongoing}</span> ${GT.design.love_raid}`);
       $raidAmounts
         .last()
-        .html(
-          `<span ${outdated ? 'style="color:pink"' : ""}>${upcoming}</span> ${
-            GT.design.upcoming_love_raids
-          }`
-        );
+        .html(html`<span ${outdated ? 'style="color:pink"' : ""}>${upcoming}</span> ${GT.design.upcoming_love_raids}`);
     }
     function setRaidNotif() {
       const showNotif = raids.reduce((result, raid) => {
@@ -474,9 +457,7 @@ export default class LoveRaids extends HHModule {
         return result;
       }, false);
       if (showNotif) {
-        $(".raids").append(
-          `<img class="new_notif" src="${IMAGES_URL}/ic_new.png" style="position: relative;" alt="!">`
-        );
+        $(".raids").append(html`<img class="new_notif" src="${IMAGES_URL}/ic_new.png" style="position: relative;" alt="!">`);
       }
     }
   }

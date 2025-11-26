@@ -4,6 +4,7 @@ import {
 } from "../types/GameTypes";
 import { HHModule, SubSettingsType } from "../types/HH++";
 import placesOfPowerCss from "../css/modules/PlacesOfPower++.css";
+import html from "../utils/html";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -158,19 +159,17 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     if ($(".pop-koban-buttons-container").length) {
       $(".pop-koban-buttons-container").remove();
     }
-    const $popKobanButtonContainer = $(
-      `<div class="pop-koban-buttons-container"></div>`
-    );
-    const $popKobanClaimAllButton = $(
-      `<btn class="pop-koban-button pop-claim-all orange_button_L" price="${hh_prices_auto_claim}" ${
-        popToClaim ? "" : "disabled"
-      }>` +
-        `<div class="action-label">Claim All</div>` +
-        `<div class="action-cost">` +
-        `<div class="hc-cost">` +
-        `<span class="hard_currency_icn"></span>${hh_prices_auto_claim}` +
-        `</div></div></div>`
-    );
+    const $popKobanButtonContainer = $(html`<div class="pop-koban-buttons-container"></div>`);
+    const $popKobanClaimAllButton = $(html`
+      <btn class="pop-koban-button pop-claim-all orange_button_L" price="${hh_prices_auto_claim}" ${popToClaim ? "" : "disabled"}>
+        <div class="action-label">Claim All</div>
+        <div class="action-cost">
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>${hh_prices_auto_claim}
+          </div>
+        </div>
+      </btn>
+    `);
     const self = this;
     $popKobanClaimAllButton.on("click", function () {
       let t = $(this);
@@ -204,16 +203,16 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       });
     });
     $popKobanButtonContainer.append($popKobanClaimAllButton);
-    const $popKobanFillAllButton = $(
-      `<btn class="pop-koban-button pop-fill-all orange_button_L" price="${hh_prices_auto_start}" ${
-        popToFill ? "" : "disabled"
-      }>` +
-        `<div class="action-label">Fill All</div>` +
-        `<div class="action-cost">` +
-        `<div class="hc-cost">` +
-        `<span class="hard_currency_icn"></span>${hh_prices_auto_start}` +
-        `</div></div></div>`
-    );
+    const $popKobanFillAllButton = $(html`
+      <btn class="pop-koban-button pop-fill-all orange_button_L" price="${hh_prices_auto_start}" ${popToFill ? "" : "disabled"}>
+        <div class="action-label">Fill All</div>
+        <div class="action-cost">
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>${hh_prices_auto_start}
+          </div>
+        </div>
+      </btn>
+    `);
     $popKobanFillAllButton.on("click", function () {
       //base game function except for the update of pop_data
       let t = $(this);
@@ -630,11 +629,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popDetailsRight = $("<div class='pop-details-right'></div>");
     $popDetails.prepend($popDetailsRight);
 
-    const $title = $(
-      `<a tooltip="Visit this PoP original page" class="pop-title" href="${shared.general.getDocumentHref(
+    const $title = $(html`
+      <a tooltip="Visit this PoP original page" class="pop-title" href="${shared.general.getDocumentHref(
         "/activities.html?tab=pop&index=" + currentPoPData.id_places_of_power
-      )}">${currentPoPData.title}</div>`
-    );
+      )}">${currentPoPData.title}</a>
+    `);
     $popDetailsRight.append($title);
 
     // Create rewards container
@@ -650,11 +649,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     $popDetailsRight.append($rewardsContainer);
 
-    const $claimBtn = $(
-      `<button class="purple_button_L claimPoPButton" ${
-        currentPoPData.status != "pending_reward" ? "disabled" : ""
-      }>Claim</button>`
-    );
+    const $claimBtn = $(html`
+      <button class="purple_button_L claimPoPButton" ${currentPoPData.status != "pending_reward" ? "disabled" : ""}>
+        Claim
+      </button>
+    `);
     $popDetailsRight.append($claimBtn);
     $claimBtn.on("click", () => {
       this.sendClaimRequest(popKey);
@@ -708,9 +707,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     orderedEntries.forEach(([key, popRecord]) => {
       const isLocked = popRecord.locked || 0;
-      const $popRecord = $(
-        `<div class="${isLocked ? "pop-record-locked" : "pop-record"}"></div>`
-      );
+      const $popRecord = $(html`<div class="${isLocked ? "pop-record-locked" : "pop-record"}"></div>`);
       $popRecord.attr("data-pop-id", key);
       // Set background image inline (can't be done in CSS)
       $popRecord.css("background-image", `url(${popRecord.image})`);
@@ -727,12 +724,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         });
 
         // Create icon (top left)
-        const $icon = $(
-          `<img src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png" class="pop-icon" />`
-        );
+        const $icon = $(html`<img src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png" class="pop-icon" />`);
         $popRecord.append($icon);
 
-        const $lvl = $(`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
+        const $lvl = $(html`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
         $popRecord.append($lvl);
 
         if (popRecord.status === "in_progress") {

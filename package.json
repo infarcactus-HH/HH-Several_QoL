@@ -17,10 +17,14 @@
   ],
   "license": "GPLv3",
   "devDependencies": {
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
     "@types/jquery": "^3.5.0",
     "@types/node": "^24.5.2",
     "csso": "^5.0.5",
     "esbuild": "^0.25.10",
+    "html-minifier-terser": "^7.2.0",
     "terser": "^5.44.0",
     "typescript": "^5.0.0"
   }

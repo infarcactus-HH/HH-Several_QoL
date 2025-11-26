@@ -3,6 +3,7 @@ import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LeagueStorageHandler } from "../utils/StorageHandler";
 import leagueOpponentHistoryCss from "../css/modules/LeagueOpponentHistory.css";
+import html from "../utils/html";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
@@ -180,17 +181,9 @@ export default class LeagueOpponentHistory extends HHModule {
     });
   }
   generateRankHtml(bestPlace: number, timesReached: number) {
-    const $divBestRankTimesReached = $(
-      `<div class="several-qol-bestrank-timesreached"></div>`
-    );
-    const $rankContainer = $(
-      `<span class="rank-container ${this.generateRankClass(
-        bestPlace
-      )}">${bestPlace}</span>`
-    );
-    const $timesReached = $(
-      `<span class="times-reached">x${timesReached}</span>`
-    );
+    const $divBestRankTimesReached = $(html`<div class="several-qol-bestrank-timesreached"></div>`);
+    const $rankContainer = $(html`<span class="rank-container ${this.generateRankClass(bestPlace)}">${bestPlace}</span>`);
+    const $timesReached = $(html`<span class="times-reached">x${timesReached}</span>`);
     $divBestRankTimesReached.prepend($rankContainer);
     $divBestRankTimesReached.append($timesReached);
     return $divBestRankTimesReached;
