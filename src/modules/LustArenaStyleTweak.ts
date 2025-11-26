@@ -31,7 +31,7 @@ export default class LustArenaStyleTweak extends HHModule {
         $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
         const $wrapper = $el.parent();
         const LeaguesA = html`<a
-          href="${location.href +
+          href="${location.origin +
           shared.general.getDocumentHref("/leagues.html")}"
           rel="leagues"
           tooltip="Go to Leagues"
@@ -44,7 +44,7 @@ export default class LustArenaStyleTweak extends HHModule {
         </a>`;
         $wrapper.append(LeaguesA);
         const SeasonA = html`<a
-          href="${location.href +
+          href="${location.origin +
           shared.general.getDocumentHref("/season.html")}"
             rel="season"
             tooltip="Go to Seasons"
