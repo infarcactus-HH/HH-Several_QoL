@@ -1,5 +1,7 @@
 export type GirlID = number;
 
+export type Grade = number;
+
 export type Class = 1 | 2 | 3;
 
 export type Rarity = "mythic" | "legendary" | "epic" | "rare" | "common";
