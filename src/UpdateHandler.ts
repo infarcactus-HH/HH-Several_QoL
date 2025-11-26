@@ -92,9 +92,6 @@ export default class UpdateHandler {
     }
 
     if (storedMinor === 20 && GlobalStorageHandler.getShowUpdatePopup()) {
-      if (!location.hostname.startsWith("nutaku")) {
-        return; // only show update popup on nutaku for this update
-      }
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
