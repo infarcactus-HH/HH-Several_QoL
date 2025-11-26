@@ -123,7 +123,7 @@ const createCssTextPlugin = ({ minify }) => ({
 
 // Plugin to minify HTML in tagged template literals using html`...`
 // Uses proper AST parsing via Babel for reliability
-const createHtmlMinifyPlugin = ({ minify }) => ({
+const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
   name: "html-minify",
   setup(build) {
     build.onLoad({ filter: /\.ts$/ }, async (args) => {
@@ -132,9 +132,15 @@ const createHtmlMinifyPlugin = ({ minify }) => ({
         return null; // In dev mode, don't transform
       }
 
-      // Skip if no html tagged templates
+      // Skip if no html tagged templates - check for both import and usage
       if (!source.includes("html`")) {
         return null;
+      }
+
+      // Verify the html function is imported (from utils/html or ./html)
+      const hasHtmlImport = /import\s+(?:\{[^}]*\bhtml\b[^}]*\}|html)\s+from\s+['"][^'"]*html['"]/.test(source);
+      if (!hasHtmlImport && debug) {
+        console.log(`⚠️ ${path.basename(args.path)} has html\` but no html import detected, will still process`);
       }
 
       try {
@@ -178,16 +184,23 @@ const createHtmlMinifyPlugin = ({ minify }) => ({
               end: node.end,
               templateContent,
               expressionTexts,
+              // Store original for debug
+              originalSource: source.slice(node.start, node.end),
             });
           },
         });
 
         if (replacements.length === 0) {
+          if (debug) {
+            console.log(`⏭️ ${path.basename(args.path)} no html\`\` tagged templates found by AST parser`);
+          }
           return null;
         }
 
         // Process replacements in reverse order to preserve positions
         let output = source;
+        const debugInfo = [];
+
         for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
           try {
             // Minify the HTML content
@@ -211,10 +224,23 @@ const createHtmlMinifyPlugin = ({ minify }) => ({
               );
             });
 
+            // Build the new code (just a template literal, html tag is removed)
+            const newCode = `\`${finalContent}\``;
+
+            // Store debug info
+            if (debug) {
+              debugInfo.push({
+                original: replacement.originalSource,
+                minified: newCode,
+                beforeLen: replacement.originalSource.length,
+                afterLen: newCode.length,
+              });
+            }
+
             // Replace the tagged template with just a regular template literal
             output =
               output.slice(0, replacement.start) +
-              `\`${finalContent}\`` +
+              newCode +
               output.slice(replacement.end);
           } catch (error) {
             console.warn(
@@ -224,9 +250,31 @@ const createHtmlMinifyPlugin = ({ minify }) => ({
           }
         }
 
+        // Log results
+        const fileName = path.basename(args.path);
         console.log(
-          `🗜️ ${path.basename(args.path)} ${replacements.length} HTML template(s) minified`
+          `🗜️ ${fileName}: ${replacements.length} HTML template(s) minified`
         );
+
+        // Debug output - show before/after for each template
+        if (debug && debugInfo.length > 0) {
+          console.log(`\n${"=".repeat(60)}`);
+          console.log(`📄 FILE: ${fileName}`);
+          console.log(`${"=".repeat(60)}`);
+          
+          debugInfo.forEach((info, idx) => {
+            const savedBytes = info.beforeLen - 4 - info.afterLen;
+            const savedPercent = ((savedBytes / info.beforeLen) * 100).toFixed(1);
+            
+            console.log(`\n--- Template #${idx + 1} (saved ${savedBytes} bytes, ${savedPercent}%) ---`);
+            console.log(`📥 BEFORE (${info.beforeLen} chars):`);
+            console.log(info.original);
+            console.log(`\n📤 AFTER (${info.afterLen} chars):`);
+            console.log(info.minified);
+          });
+          
+          console.log(`\n${"=".repeat(60)}\n`);
+        }
 
         return {
           contents: output,
@@ -246,6 +294,7 @@ const createHtmlMinifyPlugin = ({ minify }) => ({
 
 async function build() {
   const isWatch = process.argv.includes("--watch");
+  const isDebug = process.argv.includes("--debug");
 
   try {
     const buildOptions = {
@@ -258,7 +307,7 @@ async function build() {
       sourcemap: false,
       external: ["jquery"], // jQuery is available globally as $
       plugins: [
-        createHtmlMinifyPlugin({ minify: !isWatch }),
+        createHtmlMinifyPlugin({ minify: !isWatch, debug: isDebug }),
         createCssTextPlugin({ minify: !isWatch }),
         userscriptPlugin,
       ],

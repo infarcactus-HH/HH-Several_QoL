@@ -6,6 +6,7 @@
   "main": "dist/userscript.user.js",
   "scripts": {
     "build": "node esbuild.config.js",
+    "build:debug": "node esbuild.config.js --debug",
     "watch": "node esbuild.config.js --watch",
     "dev": "pnpm run watch",
     "version": "pnpm run build && git add dist/userscript.user.js"
