@@ -25,7 +25,7 @@ export default class UpdateHandler {
     //  .split(".")
     //  .map(Number);
     if (storedMinor === 21 && storedPatch < 5) {
-      //Fix Broken Shard tracked girls storage from between v1.20.3 to 1.20.0
+      //Fix Broken Shard tracked girls storage from between v1.21.3 to 1.21.0
       const values = GM_listValues().filter((v) =>
         v.includes("VillainShardTrackerTrackedGirls")
       );
@@ -46,7 +46,7 @@ export default class UpdateHandler {
     }
 
     if (storedMinor === 21 && storedPatch < 5) {
-      //Fix potentially wrongly parsed grades in tracked girls storage from between v1.20.4 to 1.20.0
+      //Fix potentially wrongly parsed grades in tracked girls storage from between v1.21.4 to 1.21.0
 
       // grades for potentially wrongly set girls
       const gradesHH: Record<GirlID, Grade> = { 50249610: 3, 92792577: 3, 118563600: 3, 125597344: 6, 143960742: 6, 199686770: 6, 219651566: 3, 225777755: 6, 230575971: 6, 237137080: 6, 270574600: 6, 309097753: 6, 323149196: 3, 328223265: 6, 330911919: 6, 344662796: 6, 372106614: 6, 376374790: 6, 413198545: 3, 423714615: 3, 423864623: 6, 434436290: 3, 445743639: 6, 451625351: 6, 452255257: 1, 455833593: 6, 474799411: 6, 507945521: 6, 538753178: 3, 550842002: 6, 577768127: 3, 580295730: 3, 617303855: 6, 690645314: 6, 772982297: 3, 804990761: 6, 850285776: 5, 861690823: 6, 886658459: 6, 899533146: 3, 935005622: 6, 948443498: 6, 954976932: 3, 967164534: 6, 973183986: 5, 981990704: 6, 994926972: 5 };
