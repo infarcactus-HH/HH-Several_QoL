@@ -20,7 +20,7 @@ export default class EventInfo_Pathes implements SubModule {
       this.replacePoGNotifButton();
     }
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(eventInfoEventCss);
   }
   replacePoVNotifButton() {

@@ -28,7 +28,7 @@ export default class ShardTracker extends HHModule {
     );
   }
 
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(villainShardTrackerCss);
   }
 

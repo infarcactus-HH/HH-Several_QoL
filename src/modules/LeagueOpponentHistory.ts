@@ -45,7 +45,7 @@ export default class LeagueOpponentHistory extends HHModule {
       this.applyRankingsToTable();
     });
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(leagueOpponentHistoryCss);
   }
   applyRankingsToOpponentLists() {

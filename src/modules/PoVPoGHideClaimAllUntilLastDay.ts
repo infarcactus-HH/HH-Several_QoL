@@ -28,7 +28,7 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
       console.log("PoVPoGHideClaimAllUntilLastDay module running");
     }
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(povPoGHideClaimAllUntilLastDayCss);
   }
 }

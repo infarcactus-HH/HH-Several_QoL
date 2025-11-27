@@ -53,7 +53,7 @@ export default class EventInfo_Event implements SubModule {
     this.injectCSS();
     this.whichEventToCall(eventType as EventInfo_EventsList | undefined);
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(eventInfoEventCss);
   }
 

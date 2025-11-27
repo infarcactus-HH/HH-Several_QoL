@@ -25,7 +25,7 @@ export default class MERankingInfo extends HHModule {
     this.injectCSS();
     this.hookAjaxRequest();
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(meRankingInfoCss);
   }
   hookAjaxRequest() {

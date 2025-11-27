@@ -59,7 +59,7 @@ export default class LustArenaStyleTweak extends HHModule {
       }  
     );
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(LustArenaStyleTweakCss);
   }
 }
