@@ -6,7 +6,7 @@ import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class LustArenaStyleTweak extends HHModule {
   readonly configSchema = {
-    baseKey: "lustArenaStylTweak",
+    baseKey: "lustArenaStyleTweak",
     label: "Lust Arena : Style tweaks",
     default: true,
   };
@@ -56,7 +56,7 @@ export default class LustArenaStyleTweak extends HHModule {
           <p ${GT.design.Season.length > 6 ? 'style="font-size:12px;"' : ''}>${GT.design.Season}</p>
         </a>`;
         $wrapper.append(SeasonA);
-      }  
+      }
     );
   }
   private async injectCSS() {
