@@ -3,6 +3,7 @@ import type {
   TrackedGirlRecords,
 } from "../types/ShardTracker";
 import {GirlID} from "../types/GameTypes";
+import { PlayerLeagueRank } from "../types/StorageHandler";
 
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
@@ -16,6 +17,15 @@ export class GlobalStorageHandler {
   }
   static getShowUpdatePopup(): boolean {
     return GM_getValue("ShowUpdatePopup", true);
+  }
+}
+
+export class PlayerStorageHandler {
+  static setPlayerLeagueRank(info : PlayerLeagueRank): void {
+    GM_setValue(HH_UNIVERSE + "PlayerLeagueRank", info);
+  }
+  static getPlayerLeagueRank(): PlayerLeagueRank {
+    return GM_getValue(HH_UNIVERSE + "PlayerLeagueRank", { league: 1, rank: -1 });
   }
 }
 
@@ -35,12 +45,6 @@ export class LeagueStorageHandler {
     checkExpiresAt: number;
   }> {
     return GM_getValue(HH_UNIVERSE + "LeaguePlayerRecord", {});
-  }
-  static setLeagueCurrentRank(rank: number): void {
-    GM_setValue(HH_UNIVERSE + "LeagueCurrentRank", rank);
-  }
-  static getLeagueCurrentRank(): number {
-    return GM_getValue(HH_UNIVERSE + "LeagueCurrentRank", -1);
   }
 }
 

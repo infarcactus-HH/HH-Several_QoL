@@ -45,6 +45,15 @@ export default class UpdateHandler {
       });
     }
 
+    if(storedMinor === 21 && storedPatch < 5) {
+      // Switch to PlayerLeagueRank being stored as separate league and rank to an object
+      GM_listValues()
+        .filter((v) => v.includes("LeagueCurrentRank"))
+        .forEach((v) => {
+          GM_deleteValue(v);
+        });
+    }
+
     if (storedMinor === 21 && storedPatch < 5) {
       //Fix potentially wrongly parsed grades in tracked girls storage from between v1.21.4 to 1.21.0
 
