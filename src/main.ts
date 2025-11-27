@@ -16,7 +16,7 @@ import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
-import CustomCSS from "./customCSS";
+import CustomCSS from "./AlwaysRunningModules.ts/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
 
@@ -49,7 +49,6 @@ class Userscript {
       this.runWithBDSM();
     }
     this.run();
-    CustomCSS.applyCustomCSS();
   }
 
   allModules = [
@@ -67,8 +66,9 @@ class Userscript {
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
     ShardTracker,
+    LustArenaStyleTweak
   ];
-  alwaysRunningModules = [PlayerLeagueTracking];
+  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
@@ -136,7 +136,7 @@ class Userscript {
     UpdateHandler.run();
     this.alwaysRunningModules.forEach((module) => {
       if (module.shouldRun()) {
-        new module().run(); 
+        new module().run();
       }
     });
   }
