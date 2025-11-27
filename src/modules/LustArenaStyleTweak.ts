@@ -26,13 +26,14 @@ export default class LustArenaStyleTweak extends HHModule {
         );
         const leftSideBgColor = $MapContainer.css("background-color");
         const leftSideColor = $MapContainer.children().css("color");
-        GM_addStyle(`:root {--lust-arena-left-side-bg-color: ${leftSideBgColor};--lust-arena-left-side-color: ${leftSideColor};}`);
+        GM_addStyle(
+          `:root {--lust-arena-left-side-bg-color: ${leftSideBgColor};--lust-arena-left-side-color: ${leftSideColor};}`
+        );
         //wrap in a div to be able to target with css
         $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
         const $wrapper = $el.parent();
         const LeaguesA = html`<a
-          href="${location.origin +
-          shared.general.getDocumentHref("/leagues.html")}"
+          href="${shared.general.getDocumentHref("/leagues.html")}"
           rel="leagues"
           tooltip="Go to Leagues"
         >
@@ -44,18 +45,17 @@ export default class LustArenaStyleTweak extends HHModule {
         </a>`;
         $wrapper.append(LeaguesA);
         const SeasonA = html`<a
-          href="${location.origin +
-          shared.general.getDocumentHref("/season.html")}"
-            rel="season"
-            tooltip="Go to Seasons"
+          href="${shared.general.getDocumentHref("/season.html")}"
+          rel="season"
+          tooltip="Go to Seasons"
         >
           <img
             src="${IMAGES_URL}/pictures/design/season_pass_alt.png"
             alt="Seasons Icon"
-            />
-            <p>Season</p>
+          />
+          <p>Season</p>
         </a>`;
-        $wrapper.append(SeasonA); 
+        $wrapper.append(SeasonA);
       }
     );
   }
