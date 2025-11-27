@@ -14,10 +14,11 @@ import LoveRaids from "./modules/LoveRaids";
 import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
-import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
 import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
 import CustomCSS from "./customCSS";
+import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
+import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
 
 class Userscript {
   constructor() {
@@ -65,9 +66,9 @@ class Userscript {
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
-    LeagueCorrectRankShowing,
     ShardTracker,
   ];
+  alwaysRunningModules = [PlayerLeagueTracking];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
@@ -133,6 +134,11 @@ class Userscript {
   }
   run() {
     UpdateHandler.run();
+    this.alwaysRunningModules.forEach((module) => {
+      if (module.shouldRun()) {
+        new module().run(); 
+      }
+    });
   }
 }
 
