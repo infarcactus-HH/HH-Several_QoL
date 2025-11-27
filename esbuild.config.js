@@ -51,11 +51,55 @@ const userscriptPlugin = {
       if (result.errors.length > 0) return;
 
       const outputFile = path.join(__dirname, "dist", "userscript.user.js");
+      const isWatch = process.argv.includes("--watch");
 
       try {
-        // Read the generated file
-        let content = fs.readFileSync(outputFile, "utf8");
-        const isWatch = process.argv.includes("--watch");
+        // Use result.outputFiles if available (when write is false), 
+        // otherwise read from disk with retry for watch mode
+        let content;
+        
+        if (result.outputFiles && result.outputFiles.length > 0) {
+          // If esbuild provides output files directly
+          const mainOutput = result.outputFiles.find(f => f.path.endsWith("userscript.user.js"));
+          if (mainOutput) {
+            content = mainOutput.text;
+          }
+        }
+        
+        if (!content) {
+          // Read from disk with retry logic for watch mode race conditions
+          let attempts = 0;
+          const maxAttempts = 5;
+          const retryDelay = 50; // ms
+          
+          while (attempts < maxAttempts) {
+            try {
+              // Small delay to ensure file is fully written
+              if (attempts > 0) {
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+              }
+              
+              content = fs.readFileSync(outputFile, "utf8");
+              
+              // Verify content is valid (not empty or truncated)
+              if (content && content.length > 0 && (content.includes("(() => {") || content.includes("(function()"))) {
+                break; // Content looks valid
+              }
+              
+              attempts++;
+            } catch (readError) {
+              attempts++;
+              if (attempts >= maxAttempts) {
+                throw readError;
+              }
+            }
+          }
+          
+          if (!content || content.length === 0) {
+            console.error("❌ Output file is empty after retries");
+            return;
+          }
+        }
 
         // Minify with Terser if not in watch mode
         if (!isWatch) {
@@ -296,6 +340,12 @@ async function build() {
   const isWatch = process.argv.includes("--watch");
   const isDebug = process.argv.includes("--debug");
 
+  // Ensure dist directory exists
+  const distDir = path.join(__dirname, "dist");
+  if (!fs.existsSync(distDir)) {
+    fs.mkdirSync(distDir, { recursive: true });
+  }
+
   try {
     const buildOptions = {
       entryPoints: ["src/main.ts"],
@@ -330,6 +380,11 @@ async function build() {
     if (isWatch) {
       console.log("👀 Starting watch mode...");
       const ctx = await esbuild.context(buildOptions);
+      
+      // Do an initial build first to ensure everything is set up
+      await ctx.rebuild();
+      console.log("✅ Initial build completed");
+      
       await ctx.watch();
       console.log("👀 Watching for changes...");
     } else {
