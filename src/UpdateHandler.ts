@@ -45,7 +45,7 @@ export default class UpdateHandler {
       });
     }
 
-    if (storedMinor === 20 && storedPatch < 5) {
+    if (storedMinor === 21 && storedPatch < 5) {
       //Fix potentially wrongly parsed grades in tracked girls storage from between v1.20.4 to 1.20.0
 
       // grades for potentially wrongly set girls
