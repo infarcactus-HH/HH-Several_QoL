@@ -18,6 +18,7 @@ import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
 import CustomCSS from "./AlwaysRunningModules.ts/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
+import SexGodPathStyleTweak from "./modules/SexGodPathStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
 
 class Userscript {
@@ -66,7 +67,8 @@ class Userscript {
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
     ShardTracker,
-    LustArenaStyleTweak
+    LustArenaStyleTweak,
+    SexGodPathStyleTweak,
   ];
   alwaysRunningModules = [PlayerLeagueTracking, CustomCSS];
   runWithBDSM() {
