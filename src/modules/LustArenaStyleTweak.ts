@@ -37,7 +37,6 @@ export default class LustArenaStyleTweak extends HHModule {
         const LeaguesA = html`<a
           href="${shared.general.getDocumentHref("/leagues.html")}"
           rel="leagues"
-          tooltip="Go to Leagues"
         >
           <img
             src="${IMAGES_URL}/pictures/design/leagues/${leagueInfo.league}.png"
@@ -49,16 +48,15 @@ export default class LustArenaStyleTweak extends HHModule {
         const SeasonA = html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
           rel="season"
-          tooltip="Go to Seasons"
         >
           <img
             src="${IMAGES_URL}/pictures/design/season_pass_alt.png"
             alt="Seasons Icon"
           />
-          <p>Season</p>
+          <p ${GT.design.Season.length > 6 ? 'style="font-size:12px;"' : ''}>${GT.design.Season}</p>
         </a>`;
         $wrapper.append(SeasonA);
-      }
+      }  
     );
   }
   async injectCSS() {
