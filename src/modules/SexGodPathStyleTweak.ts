@@ -5,8 +5,8 @@ import html from "../utils/html";
 
 export default class SexGodPathStyleTweak extends HHModule {
   readonly configSchema = {
-    baseKey: "lustArenaStyleTweak",
-    label: "Lust Arena : Style tweaks",
+    baseKey: "sexGodPathStyleTweak",
+    label: "Sex God Path: Homepage Style tweaks",
     default: true,
   };
   static shouldRun() {
