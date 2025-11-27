@@ -24,7 +24,7 @@ export default class UpdateHandler {
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
-    if (storedMinor === 20 && storedPatch < 4) {
+    if (storedMinor === 21 && storedPatch < 5) {
       //Fix Broken Shard tracked girls storage from between v1.20.3 to 1.20.0
       const values = GM_listValues().filter((v) =>
         v.includes("VillainShardTrackerTrackedGirls")
