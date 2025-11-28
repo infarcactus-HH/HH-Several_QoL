@@ -83,7 +83,8 @@
 }
 
 /* Individual PoP thumbnail card */
-.pop-records-container > .pop-record {
+.pop-records-container > .pop-record,
+.pop-record-locked {
   background-size: cover;
   background-position: center;
   position: relative;
@@ -93,19 +94,12 @@
   cursor: pointer;
   height: -webkit-fill-available;
   width: auto;
+  max-height: 100px;
 }
 
 .pop-record-locked {
   filter: grayscale(1);
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  padding: 6px;
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  height: -webkit-fill-available;
-  width: auto;
+  cursor: not-allowed;
 }
 
 /* Selected PoP thumbnail highlight */
