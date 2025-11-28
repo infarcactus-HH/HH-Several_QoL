@@ -3,7 +3,8 @@ import type {
   TrackedGirlRecords,
 } from "../types/ShardTracker";
 import {GirlID} from "../types/GameTypes";
-import { PlayerLeagueRank } from "../types/StorageHandler";
+import type { PlayerLeagueRank, StoredPlayerSeasonInfo } from "../types/StorageHandler";
+import { SeasonTierIncomplete } from "../types/GameTypes/season";
 
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
@@ -26,6 +27,12 @@ export class PlayerStorageHandler {
   }
   static getPlayerLeagueRank(): PlayerLeagueRank {
     return GM_getValue(HH_UNIVERSE + "PlayerLeagueRank", { league: 1, rank: -1 });
+  }
+  static setPlayerSeasonInfo(info : StoredPlayerSeasonInfo): void {
+    GM_setValue(HH_UNIVERSE + "PlayerSeasonInfo", info);
+  }
+  static getPlayerSeasonInfo(): StoredPlayerSeasonInfo | null {
+    return GM_getValue(HH_UNIVERSE + "PlayerSeasonInfo", null);
   }
 }
 

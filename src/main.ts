@@ -20,6 +20,7 @@ import CustomCSS from "./AlwaysRunningModules.ts/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import SexGodPathStyleTweak from "./modules/SexGodPathStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
+import PlayerSeasonTracking from "./AlwaysRunningModules.ts/PlayerSeasonTracking";
 
 class Userscript {
   constructor() {
@@ -70,7 +71,11 @@ class Userscript {
     LustArenaStyleTweak,
     SexGodPathStyleTweak,
   ];
-  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS];
+  alwaysRunningModules = [
+    PlayerLeagueTracking,
+    CustomCSS,
+    PlayerSeasonTracking,
+  ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
