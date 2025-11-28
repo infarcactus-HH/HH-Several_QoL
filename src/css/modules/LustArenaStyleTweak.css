@@ -33,13 +33,18 @@
   text-align: center;
   writing-mode: vertical-rl;
   rotate: 180deg;
+  max-width: 16px;
+  overflow: hidden;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="leagues"] {
+.lust-arena-style-tweak-wrapper > [rel="leagues"],
+.lust-arena-style-tweak-wrapper > [rel="season"] {
+  flex: 1;
   display: inline-block;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="leagues"] img {
+.lust-arena-style-tweak-wrapper > [rel="leagues"] img,
+.lust-arena-style-tweak-wrapper > [rel="season"] img {
   width: 50px;
   height: 50px;
   position: absolute;
@@ -63,17 +68,4 @@
   text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, -1px -1px 0 #000,
     1px -1px 0 #000;
   font-size: 14px;
-}
-
-.lust-arena-style-tweak-wrapper > [rel="season"] {
-  display: inline-block;
-}
-
-.lust-arena-style-tweak-wrapper > [rel="season"] img {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: 0;
 }
