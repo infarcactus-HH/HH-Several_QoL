@@ -261,7 +261,10 @@ export default class ShardTracker extends HHModule {
     ) {
       const lastShardCount = getGirlLastShardCount(trackedGirl, dropInfo);
       const totalShards = dropInfo.value - dropInfo.previous_value;
-      const gainedGirlShards = 100 - lastShardCount;
+      const gainedGirlShards =
+          number_of_battles === 1
+              ? totalShards
+              : 100 - lastShardCount;
       let skinShardsPool = totalShards - gainedGirlShards;
       trackedGirl.dropped_shards += gainedGirlShards;
       trackedGirl.last_shards_count = 100;
