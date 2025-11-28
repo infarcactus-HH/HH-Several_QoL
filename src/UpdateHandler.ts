@@ -101,7 +101,7 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor === 20 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor === 21 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
@@ -113,15 +113,14 @@ export default class UpdateHandler {
         $container.append(
           $(html`
             <div class="changelog-content hh-scroll">
-              <h2> New Feature : Villain Shard Tracker !</h2>
+              <h2> New Feature : Lust Arena Style tweak ! (on by default)</h2>
               <p>
-                This feature automatically tracks your drop rates for Legendary & Mythic shards <br>
-                Will soon include some stats crunching etc... <br>
-                Interface is still a WIP but basic features are here ! <br>
+                Puts back the season and league, with some info (season info will come later)<br/>
               </p>
-              <h3>Popup-- </h3>
+              <h3>Shard Tracking</h3>
               <p>
-                Some New Features, go check them out
+                There were some wrong grades, they have been fixed.<br/>
+                There was an issue due to an update where skins shard wouldn't be dropped properly butfight still accounted for
               </p>
             </div>
           `)
@@ -133,7 +132,7 @@ export default class UpdateHandler {
           </div>
         `);
         const $toggleUpdatePopup = $(
-          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be show often only on new features" checked>`
+          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be shown often only on new features" checked>`
         );
         $toggleUpdatePopup.on("change", () => {
           const show = $toggleUpdatePopup.prop("checked");
