@@ -20,6 +20,7 @@ import CustomCSS from "./AlwaysRunningModules.ts/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
 import PlayerSeasonTracking from "./AlwaysRunningModules.ts/PlayerSeasonTracking";
+import NutakuLogout from "./AlwaysRunningModules.ts/NutakuLogout";
 
 class Userscript {
   constructor() {
@@ -67,7 +68,7 @@ class Userscript {
     ShardTracker,
     LustArenaStyleTweak,
   ];
-  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking];
+  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking, NutakuLogout];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
