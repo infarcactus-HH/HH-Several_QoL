@@ -107,7 +107,7 @@ export interface DoBattlesTrollsResponse {
       girls?: PostFightShards; // if girl is obtained
       grade_skins?: GradeSkins; // if a skin is obtained
       loot: true; // true indicating showing actual rewards
-      rewards: BasicRewards;
+      rewards?: BasicRewards;
       shards?: PostFightShards; // if shards are obtained
     },
     heroChangesUpdate: {
