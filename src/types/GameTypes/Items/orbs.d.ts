@@ -3,7 +3,12 @@ export interface orbsItem {
   orbs_type: allOrbsType;
   value: number; //1;
 }
-export type allOrbsType = epicOrbsType | mythicOrbsType | equipmentOrbsType | greatOrbsType | eventOrbsType;
+export type allOrbsType =
+  | epicOrbsType
+  | mythicOrbsType
+  | equipmentOrbsType
+  | greatOrbsType
+  | eventOrbsType;
 
 export type epicOrbsType = "o_e1" | "o_e10" | "o_ed";
 export type mythicOrbsType = "o_m1" | "o_m3" | "o_m6";

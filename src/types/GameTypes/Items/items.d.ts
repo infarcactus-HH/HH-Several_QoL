@@ -61,9 +61,9 @@ export interface ItemTemplate {
 export type energyQuestsItem = {
   type: "energy_quest";
   value: string; // "5"
-}
+};
 
 export type energyKissItem = {
   type: "energy_kiss";
   value: string; // "1"
-}
+};

@@ -1,9 +1,6 @@
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import {
-  LabyTeamStorageHandler,
-  WBTTeamStorageHandler,
-} from "../utils/StorageHandler";
+import { LabyTeamStorageHandler, WBTTeamStorageHandler } from "../utils/StorageHandler";
 import html from "../utils/html";
 
 export default class LabyTeamPresets extends HHModule {
@@ -38,9 +35,7 @@ export default class LabyTeamPresets extends HHModule {
     }
   }
   WBTPreBattlePageRun() {
-    const currentWBTId = unsafeWindow.event_data?.id_world_boss_event as
-      | number
-      | undefined;
+    const currentWBTId = unsafeWindow.event_data?.id_world_boss_event as number | undefined;
     if (!currentWBTId) {
       return;
     }
@@ -48,21 +43,22 @@ export default class LabyTeamPresets extends HHModule {
     if (currentWBTId === savedWBTId) {
       return;
     }
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      "#perform_opponent.blue_button_L",
-      () => {
-        $("#perform_opponent.blue_button_L")
-          .removeClass("blue_button_L")
-          .addClass("red_button_L")
-          .attr("tooltip", "Set your WBT Team before continuing")
-          .text("Perform without saved team ?");
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable("#perform_opponent.blue_button_L", () => {
+      $("#perform_opponent.blue_button_L")
+        .removeClass("blue_button_L")
+        .addClass("red_button_L")
+        .attr("tooltip", "Set your WBT Team before continuing")
+        .text("Perform without saved team ?");
+    });
     WBTTeamStorageHandler.setWBTId(currentWBTId);
   }
   editTeamPageRun() {
     const $centralPanel = $(".boss-bang-panel");
-    const $savePresetBtn = $(html`<button class="green_button_L" tooltip="Save preset for later runs">Save Preset</button>`);
+    const $savePresetBtn = $(
+      html`<button class="green_button_L" tooltip="Save preset for later runs">
+        Save Preset
+      </button>`,
+    );
     $savePresetBtn.on("click", () => {
       this.saveCurrentPreset();
       $FillPresetBtn.removeAttr("disabled");
@@ -70,7 +66,11 @@ export default class LabyTeamPresets extends HHModule {
     $centralPanel.append($savePresetBtn);
 
     const $FillPresetBtn = $(html`
-      <button class="green_button_L" tooltip="Use previously saved preset & leave page" ${!this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""}>
+      <button
+        class="green_button_L"
+        tooltip="Use previously saved preset & leave page"
+        ${!this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""}
+      >
         Fill Preset
       </button>
     `);
@@ -82,7 +82,7 @@ export default class LabyTeamPresets extends HHModule {
       () => {
         const $averageLvl = $(".change-team-panel .player-team .average-lvl");
         $averageLvl.replaceWith($FillPresetBtn);
-      }
+      },
     );
   }
   migrateLocalStorageIfNeeded() {
@@ -91,18 +91,14 @@ export default class LabyTeamPresets extends HHModule {
     if (existingOldPreset) {
       LabyTeamStorageHandler.setTeamPreset(JSON.parse(existingOldPreset));
       localStorage.removeItem(oldKey);
-      console.log(
-        `Migrated old laby team preset from key ${oldKey} to storage handler`
-      );
+      console.log(`Migrated old laby team preset from key ${oldKey} to storage handler`);
     }
   }
 
   private saveCurrentPreset() {
     let n: Record<number, string> = {};
     $(".team-hexagon .team-member-container").each(function () {
-      const position = $(this).attr("data-team-member-position") as
-        | number
-        | undefined;
+      const position = $(this).attr("data-team-member-position") as number | undefined;
       const girlId = $(this).attr("data-girl-id");
       if ($(this).is("[data-girl-id]") && position && girlId) {
         n[position] = girlId;
@@ -123,10 +119,7 @@ export default class LabyTeamPresets extends HHModule {
         class: "Hero",
         action: "edit_team",
         girls: preset,
-        battle_type:
-          location.pathname === "/edit-labyrinth-team.html"
-            ? "labyrinth"
-            : "world_boss",
+        battle_type: location.pathname === "/edit-labyrinth-team.html" ? "labyrinth" : "world_boss",
         id_team: unsafeWindow.teamId,
       };
 

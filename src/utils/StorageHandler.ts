@@ -1,8 +1,5 @@
-import type {
-  TrackedGirl,
-  TrackedGirlRecords,
-} from "../types/ShardTracker";
-import {GirlID} from "../types/GameTypes";
+import type { TrackedGirl, TrackedGirlRecords } from "../types/ShardTracker";
+import { GirlID } from "../types/GameTypes";
 import type { PlayerLeagueRank, StoredPlayerSeasonInfo } from "../types/StorageHandler";
 import { SeasonTierIncomplete } from "../types/GameTypes/season";
 
@@ -22,13 +19,13 @@ export class GlobalStorageHandler {
 }
 
 export class PlayerStorageHandler {
-  static setPlayerLeagueRank(info : PlayerLeagueRank): void {
+  static setPlayerLeagueRank(info: PlayerLeagueRank): void {
     GM_setValue(HH_UNIVERSE + "PlayerLeagueRank", info);
   }
   static getPlayerLeagueRank(): PlayerLeagueRank {
     return GM_getValue(HH_UNIVERSE + "PlayerLeagueRank", { league: 1, rank: -1 });
   }
-  static setPlayerSeasonInfo(info : StoredPlayerSeasonInfo): void {
+  static setPlayerSeasonInfo(info: StoredPlayerSeasonInfo): void {
     GM_setValue(HH_UNIVERSE + "PlayerSeasonInfo", info);
   }
   static getPlayerSeasonInfo(): StoredPlayerSeasonInfo | null {
@@ -42,7 +39,7 @@ export class LeagueStorageHandler {
       bestPlace: number;
       timesReached: number;
       checkExpiresAt: number;
-    }>
+    }>,
   ): void {
     GM_setValue(HH_UNIVERSE + "LeaguePlayerRecord", data);
   }
@@ -109,7 +106,7 @@ export class LoveRaidsStorageHandler {
       id_raid: number;
       start: number;
       end: number;
-    }>
+    }>,
   ): void {
     GM_setValue(HH_UNIVERSE + "ReducedLoveRaids", data);
   }
@@ -150,10 +147,7 @@ export class sessionStorageHandler {
 // XXX: it'll be more like a villain tracker if we start tracking boosters or
 //   other bonus stuff too
 export class ShardTrackerStorageHandler {
-  static setCurrentTrackingState(
-    trollID: number,
-    girlIds: GirlID[] = []
-  ): void {
+  static setCurrentTrackingState(trollID: number, girlIds: GirlID[] = []): void {
     // XXX: we forgot to rename the key
     GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID,
@@ -161,7 +155,7 @@ export class ShardTrackerStorageHandler {
     });
   }
 
-  private static currentStoredRecords : TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
+  private static currentStoredRecords: TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
   static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID: -1,
@@ -170,7 +164,7 @@ export class ShardTrackerStorageHandler {
   }
 
   static getTrackedGirls(): TrackedGirlRecords {
-    if(this.currentStoredRecords === null) {
+    if (this.currentStoredRecords === null) {
       this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
     }
     return this.currentStoredRecords!;
@@ -186,10 +180,7 @@ export class ShardTrackerStorageHandler {
     return records[id_girl];
   }
 
-  static upsertTrackedGirl(
-    id_girl: GirlID,
-    record: TrackedGirl
-  ): void {
+  static upsertTrackedGirl(id_girl: GirlID, record: TrackedGirl): void {
     const records = this.getTrackedGirls();
     this.setTrackedGirls({ ...records, [id_girl]: record });
   }

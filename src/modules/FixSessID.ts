@@ -23,7 +23,7 @@ export default class FixSessID extends HHModule {
         `input[name="severalQoL_fixSessID"]`,
         () => {
           sessionStorageHandler.clearSessID();
-        }
+        },
       );
     }
     console.log("FixSessID module running");
@@ -32,25 +32,22 @@ export default class FixSessID extends HHModule {
     }
     sessionStorageHandler.setSessID(unsafeWindow.PLATFORM_SESS as string);
     $(document).on("click", "#girl_preview_btn", () => {
-      HHPlusPlusReplacer.doWhenSelectorAvailable(
-        ".scene-preview_wrapper.unlocked",
-        ($element) => {
-          $element.each((_, sceneDiv) => {
-            const $scenePreviewImage = $(sceneDiv).find("img.scene-preview");
-            if ($scenePreviewImage.length === 0) {
-              return;
+      HHPlusPlusReplacer.doWhenSelectorAvailable(".scene-preview_wrapper.unlocked", ($element) => {
+        $element.each((_, sceneDiv) => {
+          const $scenePreviewImage = $(sceneDiv).find("img.scene-preview");
+          if ($scenePreviewImage.length === 0) {
+            return;
+          }
+          $scenePreviewImage.attr("src", function (_, src) {
+            if (src.includes("sess=")) {
+              return src;
             }
-            $scenePreviewImage.attr("src", function (_, src) {
-              if (src.includes("sess=")) {
-                return src;
-              }
-              console.log("FixSessID: fixing sessID in URL:", src);
-              const sessID = unsafeWindow.PLATFORM_SESS as string;
-              return src + `?sess=${sessID}`;
-            });
+            console.log("FixSessID: fixing sessID in URL:", src);
+            const sessID = unsafeWindow.PLATFORM_SESS as string;
+            return src + `?sess=${sessID}`;
           });
-        }
-      );
+        });
+      });
     });
   }
 }

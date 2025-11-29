@@ -1,9 +1,5 @@
 import type { love_raids } from "../types/GameTypes/love_raids";
-import {
-  HHModule,
-  HHModule_ConfigSchema,
-  SubSettingsType,
-} from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import loveRaidsCss from "../css/modules/LoveRaids.css";
@@ -21,7 +17,7 @@ type configSchema = {
       key: "hideRaidCardsUntillStart";
       default: false;
       label: `<span tooltip="Hides raids until they start (5min before starting they'll appear)">Hide raids cards until they start</span>`;
-    }
+    },
   ];
 };
 
@@ -58,12 +54,9 @@ export default class LoveRaids extends HHModule {
         this.loveRaidsPageModifications();
         break;
       default:
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
-          "a.love-raid-container.raid",
-          () => {
-            this.handleRaidCards(subSettings.hideRaidCardsUntillStart);
-          }
-        );
+        HHPlusPlusReplacer.doWhenSelectorAvailable("a.love-raid-container.raid", () => {
+          this.handleRaidCards(subSettings.hideRaidCardsUntillStart);
+        });
         break;
     }
   }
@@ -73,9 +66,9 @@ export default class LoveRaids extends HHModule {
     }
 
     $("a.love-raid-container.raid").each(function (_index, element) {
-      const raidSearchParam = URL.parse(
-        (element as HTMLLinkElement).href
-      )?.searchParams?.get("raid");
+      const raidSearchParam = URL.parse((element as HTMLLinkElement).href)?.searchParams?.get(
+        "raid",
+      );
       if (!raidSearchParam) {
         return;
       }
@@ -110,20 +103,16 @@ export default class LoveRaids extends HHModule {
     let currentLoveRaidNotifs = result.loveRaidNotifs;
     HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
       modifyPageWithoutGirlDict();
-      unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then(
-        (girlDict: any) => {
-          modifyPageWithGirlDict(girlDict);
-        }
-      );
+      unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then((girlDict: any) => {
+        modifyPageWithGirlDict(girlDict);
+      });
     });
 
     function modifyPageWithGirlDict(girlDict: any) {
       if (love_raids === undefined) {
         return;
       }
-      const girls = love_raids.map((raid) =>
-        girlDict.get(raid.id_girl.toString())
-      );
+      const girls = love_raids.map((raid) => girlDict.get(raid.id_girl.toString()));
       $(".raid-card").each((index, raidCard) => {
         if (!girls[index]) {
           return;
@@ -134,16 +123,10 @@ export default class LoveRaids extends HHModule {
           id_girl,
           girl_data: { grade_skins },
         } = love_raids[index];
-        const haremLink = shared.general.getDocumentHref(
-          `/characters/${id_girl}`
-        );
+        const haremLink = shared.general.getDocumentHref(`/characters/${id_girl}`);
         const wikiLink = GameHelpers.getWikiPageForCurrentGame(name);
 
-        if (
-          grade_skins.length &&
-          !raidCard.classList.contains("multiple-girl") &&
-          skins
-        ) {
+        if (grade_skins.length && !raidCard.classList.contains("multiple-girl") && skins) {
           const skinsList = skins as Array<{
             id_girl_grade_skin: number;
             num_order: number;
@@ -153,22 +136,23 @@ export default class LoveRaids extends HHModule {
             is_selected: boolean;
           }>;
           // Find the lowest num_order that has shards_count != 33
-          const nextSkin = skinsList.filter(
-            (skin) => skin.shards_count !== 33
-          )[0];
+          const nextSkin = skinsList.filter((skin) => skin.shards_count !== 33)[0];
 
           const leftImage = $(raidCard.querySelector(".girl-img.left")!);
           raidCard.classList.add("multiple-girl");
           raidCard.classList.remove("single-girl");
-          $raidCard
-            .find("div.raid-content")
-            .append(
-              $(html`
-                <div class="right-girl-container">
-                  <img class="girl-img right" src="${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin${nextSkin.num_order}.png" alt="Right" style="margin-top: ${leftImage.css("marginTop")}">
-                </div>
-              `)
-            );
+          $raidCard.find("div.raid-content").append(
+            $(html`
+              <div class="right-girl-container">
+                <img
+                  class="girl-img right"
+                  src="${IMAGES_URL}/pictures/girls/${id_girl}/grade_skins/grade_skin${nextSkin.num_order}.png"
+                  alt="Right"
+                  style="margin-top: ${leftImage.css("marginTop")}"
+                />
+              </div>
+            `),
+          );
           $raidCard.find(".info-box .info-container .classic-girl").after(
             $(html`
               <div class="classic-girl">
@@ -180,7 +164,10 @@ export default class LoveRaids extends HHModule {
                         <p><span>${nextSkin.shards_count}/33</span></p>
                       </div>
                       <div class="shards_bar skins-shards">
-                        <div class="bar basic-progress-bar-fill pink" style="width: ${(nextSkin.shards_count / 33) * 100}%"></div>
+                        <div
+                          class="bar basic-progress-bar-fill pink"
+                          style="width: ${(nextSkin.shards_count / 33) * 100}%"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -188,7 +175,7 @@ export default class LoveRaids extends HHModule {
                 </div>
                 <div class="border-bottom"></div>
               </div>
-            `)
+            `),
           );
         }
         const objectives = raidCard.querySelectorAll(".classic-girl");
@@ -196,20 +183,14 @@ export default class LoveRaids extends HHModule {
         const skin = objectives[1];
         // @prettier-ignore
         //raidCard.querySelector(".raid-name > span > span")!.textContent = `${name} ${GT.design.love_raid}`;
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
-          ".raid-name span span",
-          () => {
+        HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-name span span", () => {
+          $raidCard.find(".raid-name > span > span").first().text(`${name} ${GT.design.love_raid}`);
+          if (wikiLink) {
             $raidCard
-              .find(".raid-name > span > span")
-              .first()
-              .text(`${name} ${GT.design.love_raid}`);
-            if (wikiLink) {
-              $raidCard
-                .find(".girl-name")
-                .html(html`<a href="${wikiLink}" target="_blank">${name}</a>`);
-            }
+              .find(".girl-name")
+              .html(html`<a href="${wikiLink}" target="_blank">${name}</a>`);
           }
-        );
+        });
 
         // add go buttons if there aren't any
         addMissingGoButton(girl);
@@ -217,7 +198,7 @@ export default class LoveRaids extends HHModule {
 
         // enable go buttons of owned girls/skins
         const goButtons = raidCard.querySelectorAll(
-          ".redirect_button"
+          ".redirect_button",
         ) as NodeListOf<HTMLLinkElement>;
         if (shards === 100) {
           if (girl) {
@@ -247,7 +228,7 @@ export default class LoveRaids extends HHModule {
         ".raid-content > .eye.btn-control",
         () => {
           $(".raid-content > .eye.btn-control").remove();
-        }
+        },
       );
       HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
         if (love_raids === undefined) {
@@ -262,30 +243,18 @@ export default class LoveRaids extends HHModule {
           const $element = $(element);
           if (!raidData.all_is_owned) {
             showGirlAvatarForHidden(raidData, $element);
-            HHPlusPlusReplacer.doWhenSelectorAvailable(
-              ".raid-name > .type_icon",
-              () => {
-                addNotificationForFavoriteRaid(raidData, $element);
-              }
-            );
+            HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-name > .type_icon", () => {
+              addNotificationForFavoriteRaid(raidData, $element);
+            });
             return;
           }
           // Notif for "favorite" raids
         });
-        function showGirlAvatarForHidden(
-          raidData: love_raids,
-          $element: JQuery<HTMLElement>
-        ) {
-          if (
-            raidData.announcement_type_name !== "full" &&
-            raidData.status !== "ongoing"
-          ) {
+        function showGirlAvatarForHidden(raidData: love_raids, $element: JQuery<HTMLElement>) {
+          if (raidData.announcement_type_name !== "full" && raidData.status !== "ongoing") {
             // mysterious ones
             const $girlImg = $element.find(".girl-img.avatar");
-            $girlImg.attr(
-              "src",
-              `${IMAGES_URL}/pictures/girls/${raidData.id_girl}/ava0.png`
-            ); // set the image to normal avatar
+            $girlImg.attr("src", `${IMAGES_URL}/pictures/girls/${raidData.id_girl}/ava0.png`); // set the image to normal avatar
             if ($girlImg.css("visibility") === "hidden") {
               // sometimes hidden by default ?
               $girlImg.css("visibility", "visible");
@@ -294,27 +263,28 @@ export default class LoveRaids extends HHModule {
         }
         function addNotificationForFavoriteRaid(
           raidData: love_raids,
-          $element: JQuery<HTMLElement>
+          $element: JQuery<HTMLElement>,
         ) {
           const $raidName = $element.find(".raid-name");
           if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
             $raidName.attr("data-notify", "true");
           }
-          const $notifyToggle = $(html`<span tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)" class="notify-toggle"></span>`);
+          const $notifyToggle = $(
+            html`<span
+              tooltip="Toggle favorite (shows an indicator on home page when raid is ongoing)"
+              class="notify-toggle"
+            ></span>`,
+          );
           $notifyToggle.on("click", (event) => {
             event.stopPropagation();
             if (currentLoveRaidNotifs.includes(raidData.id_raid)) {
-              currentLoveRaidNotifs = currentLoveRaidNotifs.filter(
-                (id) => id !== raidData.id_raid
-              );
+              currentLoveRaidNotifs = currentLoveRaidNotifs.filter((id) => id !== raidData.id_raid);
               $raidName.attr("data-notify", "false");
             } else {
               currentLoveRaidNotifs.push(raidData.id_raid);
               $raidName.attr("data-notify", "true");
             }
-            LoveRaidsStorageHandler.setLoveRaidNotifications(
-              currentLoveRaidNotifs
-            );
+            LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
           });
           $raidName.append($notifyToggle);
         }
@@ -328,16 +298,14 @@ export default class LoveRaids extends HHModule {
       }
     }
     async function injectCSS() {
-      GM_addStyle(
-        `.notify-toggle {background-image: url(${IMAGES_URL}/ic_new.png);`
-      );
+      GM_addStyle(`.notify-toggle {background-image: url(${IMAGES_URL}/ic_new.png);`);
       GM_addStyle(loveRaidsCss);
     }
     function updateStorage() {
       // clean up notifications for raids that no longer exist
       const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
       let currentLoveRaidNotifs = loveRaidNotifs.filter((id) =>
-        love_raids!.some((raid) => raid.id_raid === id)
+        love_raids!.some((raid) => raid.id_raid === id),
       ); // can also be used later in the script
       LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
       const reducedLoveRaids = love_raids!.map((raid) => {
@@ -358,46 +326,41 @@ export default class LoveRaids extends HHModule {
       return { reducedLoveRaids, loveRaidNotifs };
     }
     function handleHidingCompletedRaids() {
-      let shouldHideCompletedRaids =
-        LoveRaidsStorageHandler.getShouldHideCompletedRaids();
+      let shouldHideCompletedRaids = LoveRaidsStorageHandler.getShouldHideCompletedRaids();
       let hidingCss: Element | undefined;
       if (shouldHideCompletedRaids) {
-        hidingCss = GM_addStyle(
-          `.raid-card.grey-overlay{display:none!important;}`
-        );
+        hidingCss = GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
       }
-      HHPlusPlusReplacer.doWhenSelectorAvailable(
-        ".head-section > a",
-        ($element) => {
-          const $toggle = $(html`
-            <div class="eye btn-control love-raids-hide-completed-btn" tooltip="Toggle hiding completed raids">
-              <img src="${IMAGES_URL}/quest/${shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"}.svg">
-            </div>
-          `);
-          $element.after($toggle);
-          $toggle.on("click", () => {
-            shouldHideCompletedRaids = !shouldHideCompletedRaids;
-            LoveRaidsStorageHandler.setShouldHideCompletedRaids(
-              shouldHideCompletedRaids
+      HHPlusPlusReplacer.doWhenSelectorAvailable(".head-section > a", ($element) => {
+        const $toggle = $(html`
+          <div
+            class="eye btn-control love-raids-hide-completed-btn"
+            tooltip="Toggle hiding completed raids"
+          >
+            <img
+              src="${IMAGES_URL}/quest/${shouldHideCompletedRaids
+                ? "ic_eyeopen"
+                : "ic_eyeclosed"}.svg"
+            />
+          </div>
+        `);
+        $element.after($toggle);
+        $toggle.on("click", () => {
+          shouldHideCompletedRaids = !shouldHideCompletedRaids;
+          LoveRaidsStorageHandler.setShouldHideCompletedRaids(shouldHideCompletedRaids);
+          $toggle
+            .find("img")
+            .attr(
+              "src",
+              `${IMAGES_URL}/quest/${shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"}.svg`,
             );
-            $toggle
-              .find("img")
-              .attr(
-                "src",
-                `${IMAGES_URL}/quest/${
-                  shouldHideCompletedRaids ? "ic_eyeopen" : "ic_eyeclosed"
-                }.svg`
-              );
-            if (shouldHideCompletedRaids) {
-              hidingCss = GM_addStyle(
-                `.raid-card.grey-overlay{display:none!important;}`
-              );
-            } else {
-              hidingCss?.remove();
-            }
-          });
-        }
-      );
+          if (shouldHideCompletedRaids) {
+            hidingCss = GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
+          } else {
+            hidingCss?.remove();
+          }
+        });
+      });
     }
   }
   homePageModifications() {
@@ -414,8 +377,7 @@ export default class LoveRaids extends HHModule {
     });
 
     function setNonCompletedRaidCounts() {
-      const { ongoing_love_raids_count, upcoming_love_raids_count } =
-        unsafeWindow;
+      const { ongoing_love_raids_count, upcoming_love_raids_count } = unsafeWindow;
       let expired = 0,
         ongoing = 0,
         upcoming = 0;
@@ -431,25 +393,26 @@ export default class LoveRaids extends HHModule {
         }
       });
       const outdated =
-        raids.length - expired <
-        ongoing_love_raids_count + upcoming_love_raids_count;
+        raids.length - expired < ongoing_love_raids_count + upcoming_love_raids_count;
       const $raidAmounts = $(`.raids .raids-amount`);
       console.log("raid amounts:", $raidAmounts);
       $raidAmounts
         .first()
-        .html(html`<span ${outdated ? 'style="color:pink"' : ""}>${ongoing}</span> ${GT.design.love_raid}`);
+        .html(
+          html`<span ${outdated ? 'style="color:pink"' : ""}>${ongoing}</span> ${GT.design
+              .love_raid}`,
+        );
       $raidAmounts
         .last()
-        .html(html`<span ${outdated ? 'style="color:pink"' : ""}>${upcoming}</span> ${GT.design.upcoming_love_raids}`);
+        .html(
+          html`<span ${outdated ? 'style="color:pink"' : ""}>${upcoming}</span> ${GT.design
+              .upcoming_love_raids}`,
+        );
     }
     function setRaidNotif() {
       const showNotif = raids.reduce((result, raid) => {
         const ongoing = raid.start < server_now_ts && raid.end > server_now_ts;
-        if (
-          ongoing &&
-          raidNotifs.includes(raid.id_raid) &&
-          !raid.all_is_owned
-        ) {
+        if (ongoing && raidNotifs.includes(raid.id_raid) && !raid.all_is_owned) {
           if (raid.end > server_now_ts) {
             return true;
           }
@@ -457,7 +420,14 @@ export default class LoveRaids extends HHModule {
         return result;
       }, false);
       if (showNotif) {
-        $(".raids").append(html`<img class="new_notif" src="${IMAGES_URL}/ic_new.png" style="position: relative;" alt="!">`);
+        $(".raids").append(
+          html`<img
+            class="new_notif"
+            src="${IMAGES_URL}/ic_new.png"
+            style="position: relative;"
+            alt="!"
+          />`,
+        );
       }
     }
   }

@@ -33,9 +33,7 @@ class Userscript {
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       Promise.race([
         new Promise((resolve) => {
-          $(document).one("hh++-bdsm:loaded", () =>
-            resolve("hh++-bdsm:loaded")
-          );
+          $(document).one("hh++-bdsm:loaded", () => resolve("hh++-bdsm:loaded"));
         }),
         new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
       ]).then((result) => {
@@ -69,11 +67,7 @@ class Userscript {
     ShardTracker,
     LustArenaStyleTweak,
   ];
-  alwaysRunningModules = [
-    PlayerLeagueTracking,
-    CustomCSS,
-    PlayerSeasonTracking,
-  ];
+  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
@@ -102,10 +96,13 @@ class Userscript {
         if (module.shouldRun() && schema.default) {
           try {
             if (schema.subSettings) {
-              const subSettings = schema.subSettings.reduce((acc, setting) => {
-                acc[setting.key] = setting.default;
-                return acc;
-              }, {} as Record<string, any>);
+              const subSettings = schema.subSettings.reduce(
+                (acc, setting) => {
+                  acc[setting.key] = setting.default;
+                  return acc;
+                },
+                {} as Record<string, any>,
+              );
               moduleInstance.run(subSettings as any);
             } else {
               moduleInstance.run(undefined as any);
@@ -120,19 +117,13 @@ class Userscript {
     });
   }
   applySessionFix() {
-    if (
-      !location.search.includes("sess=") &&
-      sessionStorageHandler.getSessID() != ""
-    ) {
+    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID() != "") {
       const storedSessID = sessionStorageHandler.getSessID();
       if (!storedSessID) {
         return;
       }
       const newURL =
-        location.href +
-        (location.href.includes("?") ? "&" : "?") +
-        "sess=" +
-        storedSessID;
+        location.href + (location.href.includes("?") ? "&" : "?") + "sess=" + storedSessID;
       console.log("FixSessID: reloading page with stored sessID:", newURL);
       window.location.replace(newURL);
     }

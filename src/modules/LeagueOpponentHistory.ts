@@ -66,45 +66,28 @@ export default class LeagueOpponentHistory extends HHModule {
   }
   startObserverClickOnTable() {
     const self = this;
-    $(".league_table > .data-list > .body-row").on(
-      "click.SeveralQoL",
-      function () {
-        const place = parseInt(
-          $(this).children("[column='place']").text().trim()
-        );
-        const selectedOpponent = opponents_list.find(
-          (opponents) => opponents.place === place
-        );
-        if (!selectedOpponent) {
-          console.warn("Could not find opponent for place ", place);
-          return;
-        }
-        if (
-          selectedOpponent.Several_QoL &&
-          selectedOpponent.Several_QoL.checkExpiresAt > server_now_ts
-        ) {
-          return;
-        } else {
-          console.log("Record expired or not found, fetching new data...");
-        }
-        if (
-          self.updatedPlayerRecordsThisSession.has(
-            selectedOpponent.player.id_fighter
-          )
-        ) {
-          return;
-        }
-        self.sendRequestAndAnalyzeOpponent(
-          selectedOpponent.player.id_fighter,
-          $(this)
-        );
+    $(".league_table > .data-list > .body-row").on("click.SeveralQoL", function () {
+      const place = parseInt($(this).children("[column='place']").text().trim());
+      const selectedOpponent = opponents_list.find((opponents) => opponents.place === place);
+      if (!selectedOpponent) {
+        console.warn("Could not find opponent for place ", place);
+        return;
       }
-    );
+      if (
+        selectedOpponent.Several_QoL &&
+        selectedOpponent.Several_QoL.checkExpiresAt > server_now_ts
+      ) {
+        return;
+      } else {
+        console.log("Record expired or not found, fetching new data...");
+      }
+      if (self.updatedPlayerRecordsThisSession.has(selectedOpponent.player.id_fighter)) {
+        return;
+      }
+      self.sendRequestAndAnalyzeOpponent(selectedOpponent.player.id_fighter, $(this));
+    });
   }
-  sendRequestAndAnalyzeOpponent(
-    opponentId: number,
-    $opponentRow: JQuery<HTMLElement>
-  ) {
+  sendRequestAndAnalyzeOpponent(opponentId: number, $opponentRow: JQuery<HTMLElement>) {
     const payload = {
       action: "fetch_hero",
       id: "profile",
@@ -114,39 +97,32 @@ export default class LeagueOpponentHistory extends HHModule {
     const highestLeague = Object.keys(league_rewards).length;
     const D3Placement = new RegExp(
       `<img src="https:\\/\\/.*?\\/pictures\\/design\\/leagues\\/${highestLeague}\\.png">\\n\\s*?<div class=\\"tier-stats\\">\\n\\s*?<div>Best place:\\s*<span>(\\d+)<sup>[^<]+<\\/sup><\\/span><\\/div>[\\s\\S]*?<div>Times reached: <span>(\\d+)<\\/span><\\/div>`,
-      "g"
+      "g",
     );
-    shared.general.hh_ajax(
-      payload,
-      (response: { html: string; success: boolean }) => {
-        const match = D3Placement.exec(response.html);
-        const bestPlace = match ? parseInt(match[1]) : null;
-        const timesReached = match ? parseInt(match[2]) : null;
-        this.updatedPlayerRecordsThisSession.add(opponentId);
-        if (!bestPlace || !timesReached) {
-          console.warn(
-            `Could not find league ${highestLeague} placement info for opponent id `,
-            opponentId
-          );
-          return;
-        }
-
-        this.updateOpponentRecord(opponentId, bestPlace, timesReached);
-        $opponentRow
-          .children("[column='nickname']")
-          .find(".several-qol-bestrank-timesreached")
-          .remove();
-        $opponentRow
-          .children("[column='nickname']")
-          .append(this.generateRankHtml(bestPlace, timesReached));
+    shared.general.hh_ajax(payload, (response: { html: string; success: boolean }) => {
+      const match = D3Placement.exec(response.html);
+      const bestPlace = match ? parseInt(match[1]) : null;
+      const timesReached = match ? parseInt(match[2]) : null;
+      this.updatedPlayerRecordsThisSession.add(opponentId);
+      if (!bestPlace || !timesReached) {
+        console.warn(
+          `Could not find league ${highestLeague} placement info for opponent id `,
+          opponentId,
+        );
+        return;
       }
-    );
+
+      this.updateOpponentRecord(opponentId, bestPlace, timesReached);
+      $opponentRow
+        .children("[column='nickname']")
+        .find(".several-qol-bestrank-timesreached")
+        .remove();
+      $opponentRow
+        .children("[column='nickname']")
+        .append(this.generateRankHtml(bestPlace, timesReached));
+    });
   }
-  updateOpponentRecord(
-    opponentId: number,
-    bestPlace: number,
-    timesReached: number
-  ) {
+  updateOpponentRecord(opponentId: number, bestPlace: number, timesReached: number) {
     this.leaguePlayerRecord![opponentId] = {
       bestPlace: bestPlace,
       timesReached: timesReached,
@@ -162,17 +138,13 @@ export default class LeagueOpponentHistory extends HHModule {
     allRows.each((_, row) => {
       const place = parseInt($(row).children("[column='place']").text().trim());
       if (!place) return;
-      const opponent = opponents_list.find(
-        (opponents) => opponents.place === place
-      );
+      const opponent = opponents_list.find((opponents) => opponents.place === place);
       if (!opponent) return;
       const opponentId = opponent.player.id_fighter;
       const record = this.leaguePlayerRecord![opponentId];
       if (
         record &&
-        !$(row)
-          .children("[column='nickname']")
-          .find(".several-qol-bestrank-timesreached").length
+        !$(row).children("[column='nickname']").find(".several-qol-bestrank-timesreached").length
       ) {
         $(row)
           .children("[column='nickname']")
@@ -182,7 +154,9 @@ export default class LeagueOpponentHistory extends HHModule {
   }
   generateRankHtml(bestPlace: number, timesReached: number) {
     const $divBestRankTimesReached = $(html`<div class="several-qol-bestrank-timesreached"></div>`);
-    const $rankContainer = $(html`<span class="rank-container ${this.generateRankClass(bestPlace)}">${bestPlace}</span>`);
+    const $rankContainer = $(
+      html`<span class="rank-container ${this.generateRankClass(bestPlace)}">${bestPlace}</span>`,
+    );
     const $timesReached = $(html`<span class="times-reached">x${timesReached}</span>`);
     $divBestRankTimesReached.prepend($rankContainer);
     $divBestRankTimesReached.append($timesReached);

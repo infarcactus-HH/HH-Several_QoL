@@ -9,8 +9,7 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
   };
   static shouldRun() {
     return (
-      location.pathname === "/path-of-glory.html" ||
-      location.pathname === "/path-of-valor.html"
+      location.pathname === "/path-of-glory.html" || location.pathname === "/path-of-valor.html"
     );
   }
   run() {

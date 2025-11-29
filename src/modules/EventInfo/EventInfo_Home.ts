@@ -15,8 +15,7 @@ export default class EventInfo_Home implements SubModule {
     GM_addStyle(eventInfoHomeCss);
   }
   SMEventHandler() {
-    const SMShopRefreshTime =
-      EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
+    const SMShopRefreshTime = EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
     const $smEventTimerBox = $("[rel='sm_event'][href!='#']").find(".timer-box");
     if (SMShopRefreshTime != 0 && !$smEventTimerBox) {
       EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(0);
@@ -27,21 +26,19 @@ export default class EventInfo_Home implements SubModule {
         SMShopRefreshTime - server_now_ts,
         GT.design.market_new_stock,
         "severalQoL-event-timer nc-expiration-label",
-        !1
+        !1,
       );
       $smEventTimerBox.prepend(t);
       shared.timer.activateTimers("severalQoL-event-timer.nc-expiration-label");
     } else {
       $smEventTimerBox.prepend(
-        `<div class="severalQoL-event-timer expired">${GT.design.sm_event_restock_now}</div>`
+        `<div class="severalQoL-event-timer expired">${GT.design.sm_event_restock_now}</div>`,
       );
     }
   }
   PoVPoGHandler() {
-    const PoVEndTime =
-      EventInfoStorageHandler.getPoVEndTimeComparedToServerTS();
-    const PoGEndTime =
-      EventInfoStorageHandler.getPoGEndTimeComparedToServerTS();
+    const PoVEndTime = EventInfoStorageHandler.getPoVEndTimeComparedToServerTS();
+    const PoGEndTime = EventInfoStorageHandler.getPoGEndTimeComparedToServerTS();
     if (PoVEndTime !== 0) {
       addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
     }
@@ -52,7 +49,7 @@ export default class EventInfo_Home implements SubModule {
     function addPoVPoGTimer(
       endTime: number,
       $aHrefElement: JQuery<HTMLElement>,
-      incrementSeconds: number
+      incrementSeconds: number,
     ) {
       while (endTime < server_now_ts) {
         endTime += incrementSeconds; // in case the time stored is old, we increment until it's in the future
@@ -61,13 +58,10 @@ export default class EventInfo_Home implements SubModule {
         endTime - server_now_ts,
         GT.design.event_ends_in,
         "severalQoL-PoVPoG-timer nc-expiration-label",
-        false
+        false,
       );
       $aHrefElement.find(".white_text").append(timer);
     }
-    shared.timer.activateTimers(
-      "severalQoL-PoVPoG-timer.nc-expiration-label",
-      () => {}
-    );
+    shared.timer.activateTimers("severalQoL-PoVPoG-timer.nc-expiration-label", () => {});
   }
 }

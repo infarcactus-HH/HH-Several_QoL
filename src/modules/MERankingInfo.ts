@@ -1,7 +1,4 @@
-import type {
-  MERankingHeroData,
-  MERankingLeaderboardEntryIncomplete,
-} from "../types/GameTypes";
+import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types/GameTypes";
 import { HHModule } from "../types/HH++";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import meRankingInfoCss from "../css/modules/MERankingInfo.css";
@@ -39,18 +36,15 @@ export default class MERankingInfo extends HHModule {
   }
 
   hookSpecialHeroRow() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      "#leaderboard_holder > #outer-hero-row",
-      () => {
-        console.log("found special hero row");
-        const rankingInfoTooltip = this.createTooltipTableRankingContent();
-        const $rankingInfo = $(
-          `<img class="me-leaderboard-info" src="https://hh.hh-content.com/leagues/ic_rankup.png" tooltip></img>`
-        );
-        $rankingInfo.attr("hh_title", rankingInfoTooltip);
-        $("#leaderboard_holder > #outer-hero-row").append($rankingInfo);
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable("#leaderboard_holder > #outer-hero-row", () => {
+      console.log("found special hero row");
+      const rankingInfoTooltip = this.createTooltipTableRankingContent();
+      const $rankingInfo = $(
+        `<img class="me-leaderboard-info" src="https://hh.hh-content.com/leagues/ic_rankup.png" tooltip></img>`,
+      );
+      $rankingInfo.attr("hh_title", rankingInfoTooltip);
+      $("#leaderboard_holder > #outer-hero-row").append($rankingInfo);
+    });
   }
 
   createTooltipTableRankingContent(): string {
@@ -72,15 +66,11 @@ export default class MERankingInfo extends HHModule {
       `<th>Difference</th>` +
       `</tr></thead><tbody>`;
 
-    const playerEntry = this.leaderboardData.find(
-      (entry) => entry.rank === currentRank
-    );
+    const playerEntry = this.leaderboardData.find((entry) => entry.rank === currentRank);
 
     rankThresholds.forEach((threshold) => {
       // Find the leaderboard entry at this rank
-      const leaderboardEntry = this.leaderboardData!.find(
-        (entry) => entry.rank === threshold
-      );
+      const leaderboardEntry = this.leaderboardData!.find((entry) => entry.rank === threshold);
 
       const potionsAtRank = leaderboardEntry?.potions ?? "?";
       let diffText = "?";

@@ -14,10 +14,7 @@
  * `;
  * ```
  */
-export function html(
-  strings: TemplateStringsArray,
-  ...values: unknown[]
-): string {
+export function html(strings: TemplateStringsArray, ...values: unknown[]): string {
   // At runtime, just concatenate the template parts with values
   let result = strings[0];
   for (let i = 0; i < values.length; i++) {

@@ -30,9 +30,7 @@ export default class PlayerSeasonTracking extends AlwaysRunningModule {
       ? season_tiers[Number(nextTier.tier) - 1]
       : season_tiers[season_tiers.length - 1];
     const previousTierThreshold = Number(previousTier.mojo_required);
-    const nextTierThreshold = nextTier
-      ? Number(nextTier.mojo_required)
-      : undefined;
+    const nextTierThreshold = nextTier ? Number(nextTier.mojo_required) : undefined;
     PlayerStorageHandler.setPlayerSeasonInfo({
       previousTierThreshold,
       nextTierThreshold,

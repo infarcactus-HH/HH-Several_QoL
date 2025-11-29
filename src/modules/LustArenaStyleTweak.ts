@@ -19,49 +19,39 @@ export default class LustArenaStyleTweak extends HHModule {
     }
     this.hasRun = true;
     this.injectCSS();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      '.main-container [rel="pvp-arena"]',
-      ($el) => {
-        const $MapContainer = $(
-          '.left-side-container [rel="map"] > .notif-position > span'
-        );
-        const leftSideBgColor = $MapContainer.css("background-color");
-        const leftSideColor = $MapContainer.children().css("color");
-        GM_addStyle(
-          `:root {--lust-arena-left-side-bg-color: ${leftSideBgColor};--lust-arena-left-side-color: ${leftSideColor};}`
-        );
-        //wrap in a div to be able to target with css
-        $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
-        const $wrapper = $el.parent();
-        const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank();
-        const $leaguesA = $(html`<a
-          href="${shared.general.getDocumentHref("/leagues.html")}"
-          rel="leagues"
-        >
+    HHPlusPlusReplacer.doWhenSelectorAvailable('.main-container [rel="pvp-arena"]', ($el) => {
+      const $MapContainer = $('.left-side-container [rel="map"] > .notif-position > span');
+      const leftSideBgColor = $MapContainer.css("background-color");
+      const leftSideColor = $MapContainer.children().css("color");
+      GM_addStyle(
+        `:root {--lust-arena-left-side-bg-color: ${leftSideBgColor};--lust-arena-left-side-color: ${leftSideColor};}`,
+      );
+      //wrap in a div to be able to target with css
+      $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
+      const $wrapper = $el.parent();
+      const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank();
+      const $leaguesA = $(
+        html`<a href="${shared.general.getDocumentHref("/leagues.html")}" rel="leagues">
           <img
             src="${IMAGES_URL}/pictures/design/leagues/${leagueInfo.league}.png"
             alt="Leagues Icon"
           />
           <p>#${leagueInfo.rank}</p>
-        </a>`);
-        $wrapper.append($leaguesA);
-        const $seasonA = $(html`<a
-          href="${shared.general.getDocumentHref("/season.html")}"
-          rel="season"
-        >
-          <img
-            src="${IMAGES_URL}/pictures/design/season_pass_alt.png"
-            alt="Seasons Icon"
-          />
+        </a>`,
+      );
+      $wrapper.append($leaguesA);
+      const $seasonA = $(
+        html`<a href="${shared.general.getDocumentHref("/season.html")}" rel="season">
+          <img src="${IMAGES_URL}/pictures/design/season_pass_alt.png" alt="Seasons Icon" />
           <p>${GT.design.Season}</p>
-        </a>`);
-        $wrapper.append($seasonA);
+        </a>`,
+      );
+      $wrapper.append($seasonA);
 
-        const width = $seasonA.css('width');
-        const length = GT.design.Season.length;
-        $seasonA.find('p').css('font-size', `clamp(9px, calc(${width} / ${length} * 1.75), 14px)`);
-      }
-    );
+      const width = $seasonA.css("width");
+      const length = GT.design.Season.length;
+      $seasonA.find("p").css("font-size", `clamp(9px, calc(${width} / ${length} * 1.75), 14px)`);
+    });
   }
   private async injectCSS() {
     GM_addStyle(LustArenaStyleTweakCss);

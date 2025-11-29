@@ -1,5 +1,5 @@
-import { GradeSkins, PlainGirls } from './girls';
-import { Class, GirlID, GirlRarity, ObjectivePoints, OpponentFighter, Rarity } from '../GameTypes';
+import { GradeSkins, PlainGirls } from "./girls";
+import { Class, GirlID, GirlRarity, ObjectivePoints, OpponentFighter, Rarity } from "../GameTypes";
 import {
   battleLostItem,
   gemsItem,
@@ -7,8 +7,8 @@ import {
   progressionItem,
   softCurrencyItem,
   ticketItem,
-} from './Items/items';
-import { orbsItem } from './Items/orbs';
+} from "./Items/items";
+import { orbsItem } from "./Items/orbs";
 
 export interface Shard {
   animated_grades: Array<any> | [];
@@ -45,7 +45,7 @@ export interface Shard {
   role: number | null; // 10;
   salary_per_hour: number;
   slot_class: false;
-  type: 'girl_shards';
+  type: "girl_shards";
 }
 
 export interface PreFightShard extends Shard {
@@ -95,7 +95,7 @@ export interface VillainPreBattle extends OpponentFighter {
 }
 
 export interface DoBattlesTrollsResponse {
-  battle_result: 'hero_won' | 'opponent_won';
+  battle_result: "hero_won" | "opponent_won";
   hero_changes: {
     currency?: {
       // if paying for x10/x50
@@ -106,7 +106,7 @@ export interface DoBattlesTrollsResponse {
     ts_fight: number;
   };
   objective_points?: ObjectivePoints;
-  result: 'won'; // even when losing
+  result: "won"; // even when losing
   rewards?: {
     data: {
       girls?: PostFightShards; // if girl is obtained

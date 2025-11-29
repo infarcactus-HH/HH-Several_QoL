@@ -3,7 +3,7 @@ import html from "./html";
 
 export default class GameHelpers {
   static createPopup(
-    type: popupForQueue['popup']['type'],
+    type: popupForQueue["popup"]["type"],
     popupID: string,
     $content: JQuery<HTMLElement>,
     title?: string,
@@ -25,7 +25,7 @@ export default class GameHelpers {
 
   static createCommonPopup(
     popupID: string,
-    Finit: (popup: popupForQueue["popup"], t: boolean) => void
+    Finit: (popup: popupForQueue["popup"], t: boolean) => void,
   ) {
     const generatePopupDOM = $(html`
       <div class="popup_wrapper">
@@ -65,7 +65,7 @@ export default class GameHelpers {
     return generatedPopup;
   }
 
-  static getWikiPageForCurrentGame(name: string) : string | undefined {
+  static getWikiPageForCurrentGame(name: string): string | undefined {
     const formattedName = name.replace(/ /g, "-");
     if (location.host.includes("heroes.com")) {
       return `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedName}`;
@@ -73,7 +73,7 @@ export default class GameHelpers {
       return `https://harem-battle.club/wiki/Gay-Harem/GH:${formattedName}`;
     } else if (location.host.includes("gaypornstarharem")) {
       return `https://harem-battle.club/wiki/Gay-Pornstar-Harem/GPSH:${formattedName}`;
-    } 
+    }
     return undefined;
   }
 }

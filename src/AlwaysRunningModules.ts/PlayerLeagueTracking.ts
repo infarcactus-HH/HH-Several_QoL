@@ -15,9 +15,7 @@ export default class PlayerLeagueTracking extends AlwaysRunningModule {
     this.syncPlayerLeagueRank();
   }
   syncPlayerLeagueRank() {
-    const currentLeagueTier = unsafeWindow.current_tier_number as
-      | number
-      | undefined;
+    const currentLeagueTier = unsafeWindow.current_tier_number as number | undefined;
     if (currentLeagueTier === undefined) {
       return;
     }
@@ -26,9 +24,7 @@ export default class PlayerLeagueTracking extends AlwaysRunningModule {
       | undefined;
     if (!opponentsList) return;
     //opponents_list.find((a) => a.match_history_sorting === -1)
-    const player = opponentsList.find(
-      (a) => a.player.id_fighter === shared.Hero.infos.id
-    );
+    const player = opponentsList.find((a) => a.player.id_fighter === shared.Hero.infos.id);
     if (!player) {
       return;
     }

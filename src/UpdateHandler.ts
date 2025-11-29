@@ -12,23 +12,19 @@ export default class UpdateHandler {
     const currentVersion = GM_info.script.version;
     const storedVersion = GlobalStorageHandler.getStoredScriptVersion();
     console.log(
-      `HH++ Several QoL: Current version ${currentVersion}, stored version ${storedVersion}`
+      `HH++ Several QoL: Current version ${currentVersion}, stored version ${storedVersion}`,
     );
     UpdateHandler.addOptionToHHPlusPlusConfig();
     if (storedVersion === currentVersion) {
       return;
     }
-    const [storedMajor, storedMinor, storedPatch] = storedVersion
-      .split(".")
-      .map(Number);
+    const [storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
     if (storedMinor === 21 && storedPatch < 5) {
       //Fix Broken Shard tracked girls storage from between v1.21.3 to 1.21.0
-      const values = GM_listValues().filter((v) =>
-        v.includes("VillainShardTrackerTrackedGirls")
-      );
+      const values = GM_listValues().filter((v) => v.includes("VillainShardTrackerTrackedGirls"));
       values.forEach((v) => {
         const data = GM_getValue(v, {}) as TrackedGirlRecords;
         Object.values(data).forEach((girlRecord) => {
@@ -45,7 +41,7 @@ export default class UpdateHandler {
       });
     }
 
-    if(storedMinor === 21 && storedPatch < 5) {
+    if (storedMinor === 21 && storedPatch < 5) {
       // Switch to PlayerLeagueRank being stored as separate league and rank to an object
       GM_listValues()
         .filter((v) => v.includes("LeagueCurrentRank"))
@@ -75,25 +71,25 @@ export default class UpdateHandler {
         .filter((v) => v.includes("VillainShardTrackerTrackedGirls"))
         .forEach((v) => {
           const data = GM_getValue(v, {}) as TrackedGirlRecords;
-          const correctGrades = (()=>{
+          const correctGrades = (() => {
             switch (v) {
-              case 'nutakuVillainShardTrackerTrackedGirls':
-              case 'hentaiVillainShardTrackerTrackedGirls':
+              case "nutakuVillainShardTrackerTrackedGirls":
+              case "hentaiVillainShardTrackerTrackedGirls":
                 return gradesHH;
-              case 'nutaku_cVillainShardTrackerTrackedGirls':
-              case 'comix_cVillainShardTrackerTrackedGirls':
+              case "nutaku_cVillainShardTrackerTrackedGirls":
+              case "comix_cVillainShardTrackerTrackedGirls":
                 return gradesCxH;
-              case 'gh_nutakuVillainShardTrackerTrackedGirls':
-              case 'gayVillainShardTrackerTrackedGirls':
+              case "gh_nutakuVillainShardTrackerTrackedGirls":
+              case "gayVillainShardTrackerTrackedGirls":
                 return gradesGH;
-              case 'nutaku_tVillainShardTrackerTrackedGirls':
-              case 'star_tVillainShardTrackerTrackedGirls':
+              case "nutaku_tVillainShardTrackerTrackedGirls":
+              case "star_tVillainShardTrackerTrackedGirls":
                 return gradesPsH;
-              case 'nutaku_stargayVillainShardTrackerTrackedGirls':
-              case 'dotcom_stargayVillainShardTrackerTrackedGirls':
+              case "nutaku_stargayVillainShardTrackerTrackedGirls":
+              case "dotcom_stargayVillainShardTrackerTrackedGirls":
                 return gradesGPsH;
-              case 'nutaku_startransVillainShardTrackerTrackedGirls':
-              case 'dotcom_startransVillainShardTrackerTrackedGirls':
+              case "nutaku_startransVillainShardTrackerTrackedGirls":
+              case "dotcom_startransVillainShardTrackerTrackedGirls":
                 return gradesTPsH;
               default:
                 console.warn(`unknown key: ${v}`);
@@ -111,34 +107,33 @@ export default class UpdateHandler {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
-        $container.append(
-          $(
-            `<div class="banner">Several QoL - Update to ${currentVersion}</div>`
-          )
-        );
+        $container.append($(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`));
         $container.append(
           $(html`
             <div class="changelog-content hh-scroll">
-              <h2> New Feature : Lust Arena Style tweak ! (on by default)</h2>
+              <h2>New Feature : Lust Arena Style tweak ! (on by default)</h2>
               <p>
-                Puts back the season and league, with some info (season info will come later)<br/>
+                Puts back the season and league, with some info (season info will come later)<br />
               </p>
               <h3>Shard Tracking</h3>
               <p>
-                There were some wrong grades, they have been fixed.<br/>
-                There was an issue due to an update where skins shard wouldn't be dropped properly butfight still accounted for
+                There were some wrong grades, they have been fixed.<br />
+                There was an issue due to an update where skins shard wouldn't be dropped properly
+                butfight still accounted for
               </p>
             </div>
-          `)
+          `),
         );
         const $footer = $(html`
           <div class="footer">
             <span>Thank you for using Several QoL! </span>
-            <span style="margin-left:10px" tooltip="Won't be show often only on new features"> Show this popup:</span>
+            <span style="margin-left:10px" tooltip="Won't be show often only on new features">
+              Show this popup:</span
+            >
           </div>
         `);
         const $toggleUpdatePopup = $(
-          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be shown often only on new features" checked>`
+          `<input name='severalQoL-show-update-popup' type="checkbox" tooltip="Won't be shown often only on new features" checked>`,
         );
         $toggleUpdatePopup.on("change", () => {
           const show = $toggleUpdatePopup.prop("checked");
@@ -160,48 +155,39 @@ export default class UpdateHandler {
     let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup();
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".hh-plus-plus-config-button" +
-        (unsafeWindow.hhPlusPlusConfig?.BoobStrapped
-          ? ".boob-strapped"
-          : ":not(.boob-strapped)"),
+        (unsafeWindow.hhPlusPlusConfig?.BoobStrapped ? ".boob-strapped" : ":not(.boob-strapped)"),
       ($element) => {
         console.log("Adding click handler to HH++ config");
         $element.on("click.severalQoLAddConfig", () => {
           $element.off("click.severalQoLAddConfig");
           console.log("clicked on config");
-          HHPlusPlusReplacer.doWhenSelectorAvailable(
-            ".group-panel[rel='severalQoL']",
-            ($panel) => {
-              console.log("Injecting option into HH++ config");
-              const $container = $(`<div class="config-setting ${
-                updatePopupEnabled ? "enabled" : ""
-              }">
+          HHPlusPlusReplacer.doWhenSelectorAvailable(".group-panel[rel='severalQoL']", ($panel) => {
+            console.log("Injecting option into HH++ config");
+            const $container = $(`<div class="config-setting ${
+              updatePopupEnabled ? "enabled" : ""
+            }">
                     <label class="base-setting">
                       <span tooltip="It will only appear for important update, or new features">Show update Popup</span>
                     </label>
                   </div>`);
-              const $checkbox = $(
-                `<input type="checkbox" ${
-                  updatePopupEnabled ? 'checked="checked"' : ""
-                }>`
-              );
-              $container.find("label").append($checkbox);
-              $checkbox.on("change", () => {
-                updatePopupEnabled = !updatePopupEnabled;
-                console.log(
-                  `Update popup enabled set to ${updatePopupEnabled}`
-                );
-                GlobalStorageHandler.setShowUpdatePopup(updatePopupEnabled);
-                if (updatePopupEnabled) {
-                  $container.addClass("enabled");
-                } else {
-                  $container.removeClass("enabled");
-                }
-              });
-              $panel.children().first().append($container);
-            }
-          );
+            const $checkbox = $(
+              `<input type="checkbox" ${updatePopupEnabled ? 'checked="checked"' : ""}>`,
+            );
+            $container.find("label").append($checkbox);
+            $checkbox.on("change", () => {
+              updatePopupEnabled = !updatePopupEnabled;
+              console.log(`Update popup enabled set to ${updatePopupEnabled}`);
+              GlobalStorageHandler.setShowUpdatePopup(updatePopupEnabled);
+              if (updatePopupEnabled) {
+                $container.addClass("enabled");
+              } else {
+                $container.removeClass("enabled");
+              }
+            });
+            $panel.children().first().append($container);
+          });
         });
-      }
+      },
     );
   }
 }

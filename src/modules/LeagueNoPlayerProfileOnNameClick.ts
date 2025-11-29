@@ -4,8 +4,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 export default class LeagueNoPlayerProfileOnNameClick extends HHModule {
   readonly configSchema = {
     baseKey: "leagueNoPlayerProfileOnNameClick",
-    label:
-      "League : Disable opening player profile when clicking on their name",
+    label: "League : Disable opening player profile when clicking on their name",
     default: false,
   };
   static shouldRun() {
@@ -19,17 +18,11 @@ export default class LeagueNoPlayerProfileOnNameClick extends HHModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       '.data-row.body-row .data-column[column="nickname"]',
       () => {
-        $("body").off(
-          "click",
-          '.data-row.body-row .data-column[column="nickname"]'
-        );
-      }
+        $("body").off("click", '.data-row.body-row .data-column[column="nickname"]');
+      },
     );
     $(document).on("league:table-sorted", () => {
-      $("body").off(
-        "click",
-        '.data-row.body-row .data-column[column="nickname"]'
-      );
+      $("body").off("click", '.data-row.body-row .data-column[column="nickname"]');
     });
   }
 }

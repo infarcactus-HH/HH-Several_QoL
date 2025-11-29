@@ -1,4 +1,4 @@
-import {GirlID, GirlRarity} from "../GameTypes";
+import { GirlID, GirlRarity } from "../GameTypes";
 
 export interface PlainSkin {
   ico_path: string;

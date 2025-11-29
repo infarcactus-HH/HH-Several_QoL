@@ -8,9 +8,7 @@ const babelParser = require("@babel/parser");
 const babelTraverse = require("@babel/traverse").default;
 
 // Read package.json for metadata
-const packageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "package.json"), "utf8")
-);
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8"));
 
 // UserScript header template
 const userscriptHeader = `// ==UserScript==
@@ -54,38 +52,42 @@ const userscriptPlugin = {
       const isWatch = process.argv.includes("--watch");
 
       try {
-        // Use result.outputFiles if available (when write is false), 
+        // Use result.outputFiles if available (when write is false),
         // otherwise read from disk with retry for watch mode
         let content;
-        
+
         if (result.outputFiles && result.outputFiles.length > 0) {
           // If esbuild provides output files directly
-          const mainOutput = result.outputFiles.find(f => f.path.endsWith("userscript.user.js"));
+          const mainOutput = result.outputFiles.find((f) => f.path.endsWith("userscript.user.js"));
           if (mainOutput) {
             content = mainOutput.text;
           }
         }
-        
+
         if (!content) {
           // Read from disk with retry logic for watch mode race conditions
           let attempts = 0;
           const maxAttempts = 5;
           const retryDelay = 50; // ms
-          
+
           while (attempts < maxAttempts) {
             try {
               // Small delay to ensure file is fully written
               if (attempts > 0) {
-                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                await new Promise((resolve) => setTimeout(resolve, retryDelay));
               }
-              
+
               content = fs.readFileSync(outputFile, "utf8");
-              
+
               // Verify content is valid (not empty or truncated)
-              if (content && content.length > 0 && (content.includes("(() => {") || content.includes("(function()"))) {
+              if (
+                content &&
+                content.length > 0 &&
+                (content.includes("(() => {") || content.includes("(function()"))
+              ) {
                 break; // Content looks valid
               }
-              
+
               attempts++;
             } catch (readError) {
               attempts++;
@@ -94,7 +96,7 @@ const userscriptPlugin = {
               }
             }
           }
-          
+
           if (!content || content.length === 0) {
             console.error("❌ Output file is empty after retries");
             return;
@@ -115,9 +117,7 @@ const userscriptPlugin = {
             content = terserResult.code;
             console.log("✅ Minified with Terser:", content.length, "bytes");
           } else {
-            console.warn(
-              "⚠️ Terser did not return code, skipping minification."
-            );
+            console.warn("⚠️ Terser did not return code, skipping minification.");
           }
         }
 
@@ -144,12 +144,10 @@ const createCssTextPlugin = ({ minify }) => ({
       let output = css;
 
       if (minify) {
-          try {
+        try {
           const result = csso.minify(css);
           output = result.css;
-          console.log(
-            `📦 ${path.basename(args.path)} minified`
-          );
+          console.log(`📦 ${path.basename(args.path)} minified`);
         } catch (error) {
           console.warn("⚠️ CSS minification failed, using unminified CSS:", error.message);
           output = css;
@@ -182,9 +180,12 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
       }
 
       // Verify the html function is imported (from utils/html or ./html)
-      const hasHtmlImport = /import\s+(?:\{[^}]*\bhtml\b[^}]*\}|html)\s+from\s+['"][^'"]*html['"]/.test(source);
+      const hasHtmlImport =
+        /import\s+(?:\{[^}]*\bhtml\b[^}]*\}|html)\s+from\s+['"][^'"]*html['"]/.test(source);
       if (!hasHtmlImport && debug) {
-        console.log(`⚠️ ${path.basename(args.path)} has html\` but no html import detected, will still process`);
+        console.log(
+          `⚠️ ${path.basename(args.path)} has html\` but no html import detected, will still process`,
+        );
       }
 
       try {
@@ -236,7 +237,9 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
 
         if (replacements.length === 0) {
           if (debug) {
-            console.log(`⏭️ ${path.basename(args.path)} no html\`\` tagged templates found by AST parser`);
+            console.log(
+              `⏭️ ${path.basename(args.path)} no html\`\` tagged templates found by AST parser`,
+            );
           }
           return null;
         }
@@ -263,8 +266,8 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
             let finalContent = minified;
             replacement.expressionTexts.forEach((exprText, i) => {
               finalContent = finalContent.replace(
-                new RegExp(`__HTML_EXPR_${i}__`, 'gi'),
-                `\${${exprText}}`
+                new RegExp(`__HTML_EXPR_${i}__`, "gi"),
+                `\${${exprText}}`,
               );
             });
 
@@ -282,41 +285,38 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
             }
 
             // Replace the tagged template with just a regular template literal
-            output =
-              output.slice(0, replacement.start) +
-              newCode +
-              output.slice(replacement.end);
+            output = output.slice(0, replacement.start) + newCode + output.slice(replacement.end);
           } catch (error) {
             console.warn(
               `⚠️ HTML minification failed for template in ${args.path}:`,
-              error.message
+              error.message,
             );
           }
         }
 
         // Log results
         const fileName = path.basename(args.path);
-        console.log(
-          `🗜️ ${fileName}: ${replacements.length} HTML template(s) minified`
-        );
+        console.log(`🗜️ ${fileName}: ${replacements.length} HTML template(s) minified`);
 
         // Debug output - show before/after for each template
         if (debug && debugInfo.length > 0) {
           console.log(`\n${"=".repeat(60)}`);
           console.log(`📄 FILE: ${fileName}`);
           console.log(`${"=".repeat(60)}`);
-          
+
           debugInfo.forEach((info, idx) => {
             const savedBytes = info.beforeLen - 4 - info.afterLen; // Subtract 4 for the removed html tag
             const savedPercent = ((savedBytes / info.beforeLen) * 100).toFixed(1);
-            
-            console.log(`\n--- Template #${idx + 1} (saved ${savedBytes} bytes, ${savedPercent}%) ---`);
+
+            console.log(
+              `\n--- Template #${idx + 1} (saved ${savedBytes} bytes, ${savedPercent}%) ---`,
+            );
             console.log(`📥 BEFORE (${info.beforeLen} chars):`);
             console.log(info.original);
             console.log(`\n📤 AFTER (${info.afterLen} chars):`);
             console.log(info.minified);
           });
-          
+
           console.log(`\n${"=".repeat(60)}\n`);
         }
 
@@ -328,7 +328,7 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
         // If parsing fails, return null to let esbuild handle it normally
         console.warn(
           `⚠️ AST parsing failed for ${args.path}, skipping HTML minification:`,
-          parseError.message
+          parseError.message,
         );
         return null;
       }
@@ -380,11 +380,11 @@ async function build() {
     if (isWatch) {
       console.log("👀 Starting watch mode...");
       const ctx = await esbuild.context(buildOptions);
-      
+
       // Do an initial build first to ensure everything is set up
       await ctx.rebuild();
       console.log("✅ Initial build completed");
-      
+
       await ctx.watch();
       console.log("👀 Watching for changes...");
     } else {

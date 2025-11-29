@@ -45,7 +45,8 @@ export default class PopupPlusPlus extends HHModule {
     };
     function customPopup(_objectivePopupthis: any, objective_points: any) {
       Object.keys(objective_points).map((n: string) => {
-        const currObjective = objective_points[n] as { // XXX: Objective from "../GameTypes"
+        const currObjective = objective_points[n] as {
+          // XXX: Objective from "../GameTypes"
           name: string;
           points_gained: number;
           title: string;
@@ -54,16 +55,14 @@ export default class PopupPlusPlus extends HHModule {
           lastPoints[currObjective.title] = {};
         }
         if (!lastPoints[currObjective.title][currObjective.name]) {
-          lastPoints[currObjective.title][currObjective.name] =
-            currObjective.points_gained;
+          lastPoints[currObjective.title][currObjective.name] = currObjective.points_gained;
         } else {
-          lastPoints[currObjective.title][currObjective.name] +=
-            currObjective.points_gained;
+          lastPoints[currObjective.title][currObjective.name] += currObjective.points_gained;
         }
       });
       const $popup = $(
         `<div class="popup_wrapper"><div id="objective_popup" class="popup"><div class="noti_box"><div class="points">${Object.keys(
-          lastPoints
+          lastPoints,
         )
           .map((n) => {
             const currObjective = lastPoints[n];
@@ -72,13 +71,13 @@ export default class PopupPlusPlus extends HHModule {
             for (const key in currObjective) {
               const value = currObjective[key];
               title += `<div class="contest_points"><div class="points_name" style="animation:none;">${key}: </div><div class="points_num" style="animation:none;"><div class="points_i" style="animation:none;">+${number_format_lang(
-                value
+                value,
               )}</div></div></div>`;
             }
             title += `</div>`;
             return title;
           })
-          .join("")}</div></div></div></div>`
+          .join("")}</div></div></div></div>`,
       );
       $("#toast-popups .popup_wrapper").remove();
       $("#toast-popups").css("display", "unset");

@@ -1,4 +1,4 @@
 export abstract class AlwaysRunningModule {
-    protected hasRun = false;
-    abstract run(): void;
+  protected hasRun = false;
+  abstract run(): void;
 }

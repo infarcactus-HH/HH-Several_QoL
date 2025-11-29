@@ -70,27 +70,24 @@ export default class EventInfo extends HHModule {
   }
   runSeason() {
     this.helperReplaceNotifButton(
-      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310674"
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310674",
     );
   }
   runLoveRaids() {
     this.helperReplaceNotifButton(
-      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-316577"
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-316577",
     );
   }
 
   helperReplaceNotifButton(url: string) {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".button-notification-action.notif_button_s",
-      () => {
-        console.log("EventInfo: Replacing notif button link for more info");
-        $(".button-notification-action.notif_button_s")
-          .attr("tooltip", "Several QoL: More Info on this event")
-          .off("click")
-          .on("click", (e) => {
-            GM_openInTab(url, { active: true });
-          });
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".button-notification-action.notif_button_s", () => {
+      console.log("EventInfo: Replacing notif button link for more info");
+      $(".button-notification-action.notif_button_s")
+        .attr("tooltip", "Several QoL: More Info on this event")
+        .off("click")
+        .on("click", (e) => {
+          GM_openInTab(url, { active: true });
+        });
+    });
   }
 }

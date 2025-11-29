@@ -4,16 +4,11 @@ export declare global {
   const shared: {
     PopupQueueManager: {
       add(options: popupForQueue): void;
-      close(options: {
-        type: "toast" | "common" | "sliding" | "notification";
-      }): void; // at the end calls $dom_element.remove()
+      close(options: { type: "toast" | "common" | "sliding" | "notification" }): void; // at the end calls $dom_element.remove()
     };
     general: {
       hc_confirm: (price: string | number, callback: () => void) => void; // opens the confirm popup for premium spending
-      hh_ajax: (
-        options: { [key: string]: any },
-        callback: (response: any) => void
-      ) => void; // jQuery ajax wrapper for HH games
+      hh_ajax: (options: { [key: string]: any }, callback: (response: any) => void) => void; // jQuery ajax wrapper for HH games
       navigate(url: string): void; // navigate to a new page
       getDocumentHref(url: string): string; // get the full URL for a relative URL (useful for completing sessIds)
       objectivePopup: any;
@@ -23,7 +18,7 @@ export declare global {
         grade_offsets: Array<number>,
         unknown4: number, //seems to be 0 or 1 (for now only seen 0)
         $parentContainer: JQuery<HTMLElement> = null, // unsure if it has to be the parent container
-        unknown6: boolean = false // unsure of it's purpose ? On love raid pages only called with true, but on main page called with false
+        unknown6: boolean = false, // unsure of it's purpose ? On love raid pages only called with true, but on main page called with false
       ): void;
     };
     reward_popup: any;
@@ -41,7 +36,7 @@ export declare global {
         timeToFinishInSeconds: number,
         text: string,
         className: string,
-        marketClock?: boolean
+        marketClock?: boolean,
       ): string; // returns the html string
       activateTimers(
         className: string, // classname is wonky here. The selector they make adds a dot before it but you can add more after
@@ -51,7 +46,7 @@ export declare global {
           onComplete: () => void; // the callback
           time_remaining: 0; // should always be 0 here ?
           timeout_id: number; // unknown
-        }) => void
+        }) => void,
       ): void; // careful to not activate multiple time the same timer
     };
     Hero: any;

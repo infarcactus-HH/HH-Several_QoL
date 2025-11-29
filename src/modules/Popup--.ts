@@ -1,8 +1,4 @@
-import {
-  HHModule,
-  HHModule_ConfigSchema,
-  SubSettingsType,
-} from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
 import { popupForQueue } from "../types/GameTypes";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
@@ -35,7 +31,7 @@ type Popupminusminus_ConfigSchema = {
       key: "noMEClaimPopup";
       default: false;
       label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>";
-    }
+    },
   ];
 };
 
@@ -64,14 +60,12 @@ export default class PopupMinusMinus extends HHModule {
       {
         key: "noPoVPoGClaimPopup",
         default: false,
-        label:
-          "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>",
+        label: "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>",
       },
       {
         key: "noMEClaimPopup",
         default: false,
-        label:
-          "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>",
+        label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>",
       },
     ],
   };
@@ -96,10 +90,7 @@ export default class PopupMinusMinus extends HHModule {
     if (subSettings.noLevelUpPopup) {
       this.noLevelUpPopup();
     }
-    if (
-      subSettings.noMissionPopup &&
-      location.pathname === "/activities.html"
-    ) {
+    if (subSettings.noMissionPopup && location.pathname === "/activities.html") {
       this.noMissionPopup();
     }
     if (subSettings.noAnnoyingReminders) {
@@ -137,11 +128,7 @@ export default class PopupMinusMinus extends HHModule {
 
     const originalRewardHandlePopup = shared.reward_popup.Reward.handlePopup;
     shared.reward_popup.Reward.handlePopup = function (t: any) {
-      for (
-        let i = self.reward_popupRewardHandlePopupOverrides.length - 1;
-        i >= 0;
-        i--
-      ) {
+      for (let i = self.reward_popupRewardHandlePopupOverrides.length - 1; i >= 0; i--) {
         const overrideData = self.reward_popupRewardHandlePopupOverrides[i];
         const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
@@ -173,8 +160,7 @@ export default class PopupMinusMinus extends HHModule {
         });
       } catch (e) {
         document.cookie =
-          "disabledPopups=PassReminder,Bundles,News; path=/; max-age=" +
-          60 * 60 * 24 * 30;
+          "disabledPopups=PassReminder,Bundles,News; path=/; max-age=" + 60 * 60 * 24 * 30;
       }
     }
     if (location.pathname === "/home.html") {
@@ -196,7 +182,7 @@ export default class PopupMinusMinus extends HHModule {
                   } else {
                     console.log("Cookie deleted successfully");
                   }
-                }
+                },
               );
             } catch (e) {
               document.cookie = "disabledPopups=; path=/; max-age=0";
@@ -204,7 +190,7 @@ export default class PopupMinusMinus extends HHModule {
           } else {
             setCookie();
           }
-        }
+        },
       );
     }
   }
@@ -215,13 +201,11 @@ export default class PopupMinusMinus extends HHModule {
           console.log("Blocked mission popup", t);
           shared.Hero.updates(t.heroChangesUpdate, false);
           // Game handler
-          $(".missions_wrap > .mission_object").length ||
+          ($(".missions_wrap > .mission_object").length ||
             (t.callbackArgs.isGiftClaimed
               ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
               : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
-            $('#missions button[rel="claim"]')
-              .addClass("button_glow")
-              .prop("disabled", !1);
+            $('#missions button[rel="claim"]').addClass("button_glow").prop("disabled", !1));
           return true;
         }
         return false;
@@ -234,8 +218,7 @@ export default class PopupMinusMinus extends HHModule {
       fn: (t: popupForQueue["popup"]) => {
         if (
           t.type === "common" &&
-          t.$dom_element.children().filter("#level_up.hero_leveling").length ===
-            1
+          t.$dom_element.children().filter("#level_up.hero_leveling").length === 1
         ) {
           return true;
         }
@@ -263,24 +246,21 @@ export default class PopupMinusMinus extends HHModule {
     });
   }
   noMEClaimPopup() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      "button[rel='claim'].mega-claim-reward",
-      ($el) => {
-        console.log("Setting up ME popup blocker");
-        $el.on("click.noPovPoGPopup", () => {
-          this.popupQueueManagerAddOverrides.push({
-            fn: (t: popupForQueue["popup"]) => {
-              if (t.type === "common" && t.popup_name === "rewards") {
-                t.onClose();
-                console.log("Blocked ME claim popup", t);
-                return true;
-              }
-              return false;
-            },
-            permanent: false,
-          });
+    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim'].mega-claim-reward", ($el) => {
+      console.log("Setting up ME popup blocker");
+      $el.on("click.noPovPoGPopup", () => {
+        this.popupQueueManagerAddOverrides.push({
+          fn: (t: popupForQueue["popup"]) => {
+            if (t.type === "common" && t.popup_name === "rewards") {
+              t.onClose();
+              console.log("Blocked ME claim popup", t);
+              return true;
+            }
+            return false;
+          },
+          permanent: false,
         });
-      }
-    );
+      });
+    });
   }
 }
