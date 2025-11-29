@@ -41,6 +41,7 @@ export declare global {
       activateTimers(
         className: string, // classname is wonky here. The selector they make adds a dot before it but you can add more after
         callback?: (timer: {
+          // Callback by default refreshes the page when timer ends
           $dom_element: JQuery<HTMLElement>; // self
           next_tick: number; // ??
           onComplete: () => void; // the callback
