@@ -14,11 +14,11 @@ import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
-import CustomCSS from "./AlwaysRunningModules.ts/customCSS";
+import CustomCSS from "./AlwaysRunningModules/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
-import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
-import PlayerSeasonTracking from "./AlwaysRunningModules.ts/PlayerSeasonTracking";
-import NutakuLogout from "./AlwaysRunningModules.ts/NutakuLogout";
+import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
+import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
+import NutakuLogout from "./AlwaysRunningModules/NutakuLogout";
 import LeaguesQoL from "./modules/LeaguesQoL";
 
 class Userscript {
