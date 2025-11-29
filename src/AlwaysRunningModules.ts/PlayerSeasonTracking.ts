@@ -4,7 +4,7 @@ import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerSeasonTracking extends AlwaysRunningModule {
   static shouldRun() {
-    return location.pathname === "/season.html";
+    return location.pathname === "/season.html" || location.pathname === "/season-arena.html";
   }
   run() {
     if (this.hasRun || !PlayerSeasonTracking.shouldRun()) {
