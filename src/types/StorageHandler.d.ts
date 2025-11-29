@@ -8,4 +8,5 @@ export type StoredPlayerSeasonInfo = {
   nextTierThreshold: number | undefined;
   mojo: number;
   name: string | undefined;
+  tier: number;
 };

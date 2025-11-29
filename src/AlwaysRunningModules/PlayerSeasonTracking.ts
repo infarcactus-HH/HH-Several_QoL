@@ -23,20 +23,25 @@ export default class PlayerSeasonTracking extends AlwaysRunningModule {
     if (!season_tiers) {
       return;
     }
+    const currentTier = unsafeWindow.season_tier as number | undefined;
+    if (currentTier === undefined) {
+      return;
+    }
     const nextTier = season_tiers.find((tier) => {
-      return Number(tier.mojo_required) > seasonMojo;
+      return Number(tier.tier) === currentTier + 1;
     });
-    const previousTier = nextTier
-      ? season_tiers[Number(nextTier.tier) - 1]
-      : season_tiers[season_tiers.length - 1];
-    const previousTierThreshold = Number(previousTier.mojo_required);
+    const currentTierInfo = season_tiers.find((tier) => {
+      return Number(tier.tier) === currentTier;
+    })!;
+    const previousTierThreshold = Number(currentTierInfo.mojo_required);
     const nextTierThreshold = nextTier ? Number(nextTier.mojo_required) : undefined;
     const storedSeasonName = PlayerStorageHandler.getPlayerSeasonInfo()?.name;
     PlayerStorageHandler.setPlayerSeasonInfo({
       previousTierThreshold,
       nextTierThreshold,
       mojo: seasonMojo,
-      name: $("#seasons_tab_title").contents()[0]?.textContent?.trim() || storedSeasonName, // Also works on arena season
+      name: $("#seasons_tab_title").contents()[0]?.textContent?.trim() || storedSeasonName,
+      tier: currentTier,
     });
   }
 }
