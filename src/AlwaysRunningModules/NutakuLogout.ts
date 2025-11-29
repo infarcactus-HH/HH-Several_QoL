@@ -19,7 +19,7 @@ export default class NutakuLogout extends AlwaysRunningModule {
       ($navDiv) => {
         const logoutLink = html`<a
           href="${shared.general.getDocumentHref("/logout.html")}"
-          tooltip="Useful for clearing cache etc, can solve unique issues"
+          tooltip="Can solve unique issues, like buggy contests or stuff like that"
           logout
         >
           <div>
