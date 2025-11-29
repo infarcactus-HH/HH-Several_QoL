@@ -34,7 +34,7 @@ export default class LustArenaStyleTweak extends HHModule {
         $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
         const $wrapper = $el.parent();
         const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank();
-        const LeaguesA = html`<a
+        const $leaguesA = $(html`<a
           href="${shared.general.getDocumentHref("/leagues.html")}"
           rel="leagues"
         >
@@ -43,9 +43,9 @@ export default class LustArenaStyleTweak extends HHModule {
             alt="Leagues Icon"
           />
           <p>#${leagueInfo.rank}</p>
-        </a>`;
-        $wrapper.append(LeaguesA);
-        const SeasonA = html`<a
+        </a>`);
+        $wrapper.append($leaguesA);
+        const $seasonA = $(html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
           rel="season"
         >
@@ -53,9 +53,13 @@ export default class LustArenaStyleTweak extends HHModule {
             src="${IMAGES_URL}/pictures/design/season_pass_alt.png"
             alt="Seasons Icon"
           />
-          <p ${GT.design.Season.length > 6 ? 'style="font-size:12px;"' : ''}>${GT.design.Season}</p>
-        </a>`;
-        $wrapper.append(SeasonA);
+          <p>${GT.design.Season}</p>
+        </a>`);
+        $wrapper.append($seasonA);
+
+        const width = $seasonA.css('width');
+        const length = GT.design.Season.length;
+        $seasonA.find('p').css('font-size', `clamp(9px, calc(${width} / ${length} * 1.75), 14px)`);
       }
     );
   }
