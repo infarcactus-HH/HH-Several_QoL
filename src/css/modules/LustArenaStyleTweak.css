@@ -33,7 +33,7 @@
   text-align: center;
   writing-mode: vertical-rl;
   rotate: 180deg;
-  max-width: 16px;
+  width: 16px;
   overflow: hidden;
 }
 
