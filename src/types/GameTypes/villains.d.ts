@@ -8,8 +8,10 @@ import {
   GirlRarity,
   ObjectivePoints,
   OpponentFighter,
+  Rarity,
 } from "../GameTypes";
-import { battleLostItem, gemsItem, itemDropItem, orbsItem, progressionItem, softCurrencyItem, ticketItem } from "./items";
+import { battleLostItem, gemsItem, itemDropItem, progressionItem, softCurrencyItem, ticketItem } from "./Items/items";
+import { orbsItem } from "./Items/orbs";
 
 export interface Shard {
   animated_grades: Array<any> | [];
@@ -83,6 +85,8 @@ export interface VillainPreBattle extends OpponentFighter {
       shards?: PreFightShards;
     };
     girls_plain: PlainGirls | [];
+    item_data: null | Array<itemDropItem>;
+    items_plain: [] | Array<{rarity: Rarity, ico: string}>;
   };
 }
 

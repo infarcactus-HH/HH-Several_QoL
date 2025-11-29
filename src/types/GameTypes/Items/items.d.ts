@@ -21,12 +21,6 @@ export interface battleLostItem {
   value: number; // 1;
 }
 
-export interface orbsItem {
-  type: "orbs";
-  orbs_type: string; //'o_m1';
-  value: number; //1;
-}
-
 export interface progressionItem {
   progression_type: string;
   type: "progressions";
@@ -62,4 +56,14 @@ export interface ItemTemplate {
   ico: string; // 'https://hh.hh-content.com/pictures/items/K2.png';
   display_price: number; //396150;
   default_market_price: number; //39615;
+}
+
+export type energyQuestsItem = {
+  type: "energy_quest";
+  value: string; // "5"
+}
+
+export type energyKissItem = {
+  type: "energy_kiss";
+  value: string; // "1"
 }
