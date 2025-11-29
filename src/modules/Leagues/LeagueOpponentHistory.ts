@@ -1,21 +1,15 @@
-import { LeagueOpponentIncomplete } from "../types/GameTypes";
-import { HHModule } from "../types/HH++";
-import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { LeagueStorageHandler } from "../utils/StorageHandler";
-import leagueOpponentHistoryCss from "../css/modules/LeagueOpponentHistory.css";
-import html from "../utils/html";
+import { LeagueOpponentIncomplete } from "../../types/GameTypes";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
+import { LeagueStorageHandler } from "../../utils/StorageHandler";
+import leagueOpponentHistoryCss from "../../css/modules/LeagueOpponentHistory.css";
+import html from "../../utils/html";
+import { SubModule } from "../../types/subModules";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
-declare const league_rewards: any; // don't care
+declare const league_rewards: any; // don't care about the type
 
-export default class LeagueOpponentHistory extends HHModule {
-  readonly configSchema = {
-    baseKey: "leagueOpponentHistory",
-    label:
-      "League : Show history of opponents (click on the row to refresh, only looks for highest league)",
-    default: true,
-  };
+export default class LeagueOpponentHistory implements SubModule {
   leaguePlayerRecord:
     | Array<{
         bestPlace: number;
@@ -25,14 +19,7 @@ export default class LeagueOpponentHistory extends HHModule {
     | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
 
-  static shouldRun() {
-    return location.pathname.includes("/leagues.html");
-  }
   run() {
-    if (this.hasRun || !LeagueOpponentHistory.shouldRun()) {
-      return;
-    }
-    this.hasRun = true;
     this.injectCSS();
     this.leaguePlayerRecord = LeagueStorageHandler.getLeaguePlayerRecord();
     HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table", () => {

@@ -6,8 +6,6 @@ import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
 import MERankingInfo from "./modules/MERankingInfo";
-import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
-import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
 import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
@@ -21,6 +19,7 @@ import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules.ts/PlayerLeagueTracking";
 import PlayerSeasonTracking from "./AlwaysRunningModules.ts/PlayerSeasonTracking";
 import NutakuLogout from "./AlwaysRunningModules.ts/NutakuLogout";
+import LeaguesQoL from "./modules/LeaguesQoL";
 
 class Userscript {
   constructor() {
@@ -60,8 +59,7 @@ class Userscript {
     LabyTeamPresets,
     MERankingInfo,
     WhaleBossTournament,
-    LeagueOpponentHistory,
-    LeagueNoPlayerProfileOnNameClick,
+    LeaguesQoL,
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
