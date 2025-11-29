@@ -40,22 +40,21 @@
 .lust-arena-style-tweak-wrapper > [rel="leagues"],
 .lust-arena-style-tweak-wrapper > [rel="season"] {
   flex: 1;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .lust-arena-style-tweak-wrapper > [rel="leagues"] img,
 .lust-arena-style-tweak-wrapper > [rel="season"] img {
   width: 50px;
   height: 50px;
-  position: absolute;
   z-index: 0;
-  top: 0;
-  left: 0;
 }
 
 .lust-arena-style-tweak-wrapper > [rel="leagues"] p,
 .lust-arena-style-tweak-wrapper > [rel="season"] p {
-  position: relative;
+  position: absolute;
   z-index: 1;
   width: 50px;
   height: 50px;
