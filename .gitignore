@@ -12,6 +12,8 @@ node_modules/
 
 # IDE files
 .vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
