@@ -32,6 +32,9 @@ importers:
       html-minifier-terser:
         specifier: ^7.2.0
         version: 7.2.0
+      prettier:
+        specifier: ^3.7.2
+        version: 3.7.2
       terser:
         specifier: ^5.44.0
         version: 5.44.0
@@ -344,6 +347,11 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
+  prettier@3.7.2:
+    resolution: {integrity: sha512-n3HV2J6QhItCXndGa3oMWvWFAgN1ibnS7R9mt6iokScBOC0Ul9/iZORmU2IWUMcyAQaMPjTlY3uT34TqocUxMA==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   relateurl@0.2.7:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
     engines: {node: '>= 0.10'}
@@ -635,6 +643,8 @@ snapshots:
       tslib: 2.8.1
 
   picocolors@1.1.1: {}
+
+  prettier@3.7.2: {}
 
   relateurl@0.2.7: {}
 

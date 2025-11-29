@@ -1,0 +1,18 @@
+node_modules
+dist
+.pnp
+.pnpm-store
+.vscode
+*.min.js
+*.png
+*.jpg
+*.jpeg
+*.gif
+.DS_Store
+
+# ignore lockfiles and built package
+pnpm-lock.yaml
+package-lock.json
+
+# ignore userscript output
+dist/**

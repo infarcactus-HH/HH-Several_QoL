@@ -9,6 +9,7 @@
     "build:debug": "node esbuild.config.js --debug",
     "watch": "node esbuild.config.js --watch",
     "dev": "pnpm run watch",
+    "format": "prettier --write .",
     "version": "pnpm run build && git add dist/userscript.user.js"
   },
   "keywords": [
@@ -26,6 +27,7 @@
     "csso": "^5.0.5",
     "esbuild": "^0.25.10",
     "html-minifier-terser": "^7.2.0",
+    "prettier": "^3.7.2",
     "terser": "^5.44.0",
     "typescript": "^5.9.3"
   }

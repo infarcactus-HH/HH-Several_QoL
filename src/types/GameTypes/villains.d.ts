@@ -1,17 +1,14 @@
+import { GradeSkins, PlainGirls } from './girls';
+import { Class, GirlID, GirlRarity, ObjectivePoints, OpponentFighter, Rarity } from '../GameTypes';
 import {
-  GradeSkins,
-  PlainGirls,
-} from "./girls";
-import {
-  Class,
-  GirlID,
-  GirlRarity,
-  ObjectivePoints,
-  OpponentFighter,
-  Rarity,
-} from "../GameTypes";
-import { battleLostItem, gemsItem, itemDropItem, progressionItem, softCurrencyItem, ticketItem } from "./Items/items";
-import { orbsItem } from "./Items/orbs";
+  battleLostItem,
+  gemsItem,
+  itemDropItem,
+  progressionItem,
+  softCurrencyItem,
+  ticketItem,
+} from './Items/items';
+import { orbsItem } from './Items/orbs';
 
 export interface Shard {
   animated_grades: Array<any> | [];
@@ -48,7 +45,7 @@ export interface Shard {
   role: number | null; // 10;
   salary_per_hour: number;
   slot_class: false;
-  type: "girl_shards";
+  type: 'girl_shards';
 }
 
 export interface PreFightShard extends Shard {
@@ -72,7 +69,14 @@ export interface PostFightShard extends Shard {
 
 export type PostFightShards = Array<PostFightShard>;
 
-export type BasicReward = softCurrencyItem | gemsItem | ticketItem | itemDropItem | battleLostItem | orbsItem | progressionItem;
+export type BasicReward =
+  | softCurrencyItem
+  | gemsItem
+  | ticketItem
+  | itemDropItem
+  | battleLostItem
+  | orbsItem
+  | progressionItem;
 
 export type BasicRewards = Array<BasicReward>;
 
@@ -86,22 +90,23 @@ export interface VillainPreBattle extends OpponentFighter {
     };
     girls_plain: PlainGirls | [];
     item_data: null | Array<itemDropItem>;
-    items_plain: [] | Array<{rarity: Rarity, ico: string}>;
+    items_plain: [] | Array<{ rarity: Rarity; ico: string }>;
   };
 }
 
 export interface DoBattlesTrollsResponse {
-  battle_result: "hero_won" | "opponent_won";
+  battle_result: 'hero_won' | 'opponent_won';
   hero_changes: {
-    currency?: { // if paying for x10/x50
+    currency?: {
+      // if paying for x10/x50
       hard_currency: number;
-    }
+    };
     energy_fight: number;
     energy_fight_recharge_time: number;
     ts_fight: number;
-  },
+  };
   objective_points?: ObjectivePoints;
-  result: "won"; // even when losing
+  result: 'won'; // even when losing
   rewards?: {
     data: {
       girls?: PostFightShards; // if girl is obtained
@@ -109,19 +114,33 @@ export interface DoBattlesTrollsResponse {
       loot: true; // true indicating showing actual rewards
       rewards?: BasicRewards;
       shards?: PostFightShards; // if shards are obtained
-    },
-    heroChangesUpdate: {
-      currency?: {
-        soft_currency?: number; // owned total amount
-        ticket?: number; // owned total amount
-      }
-      soft_currency?: number; // no idea, doesn't match soft_currency in rewards.data.rewards
-    } | [];
+    };
+    heroChangesUpdate:
+      | ({
+          currency?: {
+            soft_currency?: number; // owned total amount
+            ticket?: number; // owned total amount
+          };
+          soft_currency?: number; // no idea, doesn't match soft_currency in rewards.data.rewards
+        } & KissEnergyUpdate)
+      | [];
     lose: boolean;
     redirectUrl: string; // "/troll-pre-battle.html?id_opponent=7"
     sub_title?: string; // for reward popup
     title: string; // for reward popup
-  }
+  };
   success: boolean; // of the request, not the battle itself
-  rounds : any;
+  rounds: any;
 }
+
+export type KissEnergyUpdate =
+  | {
+      energy_kiss: number;
+      energy_kiss_recharge_time: number;
+      ts_kiss: number;
+    }
+  | {
+      energy_kiss?: never;
+      energy_kiss_recharge_time?: never;
+      ts_kiss?: never;
+    };
