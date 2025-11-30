@@ -29,7 +29,7 @@ export default class VillainReplaceBulbsByMulticolorBulb extends HHModule {
         ($el) => {
           const multicolorBulbHtml = html`<div
             class="slot slot_scrolls_mythic size_small"
-            tooltip="1 of each bulb available as drop"
+            tooltip="1 bulb of a random rarity"
           >
             <span class="scrolls_multicolor_icn"></span>
             <div class="amount">1</div>
