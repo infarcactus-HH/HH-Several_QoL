@@ -9,6 +9,7 @@ import {
   ticketItem,
 } from "./Items/items";
 import { orbsItem } from "./Items/orbs";
+import { bulbItem } from "./Items/bulbs";
 
 export interface Shard {
   animated_grades: Array<any> | [];
@@ -76,7 +77,8 @@ export type BasicReward =
   | itemDropItem
   | battleLostItem
   | orbsItem
-  | progressionItem;
+  | progressionItem
+  | bulbItem;
 
 export type BasicRewards = Array<BasicReward>;
 

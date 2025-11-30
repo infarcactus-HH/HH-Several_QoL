@@ -20,6 +20,7 @@ import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
 import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
 import NutakuLogout from "./AlwaysRunningModules/NutakuLogout";
 import LeaguesQoL from "./modules/LeaguesQoL";
+import VillainReplaceBulbsByMulticolorBulb from "./modules/VillainReplaceBulbsByMulticolorBulb";
 
 class Userscript {
   constructor() {
@@ -65,6 +66,7 @@ class Userscript {
     PoVPoGHideClaimAllUntilLastDay,
     ShardTracker,
     LustArenaStyleTweak,
+    VillainReplaceBulbsByMulticolorBulb,
   ];
   alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking, NutakuLogout];
   runWithBDSM() {
