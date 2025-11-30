@@ -21,7 +21,8 @@
   text-decoration: none;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] > .button-notification-reward {
+.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] > .button-notification-reward,
+.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] > .button-notification-icon {
   display: none;
 }
 
