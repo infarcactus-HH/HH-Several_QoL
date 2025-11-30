@@ -1,11 +1,17 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
 import NutakuLogout from "./MenuExtensions/NutakuLogout";
+import Calendar from "./MenuExtensions/Calendar";
 
 type MenuExtensions_configSchema = {
   baseKey: "menuExtensions";
   label: "Menu Extensions:";
   default: true;
   subSettings: [
+    {
+      key: "calendar";
+      label: "Calendar";
+      default: true;
+    },
     {
       key: "logout";
       label: "Logout";
@@ -20,7 +26,13 @@ export default class MenuExtensions extends HHModule {
       baseKey: "menuExtensions",
       label: "Menu Extensions:",
       default: true,
-      subSettings: [],
+      subSettings: [
+        {
+          key: "calendar",
+          label: "Calendar",
+          default: true,
+        },
+      ],
     };
     if (location.hostname.startsWith("nutaku")) {
       configSchema.subSettings.push({
@@ -40,6 +52,9 @@ export default class MenuExtensions extends HHModule {
     }
     this.hasRun = true;
     console.log("MenuExtensions module running");
+    if (subSettings.calendar) {
+      new Calendar().run();
+    }
     if (location.hostname.startsWith("nutaku") && subSettings.logout) {
       new NutakuLogout().run();
     }

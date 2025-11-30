@@ -1,0 +1,62 @@
+.popup_wrapper > #popup-calendar-qol {
+  width: 1020px;
+  height: 550px;
+  top: 0.62rem;
+  left: 0.62rem;
+}
+#popup-calendar-qol > #container-calendar-qol.container-special-bg {
+  height: 100%;
+  align-content: center;
+}
+
+#popup-calendar-qol close {
+  width: 2rem;
+  height: 2rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-image: url(/images/clubs/ic_xCross.png);
+  opacity: 1;
+}
+
+#container-calendar-qol {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  border: 2px solid #ff9900;
+  align-content: center;
+}
+
+#container-calendar-qol > .title {
+  position: absolute;
+  width: 1020px;
+  height: 2rem;
+  top: -1rem;
+  left: 0;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.22px;
+  color: #ffb827;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    -2px -2px 5px rgba(255, 159, 0, 0.4),
+    2px -2px 5px rgba(255, 159, 0, 0.4),
+    -2px 2px 5px rgba(255, 159, 0, 0.4),
+    2px 2px 5px rgba(255, 159, 0, 0.4),
+    0px 0px 10px rgba(255, 159, 0, 0.4);
+  text-align: center;
+}
+
+#container-calendar-qol > img {
+  height: 90%;
+}
+
+#contains_all > nav a:has(ic.calendar) {
+  cursor: pointer;
+}
+
+#contains_all > nav ic.calendar {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/refs/heads/main/images/calendar/calendar_icon.svg);
+}
