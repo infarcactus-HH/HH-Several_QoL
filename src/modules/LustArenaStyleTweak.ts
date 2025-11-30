@@ -86,11 +86,14 @@ export default class LustArenaStyleTweak extends HHModule {
       nextTier !== undefined ? `${currentMojo} / ${nextTier}` : `${currentMojo} (Max)`;
 
     // Build tooltip HTML - must be a single line for tooltip attribute
+    const colors = this.getColors();
     console.log("progressPercent:", progressPercent);
     return html`<div class="season-tooltip">
       <div class="season-tooltip-name">${name}</div>
       <div class="season-tooltip-tier-row">
-        <span class="season-tooltip-tier">${GT.design.tier} ${tier}</span>
+        <span class="season-tooltip-tier" style="color: ${colors.tier}">
+          ${GT.design.tier} ${tier}
+        </span>
         <span class="season-tooltip-mojo"
           >${mojoDisplay}<img
             src="${IMAGES_URL}/mojo_logo.svg"
@@ -99,8 +102,35 @@ export default class LustArenaStyleTweak extends HHModule {
         /></span>
       </div>
       <div class="season-tooltip-bar-container">
-        <div class="season-tooltip-bar-fill" style="width: ${progressPercent}%;"></div>
+        <div
+          class="season-tooltip-bar-fill"
+          style="width: ${progressPercent}%; background-image: ${colors.barGradient};"
+        />
       </div>
     </div>`;
+  }
+
+  private getColors(): { barGradient: string; tier: string } {
+    const $barDummy = $(
+      html`<div class="progress-section">
+        <div class="general-progress-bar">
+          <div class="progress-bar-fill" />
+        </div>
+      </div>`,
+    );
+    $barDummy.appendTo("#contains_all");
+    const barGradient = $barDummy.find(".progress-bar-fill").css("background-image");
+    $barDummy.remove();
+
+    const $tabDummy = $(
+      html`<div class="tabs-switcher">
+        <div class="switch-tab" />
+      </div>`,
+    );
+    $tabDummy.appendTo("#contains_all");
+    const tier = $tabDummy.find(".switch-tab").css("color");
+    $tabDummy.remove();
+
+    return { barGradient, tier };
   }
 }
