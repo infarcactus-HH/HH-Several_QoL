@@ -18,7 +18,7 @@ import CustomCSS from "./AlwaysRunningModules/customCSS";
 import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
 import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
-import NutakuLogout from "./AlwaysRunningModules/NutakuLogout";
+import MenuExtensions from "./modules/MenuExtensions";
 import LeaguesQoL from "./modules/LeaguesQoL";
 
 class Userscript {
@@ -65,8 +65,9 @@ class Userscript {
     PoVPoGHideClaimAllUntilLastDay,
     ShardTracker,
     LustArenaStyleTweak,
+    MenuExtensions,
   ];
-  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking, NutakuLogout];
+  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",

@@ -1,16 +1,9 @@
-import { AlwaysRunningModule } from "../types/AlwaysRunningModules";
-import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import html from "../utils/html";
+import { SubModule } from "../../types/subModules";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
+import html from "../../utils/html";
 
-export default class NutakuLogout extends AlwaysRunningModule {
-  static shouldRun() {
-    return location.hostname.startsWith("nutaku");
-  }
+export default class NutakuLogout implements SubModule {
   run() {
-    if (this.hasRun || !NutakuLogout.shouldRun()) {
-      return;
-    }
-    this.hasRun = true;
     this.addLogoutOption();
   }
   addLogoutOption() {
