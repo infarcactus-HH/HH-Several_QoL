@@ -27,9 +27,7 @@ export default class Calendar implements SubModule {
         );
         $navDiv.prepend($calendarMenuItem);
 
-        const $calendarPopup = $(`
-            <img src="${calendarURL}" alt="calendar">
-        `);
+        const $calendarPopup = $(html`<img src="${calendarURL}" alt="calendar" />`);
         $calendarMenuItem.on("click", function () {
           GameHelpers.createPopup("common", "calendar-qol", $calendarPopup, "Calendar");
         });
