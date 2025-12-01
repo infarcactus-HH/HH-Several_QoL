@@ -1,6 +1,6 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
-import LeagueNoPlayerProfileOnNameClick from "./Leagues/LeagueNoPlayerProfileOnNameClick";
-import LeagueOpponentHistory from "./Leagues/LeagueOpponentHistory";
+import LeagueNoPlayerProfileOnNameClick from "./LeaguesQoL/LeagueNoPlayerProfileOnNameClick";
+import LeagueOpponentHistory from "./LeaguesQoL/LeagueOpponentHistory";
 
 type LeaguesQoL_configSchema = {
   baseKey: "leaguesQoL";
