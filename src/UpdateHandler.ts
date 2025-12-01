@@ -103,7 +103,7 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor === 21 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor === 22 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
@@ -111,10 +111,14 @@ export default class UpdateHandler {
         $container.append(
           $(html`
             <div class="changelog-content hh-scroll">
-              <h2>New Feature : Lust Arena Style tweak ! (on by default)</h2>
+              <h2>New Feature : Menu Extension ! (on by default)</h2>
               <p>
-                Puts back the season and league, with some info (season info will come later)<br />
+                In the menu in the top right corner it adds a calendar to show the calendar of this
+                month<br />
+                On Nutaku it also adds a logout button for a game logout
               </p>
+              <h2>New Feature : Villain Bulbs ! (on by default)</h2>
+              <p>Combines the bulbs rewards into a single icon to save space</p>
               <h3>Shard Tracking</h3>
               <p>
                 There were some wrong grades, they have been fixed.<br />
