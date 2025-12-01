@@ -160,3 +160,5 @@ export interface ObjectivePoints {
   path_of_valor?: Objective;
   seasonal_event?: Objective;
 }
+
+type GameKey = "HH" | "GH" | "CxH" | "PSH" | "GPSH" | "TPSH";

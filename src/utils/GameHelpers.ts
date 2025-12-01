@@ -1,4 +1,4 @@
-import { popupForQueue } from "../types/GameTypes";
+import { GameKey, popupForQueue } from "../types/GameTypes";
 import html from "./html";
 
 export default class GameHelpers {
@@ -75,5 +75,25 @@ export default class GameHelpers {
       return `https://harem-battle.club/wiki/Gay-Pornstar-Harem/GPSH:${formattedName}`;
     }
     return undefined;
+  }
+
+  static getGameKey(): GameKey {
+    const host = window.location.host;
+    if (host.includes(".gayharem.com")) {
+      return "GH";
+    }
+    if (host.includes(".comixharem.com")) {
+      return "CxH";
+    }
+    if (host.includes(".pornstarharem.com")) {
+      return "PSH";
+    }
+    if (host.includes(".gaypornstarharem.com")) {
+      return "GPSH";
+    }
+    if (host.includes(".transpornstarharem.com")) {
+      return "TPSH";
+    }
+    return "HH";
   }
 }
