@@ -103,7 +103,7 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor === 22 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 23 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
@@ -111,20 +111,21 @@ export default class UpdateHandler {
         $container.append(
           $(html`
             <div class="changelog-content hh-scroll">
-              <h2>New Feature : Menu Extension ! (on by default)</h2>
+              <h2>New Feature: Menu Extension! (on by default)</h2>
               <p>
-                In the menu in the top right corner it adds a calendar to show the calendar of this
-                month<br />
-                On Nutaku it also adds a logout button for a game logout
+                In the menu in the top left corner it adds a calendar to show the calendar of this
+                month.<br />
+                On Nutaku it also adds a logout button to reset your session.
               </p>
-              <h2>New Feature : Villain Bulbs ! (on by default)</h2>
-              <p>Combines the bulbs rewards into a single icon to save space</p>
+              <h2>New Feature: Villain Bulbs! (on by default)</h2>
+              <p>Combines the bulbs rewards into a single icon to save space.</p>
               <h3>Shard Tracking</h3>
               <p>
-                There were some wrong grades, they have been fixed.<br />
-                There was an issue due to an update where skins shard wouldn't be dropped properly
-                butfight still accounted for
+                Fixed wrong grades of some girls.<br />
+                Fixed an issue where skin shards weren't properly counted.
               </p>
+              <h3>Home Screen Lust Arena</h3>
+              <p>Some small style changes and fixes.</p>
             </div>
           `),
         );
