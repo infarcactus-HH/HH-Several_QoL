@@ -1,8 +1,7 @@
-export type PlayerLeagueRank = {
+export type StoredPlayerLeagueRank = {
   league: number;
   rank: number;
 };
-
 export type StoredPlayerSeasonInfo = {
   previousTierThreshold: number;
   nextTierThreshold: number | undefined;

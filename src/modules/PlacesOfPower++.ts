@@ -1,5 +1,5 @@
-import { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../types/GameTypes";
-import { HHModule, SubSettingsType } from "../types/HH++";
+import { HHModule, SubSettingsType } from "../base";
+import type { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../types";
 import placesOfPowerCss from "../css/modules/PlacesOfPower++.css";
 import html from "../utils/html";
 

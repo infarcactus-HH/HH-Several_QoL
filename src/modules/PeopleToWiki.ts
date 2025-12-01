@@ -1,4 +1,4 @@
-import { HHModule, type SubSettingsType } from "../types/HH++";
+import { HHModule, SubSettingsType } from "../base";
 import GameHelpers from "../utils/GameHelpers";
 
 type configSchema = {

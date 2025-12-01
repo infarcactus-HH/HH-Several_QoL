@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import EventInfo_Event from "./EventInfo/EventInfo_Event";
 import EventInfo_Home from "./EventInfo/EventInfo_Home";

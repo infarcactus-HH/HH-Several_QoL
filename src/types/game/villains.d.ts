@@ -1,5 +1,3 @@
-import { GradeSkins, PlainGirls } from "./girls";
-import { Class, GirlID, GirlRarity, ObjectivePoints, OpponentFighter, Rarity } from "../GameTypes";
 import {
   battleLostItem,
   gemsItem,
@@ -7,9 +5,17 @@ import {
   progressionItem,
   softCurrencyItem,
   ticketItem,
-} from "./Items/items";
-import { orbsItem } from "./Items/orbs";
-import { bulbItem } from "./Items/bulbs";
+  orbsItem,
+  bulbItem,
+  Class,
+  GirlID,
+  GirlRarity,
+  ObjectivePoints,
+  OpponentFighter,
+  Rarity,
+  GradeSkins,
+  PlainGirls,
+} from "../";
 
 export interface Shard {
   animated_grades: Array<any> | [];

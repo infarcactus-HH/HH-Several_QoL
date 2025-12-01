@@ -1,5 +1,5 @@
-import type { love_raids } from "../types/GameTypes/love_raids";
-import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import type { love_raids } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import loveRaidsCss from "../css/modules/LoveRaids.css";

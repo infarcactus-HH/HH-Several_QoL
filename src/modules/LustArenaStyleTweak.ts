@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import LustArenaStyleTweakCss from "../css/modules/LustArenaStyleTweak.css";
 import html from "../utils/html";

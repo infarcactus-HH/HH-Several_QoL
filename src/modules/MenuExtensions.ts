@@ -1,4 +1,4 @@
-import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import NutakuLogout from "./MenuExtensions/NutakuLogout";
 import Calendar from "./MenuExtensions/Calendar";
 

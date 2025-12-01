@@ -1,4 +1,4 @@
-import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import LeagueNoPlayerProfileOnNameClick from "./LeaguesQoL/LeagueNoPlayerProfileOnNameClick";
 import LeagueOpponentHistory from "./LeaguesQoL/LeagueOpponentHistory";
 

@@ -1,4 +1,4 @@
-import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 declare let daily_goals_member_progression: {

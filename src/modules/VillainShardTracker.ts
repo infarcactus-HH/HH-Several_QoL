@@ -1,13 +1,14 @@
+import { HHModule } from "../base";
 import type {
   DoBattlesTrollsResponse,
   PostFightShard,
   VillainPreBattle,
-} from "../types/GameTypes/villains";
-import type { TrackedGirl } from "../types/ShardTracker";
-import { HHModule } from "../types/HH++";
+  TrackedGirl,
+  GirlID,
+  GirlRarity,
+  GradeSkins,
+} from "../types";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
-import type { GirlID, GirlRarity } from "../types/GameTypes";
-import { GradeSkins } from "../types/GameTypes/girls";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import villainShardTrackerCss from "../css/modules/VillainShardTracker.css";

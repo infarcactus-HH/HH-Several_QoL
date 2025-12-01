@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LabyTeamStorageHandler, WBTTeamStorageHandler } from "../utils/StorageHandler";
 import html from "../utils/html";

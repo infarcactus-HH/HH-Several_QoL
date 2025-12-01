@@ -1,5 +1,5 @@
-import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../types/HH++";
-import { popupForQueue } from "../types/GameTypes";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import type { popupForQueue } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 type Popupminusminus_ConfigSchema = {

@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 
 export default class PopupPlusPlus extends HHModule {
   readonly configSchema = {

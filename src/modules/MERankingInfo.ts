@@ -1,5 +1,5 @@
-import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types/GameTypes";
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
+import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import meRankingInfoCss from "../css/modules/MERankingInfo.css";
 

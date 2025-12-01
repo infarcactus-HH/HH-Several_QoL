@@ -1,4 +1,5 @@
-import { GirlID, GirlRarity } from "./GameTypes";
+import { GirlID } from "../game/common";
+import { GirlRarity } from "../game/girls";
 
 export interface TrackedGirl {
   name: string;

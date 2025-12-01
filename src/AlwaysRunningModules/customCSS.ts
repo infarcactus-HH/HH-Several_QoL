@@ -1,4 +1,4 @@
-import { AlwaysRunningModule } from "../types/AlwaysRunningModules";
+import { AlwaysRunningModule } from "../base";
 
 export default class CustomCSS extends AlwaysRunningModule {
   static shouldRun() {

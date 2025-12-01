@@ -1,4 +1,4 @@
-import { SubModule } from "../../types/subModules";
+import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
 export default class LeagueNoPlayerProfileOnNameClick implements SubModule {

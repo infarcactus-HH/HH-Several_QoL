@@ -1,5 +1,5 @@
-import { AlwaysRunningModule } from "../types/AlwaysRunningModules";
-import { SeasonTiers } from "../types/GameTypes/season";
+import { AlwaysRunningModule } from "../base";
+import { SeasonTiers } from "../types/game/season";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerSeasonTracking extends AlwaysRunningModule {

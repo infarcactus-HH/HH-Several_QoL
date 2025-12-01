@@ -1,5 +1,7 @@
 import { GirlID, GirlRarity } from "../GameTypes";
 
+export type GirlRarity = Rarity | "starting";
+
 export interface PlainSkin {
   ico_path: string;
   is_owned: boolean;

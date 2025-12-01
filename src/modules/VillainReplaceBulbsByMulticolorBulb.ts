@@ -1,5 +1,5 @@
-import { VillainPreBattle } from "../types/GameTypes/villains";
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
+import type { VillainPreBattle } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import html from "../utils/html";
 import VillainReplaceBulbsByMulticolorBulbCss from "../css/modules/VillainReplaceBulbsByMulticolorBulb.css";

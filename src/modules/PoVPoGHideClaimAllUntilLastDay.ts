@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import povPoGHideClaimAllUntilLastDayCss from "../css/modules/PoVPoGHideClaimAllUntilLastDay.css";
 
 export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {

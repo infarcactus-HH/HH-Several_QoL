@@ -1,9 +1,9 @@
-import { LeagueOpponentIncomplete } from "../../types/GameTypes";
+import { SubModule } from "../../base";
+import type { LeagueOpponentIncomplete } from "../../types";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { LeagueStorageHandler } from "../../utils/StorageHandler";
 import leagueOpponentHistoryCss from "../../css/modules/LeagueOpponentHistory.css";
 import html from "../../utils/html";
-import { SubModule } from "../../types/subModules";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;

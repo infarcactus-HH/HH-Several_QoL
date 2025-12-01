@@ -1,4 +1,4 @@
-import { SubModule } from "../../types/subModules";
+import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import html from "../../utils/html";
 import GameHelpers from "../../utils/GameHelpers";

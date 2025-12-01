@@ -1,4 +1,4 @@
-import { AlwaysRunningModule } from "../types/AlwaysRunningModules";
+import { AlwaysRunningModule } from "../base";
 import { LeagueOpponentIncomplete } from "../types/GameTypes";
 import { GlobalStorageHandler, PlayerStorageHandler } from "../utils/StorageHandler";
 
