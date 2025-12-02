@@ -17,7 +17,7 @@ export default class UpdateHandler {
     if (storedVersion === currentVersion) {
       return;
     }
-    const [storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
+    const [_storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
@@ -104,7 +104,7 @@ export default class UpdateHandler {
 
     if (storedMinor < 23 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
-      GameHelpers.createCommonPopup("update-several-qol", (popup, t) => {
+      GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append($(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`));
         $container.append(
