@@ -153,9 +153,3 @@ export type KissEnergyUpdate =
       energy_kiss_recharge_time?: never;
       ts_kiss?: never;
     };
-
-export type CustomVillainGirlsEvent =
-  | "Mythic Days (Revival)"
-  | "Legendary Days"
-  | "Classic Event"
-  | "Orgy Days";

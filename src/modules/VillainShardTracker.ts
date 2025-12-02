@@ -7,7 +7,6 @@ import type {
   GirlID,
   GirlRarity,
   GradeSkins,
-  CustomVillainGirlsEvent,
 } from "../types";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
@@ -23,11 +22,13 @@ export default class ShardTracker extends HHModule {
     default: true,
   };
 
-  static readonly EVENT_OPTIONS: CustomVillainGirlsEvent[] = [
+  static readonly EVENT_OPTIONS = [
     "Mythic Days (Revival)",
     "Legendary Days",
     "Classic Event",
     "Orgy Days",
+    "Love Raids",
+    "Villain Girl",
   ];
 
   static shouldRun() {
