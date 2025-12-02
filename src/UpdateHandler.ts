@@ -2,8 +2,7 @@ import GameHelpers from "./utils/GameHelpers";
 import { HHPlusPlusReplacer } from "./utils/HHPlusPlusreplacer";
 import { GlobalStorageHandler } from "./utils/StorageHandler";
 import updateHandlerCss from "./css/UpdateHandler.css";
-import { TrackedGirlRecords } from "./types/ShardTracker";
-import { GirlID, Grade } from "./types/GameTypes";
+import { GirlID, Grade, TrackedGirlRecords } from "./types";
 import html from "./utils/html";
 
 export default class UpdateHandler {

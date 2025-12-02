@@ -1,5 +1,5 @@
 import { AlwaysRunningModule } from "../base";
-import { LeagueOpponentIncomplete } from "../types/GameTypes";
+import { LeagueOpponentIncomplete } from "../types";
 import { GlobalStorageHandler, PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerLeagueTracking extends AlwaysRunningModule {

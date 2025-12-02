@@ -1,4 +1,4 @@
-import { GameKey, popupForQueue } from "../types/GameTypes";
+import { GameKey, popupForQueue } from "../types";
 import html from "./html";
 
 export default class GameHelpers {
