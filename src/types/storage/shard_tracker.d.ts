@@ -10,6 +10,7 @@ export interface TrackedGirl {
   dropped_shards: number;
   last_fight_time: number;
   last_shards_count?: number;
+  event_source?: string;
   skins?: Array<{
     ico_path: string;
     number_fight: number;

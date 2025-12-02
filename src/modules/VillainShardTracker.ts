@@ -471,9 +471,7 @@ export default class ShardTracker extends HHModule {
       (girl.skins ?? []).reduce((sum, skin) => {
         return sum + skin.number_fight;
       }, 0);
-    const percent = (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
-
-    return $(html`
+    const girlDiv = $(html`
       <div id_girl="${id_girl}">
         <div girl="${id_girl}" class="harem-girl">
           <div class="left">
@@ -484,23 +482,96 @@ export default class ShardTracker extends HHModule {
             <div class="g_infos">
               <div class="graded">${"<g></g>".repeat(girl.grade)}</div>
             </div>
-            <div class="drop-display">
-              <div class="total-shards">
-                <span class="label">${shards}</span>
-                <span class="icon shards"></span>
-              </div>
-              <div class="total-fights">
-                <span class="label">${fights}</span>
-                <span class="icon fights"></span>
-              </div>
-              <div class="drop-rate">
-                <span class="label">${percent}</span>
-              </div>
-            </div>
+            ${this.generateDropDisplay(shards, fights)}
           </div>
         </div>
       </div>
     `);
+    girlDiv.on("click", () => {
+      this.generateGirlDetail(id_girl, girl);
+    });
+    return girlDiv;
+  }
+  generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
+    const $girlDetail = $(
+      "#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-detail",
+    ).empty();
+
+    // Calculate stats
+    const girlShards = girl.dropped_shards;
+    const girlFights = girl.number_fight;
+
+    // Build skins HTML
+    let skinsHtml = "";
+    if (girl.skins && girl.skins.length > 0) {
+      skinsHtml = `<div class="skins-section">
+        <h3>Skins</h3>
+        <div class="skins-list">
+          ${girl.skins
+            .map((skin, index) => {
+              return `<div class="skin-entry">
+              <div class="skin-ico"><img src="${skin.ico_path}" alt="Skin ${index + 1}" /></div>
+              ${this.generateDropDisplay(skin.dropped_shards ?? 0, skin.number_fight)}
+            </div>`;
+            })
+            .join("")}
+        </div>
+      </div>`;
+    }
+
+    const girlDetail = html`
+      <h2>${girl.name}</h2>
+      <div class="graded-detail">${"<g></g>".repeat(girl.grade)}</div>
+      <div class="girl-ico-detail">
+        <img class="${girl.rarity}" src="${girl.ico}" alt="" />
+      </div>
+      <div class="detail-stats">
+        <h3>Girl Stats</h3>
+        ${this.generateDropDisplay(girlShards, girlFights)}
+      </div>
+      ${skinsHtml}
+      <div class="detail-actions">
+        <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
+      </div>
+    `;
+    $girlDetail.append(girlDetail);
+
+    // Highlight the selected girl in the list
+    $("#container-drop-log-several-qol div[girl]").removeClass("opened");
+    $(`#container-drop-log-several-qol div[girl="${id_girl}"]`).addClass("opened");
+
+    // Delete button handler
+    $girlDetail.find(".delete-girl-btn").on("click", () => {
+      if (
+        confirm(
+          `Are you sure you want to delete all tracked data for ${girl.name}? This action cannot be undone.`,
+        )
+      ) {
+        ShardTrackerStorageHandler.removeTrackedGirl(id_girl);
+        $girlDetail.empty();
+        // Remove from the girl list
+        $(`#container-drop-log-several-qol div[id_girl="${id_girl}"]`).remove();
+      }
+    });
+  }
+
+  generateDropDisplay(shards: number, fights: number): string {
+    const percent = (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
+    return html`
+      <div class="drop-display">
+        <div class="total-shards">
+          <span class="label">${shards}</span>
+          <span class="icon shards"></span>
+        </div>
+        <div class="total-fights">
+          <span class="label">${fights}</span>
+          <span class="icon fights"></span>
+        </div>
+        <div class="drop-rate">
+          <span class="label">${percent}</span>
+        </div>
+      </div>
+    `;
   }
 
   createGirlList(): JQuery<HTMLElement> {
@@ -526,6 +597,7 @@ export default class ShardTracker extends HHModule {
     const title = `Shard Drop Log`;
     const $dropLog = $('<div class="drop-log"></div>');
     $dropLog.append(this.createGirlList());
+    $dropLog.append(html`<div class="girl-detail hh-scroll"></div>`);
     HHPlusPlusReplacer.doWhenSelectorAvailable("#pre-battle .opponent .personal_info", ($opp) => {
       const $showLogButton = $(html`
         <span id="show-drop-log-several-qol">

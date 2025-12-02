@@ -66,16 +66,18 @@
 #container-drop-log-several-qol div.drop-log {
   margin: 10px 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: row;
 }
 
 #container-drop-log-several-qol div.girl-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: max-content;
-  gap: 10px;
+  gap: 8px;
   height: 525px;
   overflow-y: auto;
-  padding: 0 60px;
+  padding: 0 20px;
   border-radius: 0px 0px 4px 4px;
 }
 
@@ -119,23 +121,29 @@
   left: 0;
   top: 0;
 }
-#container-drop-log-several-qol div[girl] > .left .mythic {
+#container-drop-log-several-qol div[girl] > .left .mythic,
+#popup-drop-log-several-qol .girl-ico-detail > img.mythic {
   background: transparent
     radial-gradient(closest-side at 50% 50%, #f5a866 0%, #ec0039 51%, #9e0e27 100%) 0% 0% no-repeat
     padding-box;
 }
-#container-drop-log-several-qol div[girl] > .left .legendary {
+#container-drop-log-several-qol div[girl] > .left .legendary,
+#popup-drop-log-several-qol .girl-ico-detail > img.legendary {
   background-image: url(/images/legendary.png);
   background-size: contain;
 }
-#container-drop-log-several-qol div[girl] > .left .epic {
+#container-drop-log-several-qol div[girl] > .left .epic,
+#popup-drop-log-several-qol .girl-ico-detail > img.epic {
   background: #ffb244;
 }
-#container-drop-log-several-qol div[girl] > .left .rare {
+#container-drop-log-several-qol div[girl] > .left .rare,
+#popup-drop-log-several-qol .girl-ico-detail > img.rare {
   background: #23b56b;
 }
 #container-drop-log-several-qol div[girl] > .left .starting,
-#container-drop-log-several-qol div[girl] > .left .common {
+#container-drop-log-several-qol div[girl] > .left .common,
+#popup-drop-log-several-qol .girl-ico-detail > img.starting,
+#popup-drop-log-several-qol .girl-ico-detail > img.common {
   background: #8d8e9f;
 }
 
@@ -233,4 +241,185 @@
 
 #container-drop-log-several-qol div[girl] > .right .drop-display span.icon {
   margin-left: -5px;
+}
+
+#container-drop-log-several-qol .drop-log > .girl-detail {
+  width: 395px;
+  height: 525px;
+  overflow-y: auto;
+  padding: 0 10px;
+}
+
+#container-drop-log-several-qol .drop-log > .girl-detail > .girl-ico-detail > img {
+  height: 230px;
+}
+
+#container-drop-log-several-qol .girl-detail > .graded-detail > g {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: url(/images/design_v2/affstar_S.png) center no-repeat;
+  background-size: contain;
+}
+
+/* Detail Stats Section */
+#container-drop-log-several-qol .girl-detail .detail-stats {
+  margin-top: 10px;
+  padding: 3px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats h3 {
+  font-size: 14px;
+  color: #ffb827;
+  margin: 0;
+  text-shadow: 1px 1px 0 #000;
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  height: auto;
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.label {
+  text-shadow:
+    1px 1px 0 #4d2f17,
+    -1px 1px 0 #4d2f17,
+    -1px -1px 0 #4d2f17,
+    1px -1px 0 #4d2f17;
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-left: -5px;
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.shards {
+  background-image: url(/images/pictures/design/shards.png);
+}
+
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.fights {
+  background-image: url(/images/pictures/design/ic_topbar_energy_fight.png);
+}
+
+/* Skins Section */
+#container-drop-log-several-qol .girl-detail .skins-section {
+  margin-top: 10px;
+  padding: 3px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+#container-drop-log-several-qol .girl-detail .skins-section h3 {
+  font-size: 14px;
+  color: #ffb827;
+  margin: 0;
+  text-shadow: 1px 1px 0 #000;
+}
+
+#container-drop-log-several-qol .girl-detail .skins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 3px;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #fff;
+  flex-shrink: 0;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-ico img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  height: auto;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.label {
+  text-shadow:
+    1px 1px 0 #4d2f17,
+    -1px 1px 0 #4d2f17,
+    -1px -1px 0 #4d2f17,
+    1px -1px 0 #4d2f17;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-left: -5px;
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.shards {
+  background-image: url(/images/pictures/design/shards.png);
+}
+
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.fights {
+  background-image: url(/images/pictures/design/ic_topbar_energy_fight.png);
+}
+
+/* Detail Actions */
+#container-drop-log-several-qol .girl-detail .detail-actions {
+  margin-top: 10px;
+  text-align: center;
+}
+
+#container-drop-log-several-qol .girl-detail .delete-girl-btn {
+  padding: 8px 16px;
+  background: linear-gradient(to bottom, #ff4444, #cc0000);
+  border: 1px solid #aa0000;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #000;
+}
+
+#container-drop-log-several-qol .girl-detail .delete-girl-btn:hover {
+  background: linear-gradient(to bottom, #ff6666, #ee0000);
+}
+
+#container-drop-log-several-qol .girl-detail .delete-girl-btn:active {
+  background: linear-gradient(to bottom, #cc0000, #aa0000);
+}
+
+/* Make girl entries clickable */
+#container-drop-log-several-qol div[girl] {
+  cursor: pointer;
 }
