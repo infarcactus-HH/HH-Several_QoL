@@ -262,6 +262,49 @@
   background-size: contain;
 }
 
+/* Event Source Section */
+#container-drop-log-several-qol .girl-detail .event-source-section {
+  margin-top: 10px;
+  padding: 3px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+#container-drop-log-several-qol .girl-detail .event-source-section h3 {
+  font-size: 14px;
+  color: #ffb827;
+  margin: 0;
+  text-shadow: 1px 1px 0 #000;
+}
+
+#container-drop-log-several-qol .girl-detail .event-picker {
+  width: 100%;
+  padding: 6px 10px;
+  margin-top: 5px;
+  border: 1px solid #ff9900;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #2a1a0a, #1a0a00);
+  color: #ffb827;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+#container-drop-log-several-qol .girl-detail .event-picker:hover {
+  border-color: #ffb827;
+}
+
+#container-drop-log-several-qol .girl-detail .event-picker:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+}
+
+#container-drop-log-several-qol .girl-detail .event-picker option {
+  background: #1a0a00;
+  color: #ffb827;
+  font-size: 15px;
+}
+
 /* Detail Stats Section */
 #container-drop-log-several-qol .girl-detail .detail-stats {
   margin-top: 10px;

@@ -7,6 +7,7 @@ import type {
   GirlID,
   GirlRarity,
   GradeSkins,
+  CustomVillainGirlsEvent,
 } from "../types";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
@@ -21,6 +22,13 @@ export default class ShardTracker extends HHModule {
       "<span tooltip='Display is still a WIP'>Tracks your Legendary & Mythic drops from Villains</span>",
     default: true,
   };
+
+  static readonly EVENT_OPTIONS: CustomVillainGirlsEvent[] = [
+    "Mythic Days (Revival)",
+    "Legendary Days",
+    "Classic Event",
+    "Orgy Days",
+  ];
 
   static shouldRun() {
     return (
@@ -530,11 +538,22 @@ export default class ShardTracker extends HHModule {
         ${this.generateDropDisplay(girlShards, girlFights)}
       </div>
       ${skinsHtml}
+      <div class="event-source-section" tooltip="This Will be useful for data crunching later">
+        <h3>Event Source</h3>
+        ${this.generateEventPicker(girl.event_source)}
+      </div>
       <div class="detail-actions">
         <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
       </div>
     `;
     $girlDetail.append(girlDetail);
+
+    // Event picker change handler
+    $girlDetail.find(".event-picker").on("change", (e) => {
+      const selectedEvent = $(e.target).val() as string;
+      girl.event_source = selectedEvent || undefined;
+      ShardTrackerStorageHandler.upsertTrackedGirl(id_girl, girl);
+    });
 
     // Highlight the selected girl in the list
     $("#container-drop-log-several-qol div[girl]").removeClass("opened");
@@ -571,6 +590,19 @@ export default class ShardTracker extends HHModule {
           <span class="label">${percent}</span>
         </div>
       </div>
+    `;
+  }
+
+  generateEventPicker(currentEvent?: string): string {
+    const options = ShardTracker.EVENT_OPTIONS.map(
+      (event) =>
+        `<option value="${event}" ${currentEvent === event ? "selected" : ""}>${event}</option>`,
+    ).join("");
+    return html`
+      <select class="event-picker">
+        <option value="" ${!currentEvent ? "selected" : ""}>-- Select Event --</option>
+        ${options}
+      </select>
     `;
   }
 
