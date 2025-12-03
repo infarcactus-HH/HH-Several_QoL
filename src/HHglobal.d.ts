@@ -51,12 +51,16 @@ export declare global {
       ): void; // careful to not activate multiple time the same timer
     };
     Hero: any;
+    popup_payment: any;
   };
 
   const GT: any;
   const IMAGES_URL: string; // get the base url for images
   const HH_UNIVERSE: string; // get the string of the current universe (different for games & nutaku vs .com)
   const server_now_ts: number; // Server simply sends Date.now()/1000
+  const tutoFeatures: { [key: string]: any };
+  const tutorial_keys: Array<string>;
+  const tutoData: { [key: string]: any };
   function number_format_lang(num: number): string;
 }
 
