@@ -648,4 +648,49 @@ export default class ShardTracker extends HHModule {
       });
     });
   }
+  private calculateNumberOfDropsForFights(
+    response: DoBattlesTrollsResponse,
+    nbFights: number,
+  ): number {
+    if (!response.rewards) {
+      return 0;
+    }
+    const rewardsData = response.rewards.data;
+    if (nbFights === 1) {
+      return rewardsData.shards || rewardsData.girls || rewardsData.grade_skins ? 1 : 0;
+    }
+    if (!rewardsData.rewards) {
+      return nbFights;
+    }
+    let accountedFights = 0;
+    for (const reward of rewardsData.rewards) {
+      if (reward.type === "battle_lost") {
+        accountedFights += reward.value;
+      } else if (reward.type === "ticket") {
+        accountedFights += Number(reward.value);
+      } else if (reward.type === "orbs") {
+        accountedFights += reward.value;
+      } else if (reward.type === "progressions") {
+        accountedFights += Number(reward.value);
+      } else if (reward.type === "item") {
+        accountedFights += reward.value.quantity;
+      } else if (
+        reward.type === "scrolls_common" ||
+        reward.type === "scrolls_rare" ||
+        reward.type === "scrolls_epic" ||
+        reward.type === "scrolls_legendary" ||
+        reward.type === "scrolls_mythic"
+      ) {
+        accountedFights += Number(reward.value);
+      } else if (reward.type === "gems") {
+      } else if (reward.type === "soft_currency") {
+      } else {
+        console.warn("Unknown reward type encountered in shard tracker:", reward);
+        if ((reward as any).value && !isNaN(Number((reward as any).value))) {
+          accountedFights += Number((reward as any).value);
+        }
+      }
+    }
+    return nbFights - accountedFights;
+  }
 }
