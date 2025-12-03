@@ -34,6 +34,18 @@ export class PlayerStorageHandler {
   static getPlayerSeasonInfo(): StoredPlayerSeasonInfo | null {
     return GM_getValue(HH_UNIVERSE + "PlayerSeasonInfo", null);
   }
+  /**
+   * @param bonus percentage bonus for gems gained from prestige
+   */
+  static setPlayerGemsPrestigeBonus(bonus: number): void {
+    GM_setValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", bonus);
+  }
+  /**
+   * @returns percentage bonus for gems gained from prestige, -1 if not set
+   */
+  static getPlayerGemsPrestigeBonus(): number {
+    return GM_getValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", -1);
+  }
 }
 
 export class LeagueStorageHandler {

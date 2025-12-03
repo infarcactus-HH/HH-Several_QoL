@@ -21,6 +21,7 @@ import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
 import MenuExtensions from "./modules/MenuExtensions";
 import LeaguesQoL from "./modules/LeaguesQoL";
 import VillainReplaceBulbsByMulticolorBulb from "./modules/VillainReplaceBulbsByMulticolorBulb";
+import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTracking";
 
 class Userscript {
   constructor() {
@@ -69,7 +70,12 @@ class Userscript {
     VillainReplaceBulbsByMulticolorBulb,
     MenuExtensions,
   ];
-  alwaysRunningModules = [PlayerLeagueTracking, CustomCSS, PlayerSeasonTracking];
+  alwaysRunningModules = [
+    PlayerLeagueTracking,
+    CustomCSS,
+    PlayerSeasonTracking,
+    PlayerPrestigeTracking,
+  ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
