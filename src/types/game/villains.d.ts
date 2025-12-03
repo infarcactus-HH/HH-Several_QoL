@@ -16,6 +16,7 @@ import {
   GradeSkins,
   PlainGirls,
   EventsList,
+  livelySceneItem,
 } from "../";
 
 export interface Shard {
@@ -85,7 +86,8 @@ export type BasicReward =
   | battleLostItem
   | orbsItem
   | progressionItem
-  | bulbItem;
+  | bulbItem
+  | livelySceneItem;
 
 export type BasicRewards = Array<BasicReward>;
 
