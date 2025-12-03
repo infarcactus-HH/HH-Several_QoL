@@ -18,6 +18,9 @@ export default class LustArenaStyleTweak extends HHModule {
       return;
     }
     this.hasRun = true;
+    if (this.isInTutoLustArena()) {
+      return;
+    }
     this.injectCSS();
     HHPlusPlusReplacer.doWhenSelectorAvailable('.main-container [rel="pvp-arena"]', ($el) => {
       const $MapContainer = $('.left-side-container [rel="map"] > .notif-position > span');
@@ -132,5 +135,14 @@ export default class LustArenaStyleTweak extends HHModule {
     $tabDummy.remove();
 
     return { barGradient, tier };
+  }
+  private isInTutoLustArena(): boolean {
+    if (tutoFeatures.season && !tutoData.home4_1) {
+      return true;
+    }
+    if (tutoFeatures.leagues && !tutoData.home6_1) {
+      return true;
+    }
+    return false;
   }
 }
