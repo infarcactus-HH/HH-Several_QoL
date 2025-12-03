@@ -69,7 +69,7 @@ export default class ShardTracker extends HHModule {
     this.hookTrollAjaxComplete();
   }
 
-  hookTrollAjaxComplete() {
+  private hookTrollAjaxComplete() {
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (
         this.shouldTrackShards &&
@@ -342,7 +342,7 @@ export default class ShardTracker extends HHModule {
     }
   }
 
-  handlePreBattlePage() {
+  private handlePreBattlePage() {
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
@@ -459,7 +459,7 @@ export default class ShardTracker extends HHModule {
     }
   }
 
-  handleBattlePage() {
+  private handleBattlePage() {
     const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
     if (
       location.search.includes(`id_opponent=${currentTrackingState.trollID}`) &&
@@ -469,7 +469,7 @@ export default class ShardTracker extends HHModule {
     }
   }
 
-  createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
+  private createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
     const shards =
       girl.dropped_shards +
       (girl.skins ?? []).reduce((sum, skin) => {
@@ -501,7 +501,7 @@ export default class ShardTracker extends HHModule {
     });
     return girlDiv;
   }
-  generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
+  private generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
     const $girlDetail = $(
       "#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-detail",
     ).empty();
@@ -575,7 +575,7 @@ export default class ShardTracker extends HHModule {
     });
   }
 
-  generateDropDisplay(shards: number, fights: number): string {
+  private generateDropDisplay(shards: number, fights: number): string {
     const percent = (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
     return html`
       <div class="drop-display">
@@ -594,7 +594,7 @@ export default class ShardTracker extends HHModule {
     `;
   }
 
-  generateEventPicker(currentEvent?: string): string {
+  private generateEventPicker(currentEvent?: string): string {
     const options = ShardTracker.EVENT_OPTIONS.map(
       (event) =>
         `<option value="${event}" ${currentEvent === event ? "selected" : ""}>${event}</option>`,
@@ -607,7 +607,7 @@ export default class ShardTracker extends HHModule {
     `;
   }
 
-  createGirlList(): JQuery<HTMLElement> {
+  private createGirlList(): JQuery<HTMLElement> {
     const $girlList = $('<div class="girl-grid hh-scroll"></div>');
     Object.entries(ShardTrackerStorageHandler.getTrackedGirls())
       .filter(
@@ -626,7 +626,7 @@ export default class ShardTracker extends HHModule {
     return $girlList;
   }
 
-  makeLogPopup() {
+  private makeLogPopup() {
     const title = `Shard Drop Log`;
     const $dropLog = $('<div class="drop-log"></div>');
     $dropLog.append(this.createGirlList());
