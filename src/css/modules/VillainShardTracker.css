@@ -121,29 +121,23 @@
   left: 0;
   top: 0;
 }
-#container-drop-log-several-qol div[girl] > .left .mythic,
-#popup-drop-log-several-qol .girl-ico-detail > img.mythic {
+#container-drop-log-several-qol div[girl] > .left .mythic {
   background: transparent
     radial-gradient(closest-side at 50% 50%, #f5a866 0%, #ec0039 51%, #9e0e27 100%) 0% 0% no-repeat
     padding-box;
 }
-#container-drop-log-several-qol div[girl] > .left .legendary,
-#popup-drop-log-several-qol .girl-ico-detail > img.legendary {
+#container-drop-log-several-qol div[girl] > .left .legendary {
   background-image: url(/images/legendary.png);
   background-size: contain;
 }
-#container-drop-log-several-qol div[girl] > .left .epic,
-#popup-drop-log-several-qol .girl-ico-detail > img.epic {
+#container-drop-log-several-qol div[girl] > .left .epic {
   background: #ffb244;
 }
-#container-drop-log-several-qol div[girl] > .left .rare,
-#popup-drop-log-several-qol .girl-ico-detail > img.rare {
+#container-drop-log-several-qol div[girl] > .left .rare {
   background: #23b56b;
 }
 #container-drop-log-several-qol div[girl] > .left .starting,
-#container-drop-log-several-qol div[girl] > .left .common,
-#popup-drop-log-several-qol .girl-ico-detail > img.starting,
-#popup-drop-log-several-qol .girl-ico-detail > img.common {
+#container-drop-log-several-qol div[girl] > .left .common {
   background: #8d8e9f;
 }
 
@@ -250,11 +244,7 @@
   padding: 0 10px;
 }
 
-#container-drop-log-several-qol .drop-log > .girl-detail > .girl-ico-detail > img {
-  height: 230px;
-}
-
-#container-drop-log-several-qol .girl-detail > .graded-detail > g {
+#container-drop-log-several-qol .girl-detail .graded-detail > g {
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -465,4 +455,35 @@
 /* Make girl entries clickable */
 #container-drop-log-several-qol div[girl] {
   cursor: pointer;
+}
+
+#container-drop-log-several-qol .girl-detail-container {
+  position: relative;
+  height: 525px;
+  overflow: hidden;
+}
+
+#container-drop-log-several-qol .background-pose {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: 1;
+  opacity: 0.7;
+}
+
+#container-drop-log-several-qol .girl-detail-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 10px;
+  overflow-y: auto;
+  background: rgb(0, 0, 0, 10%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }

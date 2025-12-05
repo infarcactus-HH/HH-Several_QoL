@@ -529,22 +529,28 @@ export default class ShardTracker extends HHModule {
     }
 
     const girlDetail = html`
-      <h2>${girl.name}</h2>
-      <div class="graded-detail">${"<g></g>".repeat(girl.grade)}</div>
-      <div class="girl-ico-detail">
-        <img class="${girl.rarity}" src="${girl.ico}" alt="" />
-      </div>
-      <div class="detail-stats">
-        <h3>Girl Stats</h3>
-        ${this.generateDropDisplay(girlShards, girlFights)}
-      </div>
-      ${skinsHtml}
-      <div class="event-source-section" tooltip="This Will be useful for data crunching later">
-        <h3>Event Source</h3>
-        ${this.generateEventPicker(girl.event_source)}
-      </div>
-      <div class="detail-actions">
-        <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
+      <div class="girl-detail-container">
+        <img
+          src="${IMAGES_URL + "/pictures/girls/" + id_girl + "/ava0.png"}"
+          class="background-pose"
+          alt="${girl.name}"
+        />
+        <div class="girl-detail-content">
+          <h2>${girl.name}</h2>
+          <div class="graded-detail">${"<g></g>".repeat(girl.grade)}</div>
+          <div class="detail-stats">
+            <h3>Girl Stats</h3>
+            ${this.generateDropDisplay(girlShards, girlFights)}
+          </div>
+          ${skinsHtml}
+          <div class="event-source-section" tooltip="This Will be useful for data crunching later">
+            <h3>Event Source</h3>
+            ${this.generateEventPicker(girl.event_source)}
+          </div>
+          <div class="detail-actions">
+            <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
+          </div>
+        </div>
       </div>
     `;
     $girlDetail.append(girlDetail);
