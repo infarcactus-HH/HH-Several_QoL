@@ -471,6 +471,7 @@
 }
 
 #container-drop-log-several-qol .girl-detail .delete-girl-btn {
+  /* XXX could just have a trash can icon instead of text */
   padding: 8px 16px;
   background: linear-gradient(to bottom, #ff4444, #cc0000);
   border: 1px solid #aa0000;
