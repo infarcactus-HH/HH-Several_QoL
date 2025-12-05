@@ -671,25 +671,7 @@ export default class ShardTracker extends HHModule {
     }
     let accountedFights = 0;
     for (const reward of rewardsData.rewards) {
-      if (reward.type === "battle_lost") {
-        accountedFights += reward.value;
-      } else if (reward.type === "ticket") {
-        accountedFights += Number(reward.value);
-      } else if (reward.type === "orbs") {
-        accountedFights += reward.value;
-      } else if (reward.type === "progressions") {
-        accountedFights += Number(reward.value);
-      } else if (reward.type === "item") {
-        accountedFights += reward.value.quantity;
-      } else if (
-        reward.type === "scrolls_common" ||
-        reward.type === "scrolls_rare" ||
-        reward.type === "scrolls_epic" ||
-        reward.type === "scrolls_legendary" ||
-        reward.type === "scrolls_mythic"
-      ) {
-        accountedFights += Number(reward.value);
-      } else if (reward.type === "gems") {
+      if (reward.type === "gems") {
       } else if (reward.type === "soft_currency") {
         const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
           .currency!.soft_currency!;
@@ -701,7 +683,16 @@ export default class ShardTracker extends HHModule {
         );
         accountedFights += Math.round(currencyDiff / villainCurrencyAmount);
       } else if (reward.type === "lively_scene") {
+        reward;
         nbFights += 1;
+      } else if (reward.type === "item") {
+        accountedFights += reward.value.quantity;
+      } else if (typeof reward.value === "number") {
+        accountedFights += reward.value;
+        continue;
+      } else if (typeof reward.value === "string" && !isNaN(Number(reward.value))) {
+        accountedFights += Number(reward.value);
+        continue;
       } else {
         console.warn("Unknown reward type encountered in shard tracker:", reward);
         if ((reward as any).value && !isNaN(Number((reward as any).value))) {

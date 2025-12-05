@@ -17,6 +17,8 @@ import {
   PlainGirls,
   EventsList,
   livelySceneItem,
+  energyKissItem,
+  energyQuestsItem,
 } from "../";
 
 export interface Shard {
@@ -87,30 +89,22 @@ export type BasicReward =
   | orbsItem
   | progressionItem
   | bulbItem
-  | livelySceneItem;
+  | livelySceneItem
+  | energyKissItem
+  | energyQuestsItem;
 
 export type BasicRewards = Array<BasicReward>;
 
 // Currency totals returned with rewards; energy fields appear when kisses are used.
 // soft_currency/ticket entries mirror BasicRewards items of the same type.
-export type HeroChangesCurrencyUpdate =
-  | {
-      currency?: {
-        soft_currency?: number; // owned total amount
-        ticket?: number; // owned total amount
-      };
-      soft_currency?: number; // drop amount, matches soft_currency reward entry
-    }
-  | {
-      currency?: {
-        soft_currency?: number; // owned total amount
-        ticket?: number; // owned total amount
-      };
-      soft_currency?: number; // drop amount, matches soft_currency reward entry
-      energy_kiss: number;
-      energy_kiss_recharge_time: number;
-      ts_kiss: number;
-    };
+export type HeroChangesCurrencyUpdate = {
+  currency?: {
+    soft_currency?: number; // owned total amount
+    ticket?: number; // owned total amount
+  };
+  soft_currency?: number; // drop amount, matches soft_currency reward entry
+} & (KissEnergyUpdate | {}) &
+  (QuestEnergyUpdate | {});
 
 export type HeroChangesUpdate = HeroChangesCurrencyUpdate | [];
 
@@ -161,10 +155,14 @@ export interface DoBattlesTrollsResponse {
   rounds: any;
 }
 
-export type KissEnergyUpdate =
-  | {
-      energy_kiss: number;
-      energy_kiss_recharge_time: number;
-      ts_kiss: number;
-    }
-  | {};
+export type KissEnergyUpdate = {
+  energy_kiss: number;
+  energy_kiss_recharge_time: number;
+  ts_kiss: number;
+};
+
+export type QuestEnergyUpdate = {
+  energy_quest: number;
+  energy_quest_recharge_time: number;
+  ts_quest: number;
+};
