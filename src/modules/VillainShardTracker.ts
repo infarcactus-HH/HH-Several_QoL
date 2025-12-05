@@ -683,7 +683,6 @@ export default class ShardTracker extends HHModule {
         );
         accountedFights += Math.round(currencyDiff / villainCurrencyAmount);
       } else if (reward.type === "lively_scene") {
-        reward;
         nbFights += 1;
       } else if (reward.type === "item") {
         accountedFights += reward.value.quantity;
