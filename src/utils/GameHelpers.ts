@@ -96,7 +96,11 @@ export default class GameHelpers {
     }
     return "HH";
   }
-
+  /**
+   *
+   * @param shownMoney 4digits max
+   * @returns
+   */
   static convertShownMoneyToNumber(shownMoney: string): number {
     // Tests have been run to ensure it works
     const trimmed = shownMoney.trim();
@@ -121,8 +125,31 @@ export default class GameHelpers {
     const parseReducedNumber = (value: string): number => {
       const clean = value.replace(/\s/g, "");
       // number_reduce uses commas as thousands separators and dots as decimals.
-      const withoutThousands = clean.replace(/,/g, "");
-      const normalized = withoutThousands.replace(/[^0-9.]/g, "");
+      // Find the last dot or comma to determine decimal separator
+      const lastDotIndex = clean.lastIndexOf(".");
+      const lastCommaIndex = clean.lastIndexOf(",");
+
+      // Determine which is the decimal separator (the rightmost one)
+      let decimalSeparator = "";
+      let decimalPosition = -1;
+
+      if (lastDotIndex > lastCommaIndex) {
+        decimalSeparator = ".";
+        decimalPosition = lastDotIndex;
+      } else if (lastCommaIndex > lastDotIndex) {
+        decimalSeparator = ",";
+        decimalPosition = lastCommaIndex;
+      }
+
+      // Remove all thousands separators (the other one)
+      let normalized = clean;
+      if (decimalSeparator === ".") {
+        normalized = normalized.replace(/,/g, ""); // Remove commas as thousands separators
+      } else if (decimalSeparator === ",") {
+        normalized = normalized.replace(/\./g, ""); // Remove dots as thousands separators
+        normalized = normalized.replace(/,/g, "."); // Convert comma decimal to dot for parsing
+      }
+
       return Number.parseFloat(normalized || "0");
     };
 
