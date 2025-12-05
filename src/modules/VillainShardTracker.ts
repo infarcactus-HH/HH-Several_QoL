@@ -545,7 +545,7 @@ export default class ShardTracker extends HHModule {
           </div>
           ${skinsHtml}
           <div class="event-source-section" tooltip="This Will be useful for data crunching later">
-            <h3>Event Source</h3>
+            <h3>Assign Event</h3>
             ${this.generateEventPicker(girl.event_source)}
           </div>
           <div class="detail-actions">
