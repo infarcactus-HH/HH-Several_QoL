@@ -120,6 +120,7 @@ export interface DoBattlesTrollsResponse {
   result: "won"; // even when losing
   rewards?: {
     data: {
+      has_lively_scene?: true; // when there's a video
       girls?: PostFightShards; // if girl is obtained
       grade_skins?: GradeSkins; // if a skin is obtained
       loot: true; // true indicating showing actual rewards
