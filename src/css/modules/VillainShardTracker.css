@@ -275,16 +275,15 @@
   background-size: contain;
 }
 
-/* Event Source Section */
+#container-drop-log-several-qol div[girl] > .right .drop-display span.icon,
+#container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.icon,
+#container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.icon {
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 #container-drop-log-several-qol .girl-detail .event-source-section {
-  #container-drop-log-several-qol div[girl] > .right .drop-display span.icon,
-  #container-drop-log-several-qol .girl-detail .detail-stats .drop-display span.icon,
-  #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.icon {
-    vertical-align: middle;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
   margin-top: 10px;
   padding: 3px 10px;
   background: rgba(0, 0, 0, 0.3);
@@ -450,7 +449,7 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  margin-left: -5px;
+  margin-left: -3px;
 }
 
 #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.shards {
