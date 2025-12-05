@@ -527,4 +527,9 @@
 
 #container-drop-log-several-qol .girl-detail-content > h2 {
   font-size: 30px;
+  text-shadow:
+    1px 1px 0 #4d2f17,
+    -1px 1px 0 #4d2f17,
+    -1px -1px 0 #4d2f17,
+    1px -1px 0 #4d2f17;
 }
