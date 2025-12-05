@@ -460,6 +460,7 @@
 
 #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.fights {
   background-image: url(/images/pictures/design/ic_topbar_energy_fight.png);
+  margin-top: 3px;
 }
 
 /* Detail Actions */
