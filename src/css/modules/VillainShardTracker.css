@@ -284,6 +284,7 @@
   justify-content: center;
 }
 #container-drop-log-several-qol .girl-detail .event-source-section {
+  display: none; /* hidden until it is actually used */
   margin-top: 10px;
   padding: 3px 10px;
   background: rgba(0, 0, 0, 0.3);
