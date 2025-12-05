@@ -655,7 +655,7 @@ export default class ShardTracker extends HHModule {
       });
     });
   }
-  private calculateNumberOfDropsForFights(
+  private calculateNumberOfShardDropsForFights(
     response: DoBattlesTrollsResponse,
     nbFights: number,
   ): number {
@@ -694,7 +694,14 @@ export default class ShardTracker extends HHModule {
         const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
           .currency!.soft_currency!;
         const oldSoftCurrency = shared.Hero.currencies.soft_currency;
-        let currencyDiff = newSoftCurrency - oldSoftCurrency;
+        const currencyDiff = newSoftCurrency - oldSoftCurrency;
+        const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
+        const villainCurrencyAmount = GameHelpers.convertShownMoneyToNumber(
+          opponentFighter!.rewards.data.rewards.find((r) => r.type === "soft_currency")!.value,
+        );
+        accountedFights += Math.round(currencyDiff / villainCurrencyAmount);
+      } else if (reward.type === "lively_scene") {
+        nbFights += 1;
       } else {
         console.warn("Unknown reward type encountered in shard tracker:", reward);
         if ((reward as any).value && !isNaN(Number((reward as any).value))) {

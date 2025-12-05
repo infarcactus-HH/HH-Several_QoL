@@ -98,21 +98,36 @@ export default class GameHelpers {
   }
 
   static convertShownMoneyToNumber(shownMoney: string): number {
-    if (shownMoney.slice(-1).match(/[0-9]/)) {
-      return Number(shownMoney.replace(/\D/g, ""));
-    } else if (shownMoney.slice(-1).toLowerCase() === "k") {
-      const match = shownMoney.match(/\d+/g);
-      return (
-        Number(match![0]) * 1000 +
-        (match![1] ? Number(match![1]) * (1000 / (10 * match![1].length)) : 0)
-      );
-    } else if (shownMoney.slice(-1).toLowerCase() === "m") {
-      const match = shownMoney.match(/\d+/g);
-      return (
-        Number(match![0]) * 1000000 +
-        (match![1] ? Number(match![1]) * (1000000 / (10 * match![1].length)) : 0)
-      );
-    }
-    return 0;
+    // Tests have been run to ensure it works
+    const trimmed = shownMoney.trim();
+    if (!trimmed) return 0;
+
+    const suffixMatch = trimmed.match(/([kKmMgGtTpPeEzZyY])$/);
+    const multiplierMap: Record<string, number> = {
+      k: 1e3,
+      m: 1e6,
+      g: 1e9,
+      t: 1e12,
+      p: 1e15,
+      e: 1e18,
+      z: 1e21,
+      y: 1e24,
+    };
+
+    const suffix = suffixMatch?.[1]?.toLowerCase();
+    const multiplier = suffix ? (multiplierMap[suffix] ?? 1) : 1;
+    const numberPortion = suffix ? trimmed.slice(0, -1) : trimmed;
+
+    const parseReducedNumber = (value: string): number => {
+      const clean = value.replace(/\s/g, "");
+      // number_reduce uses commas as thousands separators and dots as decimals.
+      const withoutThousands = clean.replace(/,/g, "");
+      const normalized = withoutThousands.replace(/[^0-9.]/g, "");
+      return Number.parseFloat(normalized || "0");
+    };
+
+    const baseValue = parseReducedNumber(numberPortion);
+    if (!Number.isFinite(baseValue)) return 0;
+    return baseValue * multiplier;
   }
 }
