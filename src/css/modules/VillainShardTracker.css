@@ -522,3 +522,7 @@
   flex-direction: column;
   justify-content: flex-end;
 }
+
+#container-drop-log-several-qol .girl-detail-content > h2 {
+  font-size: 30px;
+}
