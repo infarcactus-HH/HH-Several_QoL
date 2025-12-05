@@ -440,12 +440,13 @@
     -1px 1px 0 #4d2f17,
     -1px -1px 0 #4d2f17,
     1px -1px 0 #4d2f17;
+  vertical-align: middle;
 }
 
 #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.icon {
   display: inline-block;
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 22px;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -454,6 +455,7 @@
 
 #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.shards {
   background-image: url(/images/skins_shards.png);
+  margin-bottom: 3px;
 }
 
 #container-drop-log-several-qol .girl-detail .skin-entry .drop-display span.fights {
