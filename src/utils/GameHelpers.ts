@@ -96,4 +96,23 @@ export default class GameHelpers {
     }
     return "HH";
   }
+
+  static convertShownMoneyToNumber(shownMoney: string): number {
+    if (shownMoney.slice(-1).match(/[0-9]/)) {
+      return Number(shownMoney.replace(/\D/g, ""));
+    } else if (shownMoney.slice(-1).toLowerCase() === "k") {
+      const match = shownMoney.match(/\d+/g);
+      return (
+        Number(match![0]) * 1000 +
+        (match![1] ? Number(match![1]) * (1000 / (10 * match![1].length)) : 0)
+      );
+    } else if (shownMoney.slice(-1).toLowerCase() === "m") {
+      const match = shownMoney.match(/\d+/g);
+      return (
+        Number(match![0]) * 1000000 +
+        (match![1] ? Number(match![1]) * (1000000 / (10 * match![1].length)) : 0)
+      );
+    }
+    return 0;
+  }
 }

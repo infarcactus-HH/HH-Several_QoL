@@ -91,6 +91,29 @@ export type BasicReward =
 
 export type BasicRewards = Array<BasicReward>;
 
+// Currency totals returned with rewards; energy fields appear when kisses are used.
+// soft_currency/ticket entries mirror BasicRewards items of the same type.
+export type HeroChangesCurrencyUpdate =
+  | {
+      currency?: {
+        soft_currency?: number; // owned total amount
+        ticket?: number; // owned total amount
+      };
+      soft_currency?: number; // drop amount, matches soft_currency reward entry
+    }
+  | {
+      currency?: {
+        soft_currency?: number; // owned total amount
+        ticket?: number; // owned total amount
+      };
+      soft_currency?: number; // drop amount, matches soft_currency reward entry
+      energy_kiss: number;
+      energy_kiss_recharge_time: number;
+      ts_kiss: number;
+    };
+
+export type HeroChangesUpdate = HeroChangesCurrencyUpdate | [];
+
 export interface VillainPreBattle extends OpponentFighter {
   rewards: {
     data: {
@@ -127,15 +150,8 @@ export interface DoBattlesTrollsResponse {
       rewards?: BasicRewards;
       shards?: PostFightShards; // if shards are obtained
     };
-    heroChangesUpdate:
-      | ({
-          currency?: {
-            soft_currency?: number; // owned total amount
-            ticket?: number; // owned total amount
-          };
-          soft_currency?: number; // no idea, doesn't match soft_currency in rewards.data.rewards
-        } & KissEnergyUpdate)
-      | [];
+    // Present when rewards include soft_currency or ticket entries in BasicRewards.
+    heroChangesUpdate: HeroChangesUpdate;
     lose: boolean;
     redirectUrl: string; // "/troll-pre-battle.html?id_opponent=7"
     sub_title?: string; // for reward popup
@@ -151,8 +167,4 @@ export type KissEnergyUpdate =
       energy_kiss_recharge_time: number;
       ts_kiss: number;
     }
-  | {
-      energy_kiss?: never;
-      energy_kiss_recharge_time?: never;
-      ts_kiss?: never;
-    };
+  | {};

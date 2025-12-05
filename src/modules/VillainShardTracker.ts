@@ -7,6 +7,7 @@ import type {
   GirlID,
   GirlRarity,
   GradeSkins,
+  HeroChangesCurrencyUpdate,
 } from "../types";
 import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
@@ -690,6 +691,10 @@ export default class ShardTracker extends HHModule {
         accountedFights += Number(reward.value);
       } else if (reward.type === "gems") {
       } else if (reward.type === "soft_currency") {
+        const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
+          .currency!.soft_currency!;
+        const oldSoftCurrency = shared.Hero.currencies.soft_currency;
+        let currencyDiff = newSoftCurrency - oldSoftCurrency;
       } else {
         console.warn("Unknown reward type encountered in shard tracker:", reward);
         if ((reward as any).value && !isNaN(Number((reward as any).value))) {
