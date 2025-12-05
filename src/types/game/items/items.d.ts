@@ -76,8 +76,8 @@ export type livelySceneItem = {
     tooltip_text: string; // "Video A for Red Diamond"
     is_scene_owned: boolean; // should be false
     is_girl_owned: boolean; // should be true
-    image: null;
-    video: null;
+    image: null | string; // string when it's dropped
+    video: null | string; // string when it's dropped
     image_censored: string; // "https://hh.hh-content.com/pictures/gallery/40/1920x/88-f5b63b616b791b96ea631b7473c8a223.jpg"
     video_censored: string; // "https://hh.hh-content.com/pictures/gallery/39/1280x/88-bab9843511383d38c68ee37f050d86a0.mp4"
   };
