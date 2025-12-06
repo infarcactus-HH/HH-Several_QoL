@@ -8,6 +8,8 @@ const packageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, "package.json"), "utf8")
 );
 
+const outputFile = `dist/userscript.${process.argv.includes("--dev") ? "dev." : ""}user.js`;
+
 // UserScript header template
 const userscriptHeader = `// ==UserScript==
 // @name         Several QoL
@@ -45,8 +47,6 @@ const userscriptPlugin = {
   setup(build) {
     build.onEnd(async (result) => {
       if (result.errors.length > 0) return;
-
-      const outputFile = path.join(__dirname, "dist", "userscript.user.js");
 
       try {
         // Read the generated file
@@ -131,7 +131,7 @@ const createCssTextPlugin = ({ minify }) => ({
 
 async function build() {
   const isWatch = process.argv.includes("--watch");
-  const outputFile = `dist/userscript.${process.argv.includes("--dev") ? "dev" : "user"}.js`;
+  
 
   try {
     const buildOptions = {
