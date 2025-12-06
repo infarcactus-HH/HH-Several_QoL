@@ -692,10 +692,8 @@ export default class ShardTracker extends HHModule {
         accountedFights += reward.value.quantity;
       } else if (typeof reward.value === "number") {
         accountedFights += reward.value;
-        continue;
       } else if (typeof reward.value === "string" && !isNaN(Number(reward.value))) {
         accountedFights += Number(reward.value);
-        continue;
       } else {
         console.warn("Unknown reward type encountered in shard tracker:", reward);
         if ((reward as any).value && !isNaN(Number((reward as any).value))) {
