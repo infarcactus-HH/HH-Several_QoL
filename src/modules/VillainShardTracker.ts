@@ -652,6 +652,10 @@ export default class ShardTracker extends HHModule {
       $opp.append($showLogButton);
       $showLogButton.on("click", function () {
         GameHelpers.createPopup("common", "drop-log-several-qol", $dropLog, title);
+        $("#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-grid")
+          .children()
+          .first()
+          .trigger("click");
       });
     });
   }
