@@ -89,11 +89,16 @@ export default class ShardTracker extends HHModule {
         console.log("ShardTracker response data:", { response });
         const battlesMatch = settings.data.match(/number_of_battles=(\d+)/);
         const number_of_battles = battlesMatch ? parseInt(battlesMatch[1], 10) : 1;
+
         const responseShards = (response.rewards.data.shards ?? []).filter((shard) =>
           this.trackedRarities.includes(shard.rarity),
         );
         const dropsByGirlId = new Map<GirlID, PostFightShard>(
           responseShards.map((shard) => [shard.id_girl, shard]),
+        );
+        console.log(
+          "number of fights that dropped shards",
+          this.calculateNumberOfFightsThatDroppedShards(response, number_of_battles),
         );
 
         const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
@@ -660,7 +665,7 @@ export default class ShardTracker extends HHModule {
       });
     });
   }
-  private calculateNumberOfShardDropsForFights(
+  private calculateNumberOfFightsThatDroppedShards(
     response: DoBattlesTrollsResponse,
     nbFights: number,
   ): number {
@@ -684,7 +689,7 @@ export default class ShardTracker extends HHModule {
           (r) => "gem_type" in r && r.gem_type === reward.gem_type,
         )! as gemsItem;
         const gemPrestigeBoost = PlayerStorageHandler.getPlayerGemsPrestigeBonus();
-        nbFights += Math.round(gainedGems / (1 + gemPrestigeBoost) / gemVilain.value);
+        accountedFights += Math.round(gainedGems / (1 + gemPrestigeBoost) / gemVilain.value);
       } else if (reward.type === "soft_currency") {
         const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
           .currency!.soft_currency!;
