@@ -1,8 +1,6 @@
-import {
-  HHModule,
-  HHModule_ConfigSchema,
-  SubSettingsType,
-} from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import type { popupForQueue } from "../types";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 type Popupminusminus_ConfigSchema = {
   baseKey: "popupMinusMinus";
@@ -23,12 +21,21 @@ type Popupminusminus_ConfigSchema = {
       key: "noLevelUpPopup";
       default: false;
       label: "No Level Up Popup";
-    }
+    },
+    {
+      key: "noPoVPoGClaimPopup";
+      default: false;
+      label: "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>";
+    },
+    {
+      key: "noMEClaimPopup";
+      default: false;
+      label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>";
+    },
   ];
 };
 
 export default class PopupMinusMinus extends HHModule {
-
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "popupMinusMinus",
     label: "Popup--",
@@ -50,53 +57,92 @@ export default class PopupMinusMinus extends HHModule {
         default: false,
         label: "No Level Up Popup",
       },
+      {
+        key: "noPoVPoGClaimPopup",
+        default: false,
+        label: "<span tooltip='Does not remove girl obtained popup'>No PoV/PoG claim Popup</span>",
+      },
+      {
+        key: "noMEClaimPopup",
+        default: false,
+        label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>",
+      },
     ],
   };
   static shouldRun() {
     return true;
   }
+  popupQueueManagerAddOverrides: Array<{
+    fn: (t: popupForQueue["popup"]) => boolean;
+    permanent: boolean;
+  }> = [];
+  reward_popupRewardHandlePopupOverrides: Array<{
+    fn: (t: any) => boolean;
+    permanent: boolean;
+  }> = []; // carefull with this one
   run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
     if (this.hasRun || !PopupMinusMinus.shouldRun()) {
       return;
     }
     this.hasRun = true;
+    this.overridePopups();
+
     if (subSettings.noLevelUpPopup) {
-      const originalPopupQueuManagerAdd = shared.PopupQueueManager.add;
-      shared.PopupQueueManager.add = function ({ popup: t }) {
-        if (
-          t.type === "common" &&
-          t.$dom_element.children().filter("#level_up.hero_leveling").length ===
-            1
-        ) {
-          console.log("Blocked level up popup", t);
-          return;
-        }
-        console.log("Allowed popup", t);
-        return originalPopupQueuManagerAdd.call(this, { popup: t });
-      };
+      this.noLevelUpPopup();
     }
-    if (subSettings.noMissionPopup) {
-      const originalRewardHandlePopup = shared.reward_popup.Reward.handlePopup;
-      shared.reward_popup.Reward.handlePopup = function (t: any) {
-        if (t.callback === "handleMissionPopup") {
-          console.log("Blocked mission popup", t);
-          // Game handler
-          $(".missions_wrap > .mission_object").length ||
-            (t.callbackArgs.isGiftClaimed
-              ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
-              : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
-            $('#missions button[rel="claim"]')
-              .addClass("button_glow")
-              .prop("disabled", !1);
-          return;
-        }
-        console.log("Allowed reward popup", t);
-        return originalRewardHandlePopup.call(this, t);
-      };
+    if (subSettings.noMissionPopup && location.pathname === "/activities.html") {
+      this.noMissionPopup();
     }
     if (subSettings.noAnnoyingReminders) {
       this.noAnnoyingReminders();
     }
+    if (
+      subSettings.noPoVPoGClaimPopup &&
+      ["/path-of-glory.html", "/path-of-valor.html"].includes(location.pathname)
+    ) {
+      this.noPoVPoGClaimPopup();
+    }
+    if (subSettings.noMEClaimPopup && location.pathname === "/seasonal.html") {
+      this.noMEClaimPopup();
+    }
+  }
+  overridePopups() {
+    const self = this;
+    const originalPopupQueuManagerAdd = shared.PopupQueueManager.add;
+    shared.PopupQueueManager.add = function ({ popup: t }) {
+      for (let i = self.popupQueueManagerAddOverrides.length - 1; i >= 0; i--) {
+        const overrideData = self.popupQueueManagerAddOverrides[i];
+        const shouldBlock = overrideData.fn(t);
+        if (shouldBlock) {
+          console.log("Blocked popup by override", t);
+          // Remove if no more usages left
+          if (!overrideData.permanent) {
+            self.popupQueueManagerAddOverrides.splice(i, 1);
+          }
+          return; // blocked by override
+        }
+      }
+      console.log("Allowed popup", t);
+      return originalPopupQueuManagerAdd.call(this, { popup: t });
+    };
+
+    const originalRewardHandlePopup = shared.reward_popup.Reward.handlePopup;
+    shared.reward_popup.Reward.handlePopup = function (t: any) {
+      for (let i = self.reward_popupRewardHandlePopupOverrides.length - 1; i >= 0; i--) {
+        const overrideData = self.reward_popupRewardHandlePopupOverrides[i];
+        const shouldBlock = overrideData.fn(t);
+        if (shouldBlock) {
+          console.log("Blocked reward popup by override", t);
+          // Remove if no more usages left
+          if (!overrideData.permanent) {
+            self.reward_popupRewardHandlePopupOverrides.splice(i, 1);
+          }
+          return; // blocked by override
+        }
+      }
+      console.log("Allowed reward popup", t);
+      return originalRewardHandlePopup.call(this, t);
+    };
   }
   noAnnoyingReminders() {
     setCookie();
@@ -114,8 +160,7 @@ export default class PopupMinusMinus extends HHModule {
         });
       } catch (e) {
         document.cookie =
-          "disabledPopups=PassReminder,Bundles,News; path=/; max-age=" +
-          60 * 60 * 24 * 30;
+          "disabledPopups=PassReminder,Bundles,News; path=/; max-age=" + 60 * 60 * 24 * 30;
       }
     }
     if (location.pathname === "/home.html") {
@@ -137,7 +182,7 @@ export default class PopupMinusMinus extends HHModule {
                   } else {
                     console.log("Cookie deleted successfully");
                   }
-                }
+                },
               );
             } catch (e) {
               document.cookie = "disabledPopups=; path=/; max-age=0";
@@ -145,8 +190,77 @@ export default class PopupMinusMinus extends HHModule {
           } else {
             setCookie();
           }
-        }
+        },
       );
     }
+  }
+  noMissionPopup() {
+    this.reward_popupRewardHandlePopupOverrides.push({
+      fn: (t: any) => {
+        if (t.callback === "handleMissionPopup") {
+          console.log("Blocked mission popup", t);
+          shared.Hero.updates(t.heroChangesUpdate, false);
+          // Game handler
+          ($(".missions_wrap > .mission_object").length ||
+            (t.callbackArgs.isGiftClaimed
+              ? (t.callbackArgs.displayAfterGift(), $(".end_gift").hide())
+              : (t.callbackArgs.displayGift(), $("#missions_counter").hide())),
+            $('#missions button[rel="claim"]').addClass("button_glow").prop("disabled", !1));
+          return true;
+        }
+        return false;
+      },
+      permanent: true,
+    });
+  }
+  noLevelUpPopup() {
+    this.popupQueueManagerAddOverrides.push({
+      fn: (t: popupForQueue["popup"]) => {
+        if (
+          t.type === "common" &&
+          t.$dom_element.children().filter("#level_up.hero_leveling").length === 1
+        ) {
+          return true;
+        }
+        return false;
+      },
+      permanent: true,
+    });
+  }
+  noPoVPoGClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim']", ($el) => {
+      console.log("Setting up PoV/PoG popup blocker");
+      $el.on("click.noPovPoGPopup", () => {
+        this.popupQueueManagerAddOverrides.push({
+          fn: (t: popupForQueue["popup"]) => {
+            if (t.type === "common" && t.popup_name === "rewards") {
+              t.onClose();
+              console.log("Blocked PoV/PoG popup", t);
+              return true;
+            }
+            return false;
+          },
+          permanent: false,
+        });
+      });
+    });
+  }
+  noMEClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim'].mega-claim-reward", ($el) => {
+      console.log("Setting up ME popup blocker");
+      $el.on("click.noPovPoGPopup", () => {
+        this.popupQueueManagerAddOverrides.push({
+          fn: (t: popupForQueue["popup"]) => {
+            if (t.type === "common" && t.popup_name === "rewards") {
+              t.onClose();
+              console.log("Blocked ME claim popup", t);
+              return true;
+            }
+            return false;
+          },
+          permanent: false,
+        });
+      });
+    });
   }
 }

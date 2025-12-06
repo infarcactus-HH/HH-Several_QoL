@@ -1,4 +1,5 @@
-import { HHModule, type SubSettingsType } from "../types/HH++";
+import { HHModule, SubSettingsType } from "../base";
+import GameHelpers from "../utils/GameHelpers";
 
 type configSchema = {
   baseKey: "peopleToWiki";
@@ -14,7 +15,7 @@ type configSchema = {
       key: "portraitToWiki";
       default: false;
       label: "Make portrait clickable to wiki";
-    }
+    },
   ];
 };
 
@@ -51,44 +52,40 @@ export default class People extends HHModule {
 
     if (subSettings.infoBubbleNameToWiki) {
       GM_addStyle(`.new_girl_info .girl_name_wrap > h5 { cursor: pointer; }`);
-      $(document).on(
-        "click.InfoBubbleToWiki",
-        ".new_girl_info .girl_name_wrap > h5",
-        (event) => {
-          const girlName = event.currentTarget.getAttribute("hh_title");
-          if (!girlName) return;
-          const formattedName = girlName.replace(/ /g, "-");
-          GM_openInTab(this.getWikiPageForCurrentGame(formattedName), {
-            active: true,
-          });
+      $(document).on("click.InfoBubbleToWiki", ".new_girl_info .girl_name_wrap > h5", (event) => {
+        const girlName = event.currentTarget.getAttribute("hh_title");
+        if (!girlName) return;
+        const formattedName = girlName.replace(/ /g, "-");
+        const link = GameHelpers.getWikiPageForCurrentGame(formattedName);
+        if (!link) {
+          return;
         }
-      );
+        GM_openInTab(link, {
+          active: true,
+        });
+      });
     }
     if (subSettings.portraitToWiki) {
       GM_addStyle(`.slot_girl_shards > [data-new-girl-tooltip] { cursor: pointer; }`);
-      $(document).on("click.PortraitToWiki", ".slot_girl_shards > [data-new-girl-tooltip]", (event) => {
-        const tooltip = event.currentTarget.getAttribute("data-new-girl-tooltip");
-        if (!tooltip) return;
-        const match = tooltip.match(/"name":"(.+)","rarity/);
-        if (match && match[1]) {
-          const formattedName = match[1].replace(/ /g, "-");
-          GM_openInTab(this.getWikiPageForCurrentGame(formattedName), {
-            active: true,
-          });
-        }
-      })
-    }
-  }
-
-  getWikiPageForCurrentGame(formattedName: string) {
-    if (location.host.includes("heroes.com")) {
-      return `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedName}`;
-    } else if (location.host.includes("gayharem")) {
-      return `https://harem-battle.club/wiki/Gay-Harem/GH:${formattedName}`;
-    } else if (location.host.includes("gaypornstarharem")) {
-      return `https://harem-battle.club/wiki/Gay-Pornstar-Harem/GPSH:${formattedName}`;
-    } else {
-      throw new Error("Unsupported game for wiki link");
+      $(document).on(
+        "click.PortraitToWiki",
+        ".slot_girl_shards > [data-new-girl-tooltip]",
+        (event) => {
+          const tooltip = event.currentTarget.getAttribute("data-new-girl-tooltip");
+          if (!tooltip) return;
+          const match = tooltip.match(/"name":"(.+)","rarity/);
+          if (match && match[1]) {
+            const formattedName = match[1].replace(/ /g, "-");
+            const link = GameHelpers.getWikiPageForCurrentGame(formattedName);
+            if (!link) {
+              return;
+            }
+            GM_openInTab(link, {
+              active: true,
+            });
+          }
+        },
+      );
     }
   }
 }

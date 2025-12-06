@@ -1,12 +1,12 @@
 .me-ranking-tooltip th,
 .me-ranking-tooltip td {
-    border: 1px solid #ccc;
-    padding: 5px;
-    text-align: center;
+  border: 1px solid #ccc;
+  padding: 5px;
+  text-align: center;
 }
 
 .me-leaderboard-info {
-    position: absolute;
-    right: 13rem;
-    width: 20px;
-} 
+  position: absolute;
+  right: 13rem;
+  width: 20px;
+}

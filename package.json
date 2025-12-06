@@ -1,14 +1,16 @@
 {
   "name": "several-qol",
   "author": "infarcactus",
-  "version": "1.20.0",
+  "version": "1.23.1",
   "description": "A userscript for QoL for the Haremverse",
   "main": "dist/userscript.user.js",
   "scripts": {
     "build": "node esbuild.config.js",
+    "build:debug": "node esbuild.config.js --debug",
     "watch": "node esbuild.config.js --watch",
     "devfile": "node esbuild.config.js --watch --dev",
     "dev": "pnpm run watch",
+    "format": "prettier --write .",
     "version": "pnpm run build && git add dist/userscript.user.js"
   },
   "keywords": [
@@ -18,10 +20,16 @@
   ],
   "license": "GPLv3",
   "devDependencies": {
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
     "@types/jquery": "^3.5.0",
     "@types/node": "^24.5.2",
+    "csso": "^5.0.5",
     "esbuild": "^0.25.10",
+    "html-minifier-terser": "^7.2.0",
+    "prettier": "^3.7.2",
     "terser": "^5.44.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   }
 }

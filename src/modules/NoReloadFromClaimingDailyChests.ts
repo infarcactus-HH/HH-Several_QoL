@@ -1,8 +1,4 @@
-import {
-  HHModule,
-  HHModule_ConfigSchema,
-  SubSettingsType,
-} from "../types/HH++";
+import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 declare let daily_goals_member_progression: {
@@ -22,7 +18,7 @@ type configSchema = {
       key: "popupEnabled";
       default: true;
       label: "Show reward popup on claiming";
-    }
+    },
   ];
 };
 
@@ -50,12 +46,9 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
     const $DailyGoals = $(".switch-tab[data-tab='daily_goals']");
     $DailyGoals.on("click", () => {
       console.log("Clicked daily goals");
-      HHPlusPlusReplacer.doWhenSelectorAvailable(
-        ".progress-bar-claim-reward",
-        () => {
-          this.applyNoReloadFix(subSettings.popupEnabled);
-        }
-      );
+      HHPlusPlusReplacer.doWhenSelectorAvailable(".progress-bar-claim-reward", () => {
+        this.applyNoReloadFix(subSettings.popupEnabled);
+      });
     });
   }
   applyNoReloadFix(popupEnabled: boolean) {
@@ -90,19 +83,14 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       });
     $(".progress-bar-claim-reward").attr(
       "tooltip",
-      `Several QoL: Claim without reload${
-        popupEnabled ? "" : " & without popup"
-      }`
+      `Several QoL: Claim without reload${popupEnabled ? "" : " & without popup"}`,
     );
   }
 
   checkIfAllChestsClaimed() {
     if (
       daily_goals_member_progression.taken_rewards_array.length >=
-      Math.min(
-        Math.floor(daily_goals_member_progression.potions_amount / 20),
-        5
-      )
+      Math.min(Math.floor(daily_goals_member_progression.potions_amount / 20), 5)
     ) {
       $(`[data-tab="daily_goals"] > .collect_notif`).remove();
     }

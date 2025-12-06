@@ -1,4 +1,4 @@
-import type { HHModule, HHModule_ConfigSchema } from "./types/HH++";
+import type { HHModule_ConfigSchema } from "./base";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
@@ -6,21 +6,28 @@ import WhaleBossTournament from "./modules/WhaleBossTournament";
 import PlacesOfPowerPlusPlus from "./modules/PlacesOfPower++";
 import NoReloadFromClaimingDailyChests from "./modules/NoReloadFromClaimingDailyChests";
 import MERankingInfo from "./modules/MERankingInfo";
-import LeagueOpponentHistory from "./modules/LeagueOpponentHistory";
-import LeagueNoPlayerProfileOnNameClick from "./modules/LeagueNoPlayerProfileOnNameClick";
 import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
 import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
-import LeagueCorrectRankShowing from "./modules/LeagueCorrectRankShowing";
-import LegendaryMythicTracker from "./modules/Legendary-MythicTracking";
+import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
+import CustomCSS from "./AlwaysRunningModules/customCSS";
+import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
+import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
+import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
+import MenuExtensions from "./modules/MenuExtensions";
+import LeaguesQoL from "./modules/LeaguesQoL";
+import VillainReplaceBulbsByMulticolorBulb from "./modules/VillainReplaceBulbsByMulticolorBulb";
+import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTracking";
 
 class Userscript {
   constructor() {
-    if(location.pathname === "/integrations/"){return;} // do not run on integrations page otherwise it breaks on phone
+    if (location.pathname === "/integrations/") {
+      return;
+    } // do not run on integrations page otherwise it breaks on phone
     if (location.hostname.startsWith("nutaku")) {
       this.applySessionFix();
       this.allModules.push(FixSessID);
@@ -28,9 +35,7 @@ class Userscript {
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       Promise.race([
         new Promise((resolve) => {
-          $(document).one("hh++-bdsm:loaded", () =>
-            resolve("hh++-bdsm:loaded")
-          );
+          $(document).one("hh++-bdsm:loaded", () => resolve("hh++-bdsm:loaded"));
         }),
         new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
       ]).then((result) => {
@@ -56,12 +61,20 @@ class Userscript {
     LabyTeamPresets,
     MERankingInfo,
     WhaleBossTournament,
-    LeagueOpponentHistory,
-    LeagueNoPlayerProfileOnNameClick,
+    LeaguesQoL,
     EventInfo,
     LoveRaids,
     PoVPoGHideClaimAllUntilLastDay,
-    LeagueCorrectRankShowing,
+    ShardTracker,
+    LustArenaStyleTweak,
+    VillainReplaceBulbsByMulticolorBulb,
+    MenuExtensions,
+  ];
+  alwaysRunningModules = [
+    PlayerLeagueTracking,
+    CustomCSS,
+    PlayerSeasonTracking,
+    PlayerPrestigeTracking,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
@@ -91,10 +104,13 @@ class Userscript {
         if (module.shouldRun() && schema.default) {
           try {
             if (schema.subSettings) {
-              const subSettings = schema.subSettings.reduce((acc, setting) => {
-                acc[setting.key] = setting.default;
-                return acc;
-              }, {} as Record<string, any>);
+              const subSettings = schema.subSettings.reduce(
+                (acc, setting) => {
+                  acc[setting.key] = setting.default;
+                  return acc;
+                },
+                {} as Record<string, any>,
+              );
               moduleInstance.run(subSettings as any);
             } else {
               moduleInstance.run(undefined as any);
@@ -109,25 +125,24 @@ class Userscript {
     });
   }
   applySessionFix() {
-    if (
-      !location.search.includes("sess=") &&
-      sessionStorageHandler.getSessID() != ""
-    ) {
+    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID() != "") {
       const storedSessID = sessionStorageHandler.getSessID();
       if (!storedSessID) {
         return;
       }
       const newURL =
-        location.href +
-        (location.href.includes("?") ? "&" : "?") +
-        "sess=" +
-        storedSessID;
+        location.href + (location.href.includes("?") ? "&" : "?") + "sess=" + storedSessID;
       console.log("FixSessID: reloading page with stored sessID:", newURL);
-      window.location.href = newURL;
+      window.location.replace(newURL);
     }
   }
   run() {
     UpdateHandler.run();
+    this.alwaysRunningModules.forEach((module) => {
+      if (module.shouldRun()) {
+        new module().run();
+      }
+    });
   }
 }
 

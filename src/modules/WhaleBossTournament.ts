@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 export default class WhaleBossTournament extends HHModule {
@@ -15,18 +15,15 @@ export default class WhaleBossTournament extends HHModule {
       return;
     }
     this.hasRun = true;
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".world-boss .title",
-      ($element) => {
-        $element.each((_, el) => {
-          const $el = $(el);
-          if ($el.parent().attr("rel")  === "world-boss-co-op") {
-            $el.text("Whale Boss Co-Op");
-          } else {
-            $el.text("Whale Boss Tournament");
-          }
-        });
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".world-boss .title", ($element) => {
+      $element.each((_, el) => {
+        const $el = $(el);
+        if ($el.parent().attr("rel") === "world-boss-co-op") {
+          $el.text("Whale Boss Co-Op");
+        } else {
+          $el.text("Whale Boss Tournament");
+        }
+      });
+    });
   }
 }

@@ -1,7 +1,7 @@
 export class HHPlusPlusReplacer {
   static doWhenSelectorAvailable(
     selector: string,
-    callback: ($element: JQuery<HTMLElement>) => void
+    callback: ($element: JQuery<HTMLElement>) => void,
   ) {
     const $elementOnCall = $(selector);
     if ($elementOnCall.length) {
@@ -23,7 +23,7 @@ export class HHPlusPlusReplacer {
   static conditionalDoWhenSelectorAvailable(
     condition: ($el: JQuery<HTMLElement>) => boolean,
     selector: string,
-    callback: ($element?: JQuery<HTMLElement>) => void
+    callback: ($element?: JQuery<HTMLElement>) => void,
   ) {
     const $elementOnCall = $(selector);
     if (condition($elementOnCall)) {

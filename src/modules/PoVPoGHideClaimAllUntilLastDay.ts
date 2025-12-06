@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import povPoGHideClaimAllUntilLastDayCss from "../css/modules/PoVPoGHideClaimAllUntilLastDay.css";
 
 export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
@@ -9,8 +9,7 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
   };
   static shouldRun() {
     return (
-      location.pathname === "/path-of-glory.html" ||
-      location.pathname === "/path-of-valor.html"
+      location.pathname === "/path-of-glory.html" || location.pathname === "/path-of-valor.html"
     );
   }
   run() {
@@ -28,7 +27,7 @@ export default class PoVPoGHideClaimAllUntilLastDay extends HHModule {
       console.log("PoVPoGHideClaimAllUntilLastDay module running");
     }
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(povPoGHideClaimAllUntilLastDayCss);
   }
 }

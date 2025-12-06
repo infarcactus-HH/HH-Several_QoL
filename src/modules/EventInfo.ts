@@ -1,4 +1,4 @@
-import { HHModule } from "../types/HH++";
+import { HHModule } from "../base";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import EventInfo_Event from "./EventInfo/EventInfo_Event";
 import EventInfo_Home from "./EventInfo/EventInfo_Home";
@@ -9,7 +9,7 @@ export default class EventInfo extends HHModule {
   readonly configSchema = {
     baseKey: "eventInfo",
     label:
-      "<span tooltip='Click on the Information top right of event (only Mythic, DP, SM, CbC, OD, PoV & PoG)'>Event Info (WIP): Show guides, tips, tricks & more info on events</span>",
+      "<span tooltip='Click on the Information top right of event*'>Event Info : Show guides, tips, tricks & more info on events</span>",
     default: true,
   };
   static shouldRun() {
@@ -70,27 +70,24 @@ export default class EventInfo extends HHModule {
   }
   runSeason() {
     this.helperReplaceNotifButton(
-      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310674"
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310674",
     );
   }
   runLoveRaids() {
     this.helperReplaceNotifButton(
-      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-316577"
+      "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-316577",
     );
   }
 
   helperReplaceNotifButton(url: string) {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".button-notification-action.notif_button_s",
-      () => {
-        console.log("EventInfo: Replacing notif button link for more info");
-        $(".button-notification-action.notif_button_s")
-          .attr("tooltip", "Several QoL: More Info on this event")
-          .off("click")
-          .on("click", (e) => {
-            GM_openInTab(url, { active: true });
-          });
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".button-notification-action.notif_button_s", () => {
+      console.log("EventInfo: Replacing notif button link for more info");
+      $(".button-notification-action.notif_button_s")
+        .attr("tooltip", "Several QoL: More Info on this event")
+        .off("click")
+        .on("click", (e) => {
+          GM_openInTab(url, { active: true });
+        });
+    });
   }
 }

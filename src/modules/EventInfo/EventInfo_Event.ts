@@ -1,5 +1,5 @@
-import { sm_event_dataIncomplete } from "../../types/GameTypes";
-import { SubModule } from "../../types/subModules";
+import { SubModule } from "../../base";
+import type { sm_event_dataIncomplete } from "../../types";
 import GameHelpers from "../../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
@@ -20,10 +20,7 @@ type EventInfo_EventsList =
 type WeirdKKShitEvent = "classic_event" | "org_days";
 
 export default class EventInfo_Event implements SubModule {
-  private readonly EventInfoLinks: Record<
-    EventInfo_EventsList | WeirdKKShitEvent,
-    string
-  > = {
+  private readonly EventInfoLinks: Record<EventInfo_EventsList | WeirdKKShitEvent, string> = {
     dp_event:
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-304655",
     sm_event:
@@ -53,20 +50,17 @@ export default class EventInfo_Event implements SubModule {
     this.injectCSS();
     this.whichEventToCall(eventType as EventInfo_EventsList | undefined);
   }
-  async injectCSS() {
+  private async injectCSS() {
     GM_addStyle(eventInfoEventCss);
   }
 
   helperCreateNotifButton(event: EventInfo_EventsList | WeirdKKShitEvent) {
     const $notifButton = $(
-      `<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`
+      `<div class="button-notification-action notif_button_s sm-event-info-button" tooltip="Several QoL: More Info on this event"></div>`,
     );
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".nc-panel-header .nc-pull-right",
-      () => {
-        $(".nc-panel-header .nc-pull-right").prepend($notifButton);
-      }
-    );
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".nc-panel-header .nc-pull-right", () => {
+      $(".nc-panel-header .nc-pull-right").prepend($notifButton);
+    });
     $notifButton.off("click").on("click", (e) => {
       GM_openInTab(this.EventInfoLinks[event], { active: true });
     });
@@ -74,7 +68,7 @@ export default class EventInfo_Event implements SubModule {
   }
   helperReplaceNotifButton(
     event: EventInfo_EventsList | WeirdKKShitEvent,
-    stopPropagation = false
+    stopPropagation = false,
   ) {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".nc-pull-right > .button-notification-action",
@@ -90,7 +84,7 @@ export default class EventInfo_Event implements SubModule {
             }
             GM_openInTab(this.EventInfoLinks[event], { active: true });
           });
-      }
+      },
     );
   }
   whichEventToCall(eventType: EventInfo_EventsList | "event" | undefined) {
@@ -123,10 +117,7 @@ export default class EventInfo_Event implements SubModule {
   }
   event_Run() {
     console.log(unsafeWindow.event_data);
-    if (
-      unsafeWindow.event_data &&
-      unsafeWindow.event_data.subtype === "classic"
-    ) {
+    if (unsafeWindow.event_data && unsafeWindow.event_data.subtype === "classic") {
       this.helperCreateNotifButton("classic_event");
     } else {
       this.helperCreateNotifButton("org_days");
@@ -136,48 +127,43 @@ export default class EventInfo_Event implements SubModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable(
       ".nc-pull-right > .button-notification-action",
       () => {
-        $(".nc-pull-right > .button-notification-action").removeClass(
-          "js-mythic-help-open-button"
-        );
+        $(".nc-pull-right > .button-notification-action").removeClass("js-mythic-help-open-button");
         this.helperReplaceNotifButton("mythic_event");
-      }
+      },
     );
   }
   dp_eventRun() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
-      ".button-notification-action.notif_button_s",
-      () => {
-        $(".button-notification-action.notif_button_s")
-          .attr("tooltip", "Several QoL: More Info on this event")
-          .off("click")
-          .on("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            GameHelpers.createCommonPopup("event_info", (popup, _t) => {
-              popup.$dom_element
-                .find(".container-special-bg")
-                .append(
-                  `<div class="banner">Several QoL - Event Info - DP</div>` +
-                    `<div class="event-content dp_event"><span>` +
-                    `Before going\n into more details read <a target="_blank" href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
-                    `<br><br>There are important things to note for this event:<br>` +
-                    `First there are some missions that are not in the daily missions list that can appear on easy & hard side :<br>` +
-                    `- Claim chest n°X on daily missions (idk if you can land on a chest you already claimed)<br>` +
-                    `- Claim X number of PoP<br>` +
-                    `- Gain PoV potions<br>` +
-                    `- Get shards<br>` +
-                    `- Score points in contests<br>` +
-                    `<br>` +
-                    `There's one that's <strong>really annoying</strong> that can only appear on the hard side:<br>` +
-                    `- Restock the Market<br>` +
-                    `<br>` +
-                    `One info not given is that a challenge cannot be the same on both easy & hard side as such try to lock an annoying mission on the hard side before you get stuck with "Restock the Market"` +
-                    `</span></div>`
-                );
-            });
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".button-notification-action.notif_button_s", () => {
+      $(".button-notification-action.notif_button_s")
+        .attr("tooltip", "Several QoL: More Info on this event")
+        .off("click")
+        .on("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          GameHelpers.createCommonPopup("event_info", (popup, _t) => {
+            popup.$dom_element
+              .find(".container-special-bg")
+              .append(
+                `<div class="banner">Several QoL - Event Info - DP</div>` +
+                  `<div class="event-content dp_event"><span>` +
+                  `Before going\n into more details read <a target="_blank" href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
+                  `<br><br>There are important things to note for this event:<br>` +
+                  `First there are some missions that are not in the daily missions list that can appear on easy & hard side :<br>` +
+                  `- Claim chest n°X on daily missions (idk if you can land on a chest you already claimed)<br>` +
+                  `- Claim X number of PoP<br>` +
+                  `- Gain PoV potions<br>` +
+                  `- Get shards<br>` +
+                  `- Score points in contests<br>` +
+                  `<br>` +
+                  `There's one that's <strong>really annoying</strong> that can only appear on the hard side:<br>` +
+                  `- Restock the Market<br>` +
+                  `<br>` +
+                  `One info not given is that a challenge cannot be the same on both easy & hard side as such try to lock an annoying mission on the hard side before you get stuck with "Restock the Market"` +
+                  `</span></div>`,
+              );
           });
-      }
-    );
+        });
+    });
   }
   sm_eventRun() {
     this.helperReplaceNotifButton("sm_event");
@@ -187,29 +173,22 @@ export default class EventInfo_Event implements SubModule {
       sm_event_data.seconds_until_event_end,
       GT.design.event_ends_in,
       "event-timer nc-expiration-label",
-      !1
+      !1,
     );
     $(".nc-pull-right").append(t);
     shared.timer.activateTimers("event-timer.nc-expiration-label");
     // end base game function
-    $("#sultry-mysteries-tabs > #shop_tab").on(
-      "click.SeveralQoLEventInfo",
-      function () {
-        $(this).off("click.SeveralQoLEventInfo");
-        HHPlusPlusReplacer.doWhenSelectorAvailable(".shop-timer.timer", () => {
-          const shopRefreshesIn =
-            $(".shop-timer.timer").attr("data-time-stamp");
-          if (!shopRefreshesIn || isNaN(Number(shopRefreshesIn))) {
-            return;
-          }
-          const timeShopRefreshesIn =
-            Number(shopRefreshesIn) + Math.floor(Date.now() / 1000);
-          EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(
-            timeShopRefreshesIn
-          );
-        });
-      }
-    );
+    $("#sultry-mysteries-tabs > #shop_tab").on("click.SeveralQoLEventInfo", function () {
+      $(this).off("click.SeveralQoLEventInfo");
+      HHPlusPlusReplacer.doWhenSelectorAvailable(".shop-timer.timer", () => {
+        const shopRefreshesIn = $(".shop-timer.timer").attr("data-time-stamp");
+        if (!shopRefreshesIn || isNaN(Number(shopRefreshesIn))) {
+          return;
+        }
+        const timeShopRefreshesIn = Number(shopRefreshesIn) + Math.floor(Date.now() / 1000);
+        EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(timeShopRefreshesIn);
+      });
+    });
     const storedSMShopRefreshTime =
       EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
     if (storedSMShopRefreshTime > server_now_ts) {
@@ -217,12 +196,10 @@ export default class EventInfo_Event implements SubModule {
         storedSMShopRefreshTime - server_now_ts,
         "",
         "severalQoL-event-shop-timer nc-expiration-label",
-        !1
+        !1,
       );
       $("#sultry-mysteries-tabs > #shop_tab").append(t);
-      shared.timer.activateTimers(
-        "severalQoL-event-shop-timer.nc-expiration-label"
-      );
+      shared.timer.activateTimers("severalQoL-event-shop-timer.nc-expiration-label");
     }
   }
 }
