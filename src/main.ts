@@ -22,6 +22,7 @@ import MenuExtensions from "./modules/MenuExtensions";
 import LeaguesQoL from "./modules/LeaguesQoL";
 import VillainReplaceBulbsByMulticolorBulb from "./modules/VillainReplaceBulbsByMulticolorBulb";
 import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTracking";
+import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
 
 class Userscript {
   constructor() {
@@ -69,6 +70,7 @@ class Userscript {
     LustArenaStyleTweak,
     VillainReplaceBulbsByMulticolorBulb,
     MenuExtensions,
+    ChampionFightsFromMap,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,
