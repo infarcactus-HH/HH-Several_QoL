@@ -674,6 +674,7 @@ export default class ShardTracker extends HHModule {
       return nbFights;
     }
     let accountedFights = 0;
+    const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     for (const reward of rewardsData.rewards) {
       if (reward.type === "gems") {
       } else if (reward.type === "soft_currency") {
@@ -681,15 +682,19 @@ export default class ShardTracker extends HHModule {
           .currency!.soft_currency!;
         const oldSoftCurrency = shared.Hero.currencies.soft_currency;
         const currencyDiff = newSoftCurrency - oldSoftCurrency;
-        const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
         const villainCurrencyAmount = GameHelpers.convertShownMoneyToNumber(
           opponentFighter!.rewards.data.rewards.find((r) => r.type === "soft_currency")!.value,
         );
         accountedFights += Math.round(currencyDiff / villainCurrencyAmount);
       } else if (reward.type === "lively_scene") {
-        nbFights += 1;
+        accountedFights += 1;
       } else if (reward.type === "item") {
         accountedFights += reward.value.quantity;
+      } else if (reward.type === "energy_quest") {
+        const EnergyGained = opponentFighter!.rewards.data.rewards.find(
+          (r) => r.type === "energy_quest",
+        )!;
+        accountedFights += Math.round(Number(reward.value) / Number(EnergyGained.value));
       } else if (typeof reward.value === "number") {
         accountedFights += reward.value;
       } else if (typeof reward.value === "string" && !isNaN(Number(reward.value))) {
