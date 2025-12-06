@@ -4,6 +4,7 @@ node_modules/
 
 # Build outputs (but keep the userscript)
 *.tsbuildinfo
+dist/
 
 # Environment files
 .env
@@ -58,9 +59,6 @@ temp/
 
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
 
 # Microbundle cache
 .rpt2_cache/

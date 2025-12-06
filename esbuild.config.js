@@ -10,6 +10,10 @@ const babelTraverse = require("@babel/traverse").default;
 // Read package.json for metadata
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8"));
 
+const outputFile = `dist/userscript.${process.argv.includes("--dev") ? "dev." : ""}user.js`;
+const isWatch = process.argv.includes("--watch");
+const isDebug = process.argv.includes("--debug");
+
 // UserScript header template
 const userscriptHeader = `// ==UserScript==
 // @name         Several QoL
@@ -47,9 +51,6 @@ const userscriptPlugin = {
   setup(build) {
     build.onEnd(async (result) => {
       if (result.errors.length > 0) return;
-
-      const outputFile = path.join(__dirname, "dist", "userscript.user.js");
-      const isWatch = process.argv.includes("--watch");
 
       try {
         // Use result.outputFiles if available (when write is false),
@@ -337,8 +338,6 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
 });
 
 async function build() {
-  const isWatch = process.argv.includes("--watch");
-  const isDebug = process.argv.includes("--debug");
 
   // Ensure dist directory exists
   const distDir = path.join(__dirname, "dist");
@@ -350,7 +349,7 @@ async function build() {
     const buildOptions = {
       entryPoints: ["src/main.ts"],
       bundle: true,
-      outfile: "dist/userscript.user.js",
+      outfile: outputFile,
       format: "iife", // Immediately Invoked Function Expression
       target: "es2021",
       minify: !isWatch, // Don't minify in watch mode for easier debugging
