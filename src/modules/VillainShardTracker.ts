@@ -8,8 +8,9 @@ import type {
   GirlRarity,
   GradeSkins,
   HeroChangesCurrencyUpdate,
+  gemsItem,
 } from "../types";
-import { ShardTrackerStorageHandler } from "../utils/StorageHandler";
+import { PlayerStorageHandler, ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import villainShardTrackerCss from "../css/modules/VillainShardTracker.css";
@@ -677,6 +678,13 @@ export default class ShardTracker extends HHModule {
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     for (const reward of rewardsData.rewards) {
       if (reward.type === "gems") {
+        // Only way this breaks, is with gem boosters (mythic booster) and it runs out halfway through the drops
+        const gainedGems = reward.value; // This includes prestige boost, but villain shown gem doesn't account for it
+        const gemVilain = opponentFighter!.rewards.data.rewards.find(
+          (r) => "gem_type" in r && r.gem_type === reward.gem_type,
+        )! as gemsItem;
+        const gemPrestigeBoost = PlayerStorageHandler.getPlayerGemsPrestigeBonus();
+        nbFights += Math.round(gainedGems / (1 + gemPrestigeBoost) / gemVilain.value);
       } else if (reward.type === "soft_currency") {
         const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
           .currency!.soft_currency!;

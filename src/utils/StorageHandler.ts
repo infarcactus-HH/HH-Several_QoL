@@ -41,10 +41,10 @@ export class PlayerStorageHandler {
     GM_setValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", bonus);
   }
   /**
-   * @returns percentage bonus for gems gained from prestige, -1 if not set
+   * @returns percentage bonus for gems gained from prestige, 0 if not set
    */
   static getPlayerGemsPrestigeBonus(): number {
-    return GM_getValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", -1);
+    return GM_getValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", 0);
   }
 }
 
