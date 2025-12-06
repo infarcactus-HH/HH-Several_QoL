@@ -97,7 +97,7 @@ export default class GameHelpers {
     return "HH";
   }
   /**
-   *
+   * This is not fullproof since the shown value is rounded beforehand
    * @param shownMoney 4digits max
    * @returns
    */

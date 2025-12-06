@@ -691,10 +691,10 @@ export default class ShardTracker extends HHModule {
       } else if (reward.type === "item") {
         accountedFights += reward.value.quantity;
       } else if (reward.type === "energy_quest") {
-        const EnergyGained = opponentFighter!.rewards.data.rewards.find(
+        const EnergyQuestVilain = opponentFighter!.rewards.data.rewards.find(
           (r) => r.type === "energy_quest",
         )!;
-        accountedFights += Math.round(Number(reward.value) / Number(EnergyGained.value));
+        accountedFights += Math.round(Number(reward.value) / Number(EnergyQuestVilain.value));
       } else if (typeof reward.value === "number") {
         accountedFights += reward.value;
       } else if (typeof reward.value === "string" && !isNaN(Number(reward.value))) {
