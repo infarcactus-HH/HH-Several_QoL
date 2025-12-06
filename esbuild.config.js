@@ -9,6 +9,7 @@ const packageJson = JSON.parse(
 );
 
 const outputFile = `dist/userscript.${process.argv.includes("--dev") ? "dev." : ""}user.js`;
+const isWatch = process.argv.includes("--watch");
 
 // UserScript header template
 const userscriptHeader = `// ==UserScript==
@@ -130,9 +131,6 @@ const createCssTextPlugin = ({ minify }) => ({
 });
 
 async function build() {
-  const isWatch = process.argv.includes("--watch");
-  
-
   try {
     const buildOptions = {
       entryPoints: ["src/main.ts"],
