@@ -1,6 +1,6 @@
 import type { VillainPreBattle } from "../../types";
 import html from "../../utils/html";
-import VillainReplaceBulbsByMulticolorBulbCss from "../../css/modules/VillainReplaceBulbsByMulticolorBulb.css";
+import { VillainReplaceBulbsByMulticolorBulbCss } from "../../css/modules";
 import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 

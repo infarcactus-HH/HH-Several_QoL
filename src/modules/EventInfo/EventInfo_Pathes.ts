@@ -1,7 +1,7 @@
 import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
-import eventInfoEventCss from "../../css/modules/EventInfo/EventInfo_Event.css";
+import { eventInfoEventCss } from "../../css/modules";
 
 export default class EventInfo_Pathes implements SubModule {
   run() {

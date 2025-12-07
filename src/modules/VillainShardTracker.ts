@@ -13,7 +13,7 @@ import type {
 import { PlayerStorageHandler, ShardTrackerStorageHandler } from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import villainShardTrackerCss from "../css/modules/VillainShardTracker.css";
+import { villainShardTrackerCss } from "../css/modules";
 import html from "../utils/html";
 
 export default class ShardTracker extends HHModule {

@@ -2,7 +2,7 @@ import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import html from "../../utils/html";
 import GameHelpers from "../../utils/GameHelpers";
-import calendarCss from "../../css/modules/MenuExtensions/Calendar.css";
+import { calendarCss } from "../../css/modules";
 
 export default class Calendar implements SubModule {
   run() {

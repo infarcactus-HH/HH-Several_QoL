@@ -2,7 +2,7 @@ import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import type { love_raids } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
-import loveRaidsCss from "../css/modules/LoveRaids.css";
+import { loveRaidsCss } from "../css/modules";
 import GameHelpers from "../utils/GameHelpers";
 import html from "../utils/html";
 

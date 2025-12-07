@@ -1,7 +1,7 @@
 import { HHModule } from "../base";
 import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import meRankingInfoCss from "../css/modules/MERankingInfo.css";
+import { meRankingInfoCss } from "../css/modules";
 
 export default class MERankingInfo extends HHModule {
   readonly configSchema = {

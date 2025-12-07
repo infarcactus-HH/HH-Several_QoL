@@ -1,6 +1,6 @@
 import { HHModule, SubSettingsType } from "../base";
 import type { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../types";
-import placesOfPowerCss from "../css/modules/PlacesOfPower++.css";
+import { placesOfPowerCss } from "../css/modules";
 import html from "../utils/html";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;

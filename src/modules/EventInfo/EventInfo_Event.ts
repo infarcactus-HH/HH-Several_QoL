@@ -3,7 +3,7 @@ import type { sm_event_dataIncomplete } from "../../types";
 import GameHelpers from "../../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { EventInfoStorageHandler } from "../../utils/StorageHandler";
-import eventInfoEventCss from "../../css/modules/EventInfo/EventInfo_Event.css";
+import { eventInfoEventCss } from "../../css/modules";
 
 type EventInfo_EventsList =
   | "dp_event" // Double Pen

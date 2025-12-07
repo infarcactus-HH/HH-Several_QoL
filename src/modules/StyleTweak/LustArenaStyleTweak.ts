@@ -1,6 +1,6 @@
-import { HHModule, SubModule } from "../../base";
+import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
-import LustArenaStyleTweakCss from "../../css/modules/LustArenaStyleTweak.css";
+import { LustArenaStyleTweakCss } from "../../css/modules";
 import html from "../../utils/html";
 import { PlayerStorageHandler } from "../../utils/StorageHandler";
 

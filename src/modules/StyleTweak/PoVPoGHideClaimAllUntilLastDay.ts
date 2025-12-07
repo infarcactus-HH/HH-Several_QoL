@@ -1,5 +1,5 @@
 import { HHModule, SubModule } from "../../base";
-import povPoGHideClaimAllUntilLastDayCss from "../../css/modules/PoVPoGHideClaimAllUntilLastDay.css";
+import { povPoGHideClaimAllUntilLastDayCss } from "../../css/modules";
 
 export default class PoVPoGHideClaimAllUntilLastDay implements SubModule {
   run() {
