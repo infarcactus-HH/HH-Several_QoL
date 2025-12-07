@@ -53,19 +53,19 @@ class Userscript {
 
   allModules = [
     PopupMinusMinus,
-    PopupPlusPlus,
+    StyleTweak,
     PlacesOfPowerPlusPlus,
     NoReloadFromClaimingDailyChests,
     People,
+    LeaguesQoL,
+    LoveRaids,
+    MenuExtensions,
+    PopupPlusPlus,
     LabyTeamPresets,
     MERankingInfo,
     WhaleBossTournament,
-    LeaguesQoL,
     EventInfo,
-    LoveRaids,
     ShardTracker,
-    MenuExtensions,
-    StyleTweak,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,
