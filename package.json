@@ -11,7 +11,7 @@
     "devfile": "node esbuild.config.js --watch --dev",
     "dev": "pnpm run watch",
     "format": "prettier --write .",
-    "version": "pnpm run build && git add dist/userscript.user.js"
+    "version": "pnpm run build && git add -f dist/userscript.user.js"
   },
   "keywords": [
     "userscript",
