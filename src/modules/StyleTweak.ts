@@ -45,7 +45,7 @@ export default class StyleTweak extends HHModule {
       {
         key: "poVPoGHideClaimAllUntilLastDay",
         label: "PoV/PoG: Hide 'Claim All' until last day",
-        default: true,
+        default: false,
       },
     ],
   };

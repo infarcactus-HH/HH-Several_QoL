@@ -102,7 +102,7 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 23 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 24 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
@@ -110,21 +110,22 @@ export default class UpdateHandler {
         $container.append(
           $(html`
             <div class="changelog-content hh-scroll">
-              <h2>New Feature: Menu Extension! (on by default)</h2>
+              <h2>New Feature: Champion Fight From Map! (off by default)</h2>
               <p>
-                In the menu in the top left corner it adds a calendar to show the calendar of this
-                month.<br />
-                On Nutaku it also adds a logout button to reset your session.
+                On champion map page allows you to click on champion area to start a fight </br>
+                To go the the champion page, click around the button just not directly on it.
               </p>
-              <h2>New Feature: Villain Bulbs! (on by default)</h2>
-              <p>Combines the bulbs rewards into a single icon to save space.</p>
+              <h2>Grouped Featured under a name: Style Tweak (on by default)</h2>
+              <p>
+                Combines:</br>
+                - Multicolor Bulbs (on),</br> 
+                - PoV/PoG claim all until last day (off)</br>
+                - Lust Arena Home Screen Style Tweak (on)</br>
+              </p>
               <h3>Shard Tracking</h3>
               <p>
-                Fixed wrong grades of some girls.<br />
-                Fixed an issue where skin shards weren't properly counted.
+                Improved interface & shown stat with more details.
               </p>
-              <h3>Home Screen Lust Arena</h3>
-              <p>Some small style changes and fixes.</p>
             </div>
           `),
         );

@@ -5,7 +5,7 @@ import { GirlMinimalData } from "../types";
 export default class ChampionFightsFromMap extends HHModule {
   readonly configSchema = {
     baseKey: "championFightsFromMap",
-    label: `<span tooltip="Don't click on the button directly to access base page">Champion Fights From Map</span>`,
+    label: `<span tooltip="Don't click on the button directly to access champ page">Champion Fights From Map</span>`,
     default: false,
   };
   static shouldRun() {
