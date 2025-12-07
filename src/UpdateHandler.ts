@@ -106,9 +106,8 @@ export default class UpdateHandler {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
-        $container.append($(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`));
-        $container.append(
-          $(html`
+        $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
+        $container.append(html`
             <div class="changelog-content hh-scroll">
               <h2>New Feature: Champion Fight From Map! (off by default)</h2>
               <p>
@@ -127,8 +126,7 @@ export default class UpdateHandler {
                 Improved interface & shown stat with more details.
               </p>
             </div>
-          `),
-        );
+          `);
         const $footer = $(html`
           <div class="footer">
             <span>Thank you for using Several QoL! </span>
@@ -168,13 +166,15 @@ export default class UpdateHandler {
           console.log("clicked on config");
           HHPlusPlusReplacer.doWhenSelectorAvailable(".group-panel[rel='severalQoL']", ($panel) => {
             console.log("Injecting option into HH++ config");
-            const $container = $(`<div class="config-setting ${
-              updatePopupEnabled ? "enabled" : ""
-            }">
-                    <label class="base-setting">
-                      <span tooltip="It will only appear for important update, or new features">Show update Popup</span>
-                    </label>
-                  </div>`);
+            const $container = $(
+              html`<div class="config-setting ${updatePopupEnabled ? "enabled" : ""}">
+                <label class="base-setting">
+                  <span tooltip="It will only appear for important update, or new features"
+                    >Show update Popup</span
+                  >
+                </label>
+              </div>`,
+            );
             const $checkbox = $(
               `<input type="checkbox" ${updatePopupEnabled ? 'checked="checked"' : ""}>`,
             );
