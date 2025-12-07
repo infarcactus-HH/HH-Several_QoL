@@ -6,7 +6,7 @@ export default class ChampionFightsFromMap extends HHModule {
   readonly configSchema = {
     baseKey: "championFightsFromMap",
     label: `<span tooltip="Don't click on the button directly to access base page">Champion Fights From Map</span>`,
-    default: true,
+    default: false,
   };
   static shouldRun() {
     return location.pathname === "/champions-map.html";

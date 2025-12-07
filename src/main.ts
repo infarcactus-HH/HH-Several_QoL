@@ -70,7 +70,6 @@ class Userscript {
     LustArenaStyleTweak,
     VillainReplaceBulbsByMulticolorBulb,
     MenuExtensions,
-    ChampionFightsFromMap,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,
