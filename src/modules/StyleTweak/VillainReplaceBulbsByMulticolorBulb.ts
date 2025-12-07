@@ -1,23 +1,11 @@
-import { HHModule } from "../base";
-import type { VillainPreBattle } from "../types";
-import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import html from "../utils/html";
-import VillainReplaceBulbsByMulticolorBulbCss from "../css/modules/VillainReplaceBulbsByMulticolorBulb.css";
+import type { VillainPreBattle } from "../../types";
+import html from "../../utils/html";
+import VillainReplaceBulbsByMulticolorBulbCss from "../../css/modules/VillainReplaceBulbsByMulticolorBulb.css";
+import { SubModule } from "../../base";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
-export default class VillainReplaceBulbsByMulticolorBulb extends HHModule {
-  readonly configSchema = {
-    baseKey: "villainReplaceBulbsByMulticolorBulb",
-    label: "Villain: Replace bulbs by multicolor bulb",
-    default: true,
-  };
-  static shouldRun() {
-    return location.pathname === "/troll-pre-battle.html";
-  }
+export default class VillainReplaceBulbsByMulticolorBulb implements SubModule {
   run() {
-    if (this.hasRun || !VillainReplaceBulbsByMulticolorBulb.shouldRun()) {
-      return;
-    }
-    this.hasRun = true;
     console.log("VillainReplaceBulbsByMulticolorBulb module running");
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle | undefined;
     if (!opponentFighter) {

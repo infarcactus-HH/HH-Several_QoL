@@ -9,20 +9,18 @@ import MERankingInfo from "./modules/MERankingInfo";
 import EventInfo from "./modules/EventInfo";
 import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
-import PoVPoGHideClaimAllUntilLastDay from "./modules/PoVPoGHideClaimAllUntilLastDay";
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
 import ShardTracker from "./modules/VillainShardTracker";
 import PopupMinusMinus from "./modules/Popup--";
 import CustomCSS from "./AlwaysRunningModules/customCSS";
-import LustArenaStyleTweak from "./modules/LustArenaStyleTweak";
 import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
 import PlayerSeasonTracking from "./AlwaysRunningModules/PlayerSeasonTracking";
 import MenuExtensions from "./modules/MenuExtensions";
 import LeaguesQoL from "./modules/LeaguesQoL";
-import VillainReplaceBulbsByMulticolorBulb from "./modules/VillainReplaceBulbsByMulticolorBulb";
 import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTracking";
 import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
+import StyleTweak from "./modules/StyleTweak";
 
 class Userscript {
   constructor() {
@@ -65,11 +63,9 @@ class Userscript {
     LeaguesQoL,
     EventInfo,
     LoveRaids,
-    PoVPoGHideClaimAllUntilLastDay,
     ShardTracker,
-    LustArenaStyleTweak,
-    VillainReplaceBulbsByMulticolorBulb,
     MenuExtensions,
+    StyleTweak,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,

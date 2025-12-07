@@ -1,23 +1,11 @@
-import { HHModule } from "../base";
-import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import LustArenaStyleTweakCss from "../css/modules/LustArenaStyleTweak.css";
-import html from "../utils/html";
-import { PlayerStorageHandler } from "../utils/StorageHandler";
+import { HHModule, SubModule } from "../../base";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
+import LustArenaStyleTweakCss from "../../css/modules/LustArenaStyleTweak.css";
+import html from "../../utils/html";
+import { PlayerStorageHandler } from "../../utils/StorageHandler";
 
-export default class LustArenaStyleTweak extends HHModule {
-  readonly configSchema = {
-    baseKey: "lustArenaStyleTweak",
-    label: "Lust Arena : Style tweaks",
-    default: true,
-  };
-  static shouldRun() {
-    return location.pathname === "/home.html";
-  }
+export default class LustArenaStyleTweak implements SubModule {
   run() {
-    if (this.hasRun || !LustArenaStyleTweak.shouldRun()) {
-      return;
-    }
-    this.hasRun = true;
     if (this.isInTutoLustArena()) {
       return;
     }
