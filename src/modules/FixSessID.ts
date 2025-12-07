@@ -5,8 +5,7 @@ import { sessionStorageHandler } from "../utils/StorageHandler";
 export default class FixSessID extends HHModule {
   readonly configSchema = {
     baseKey: "fixSessID",
-    label:
-      "<span tooltip='For example when viewing some scenes'>[NUTAKU] Fix session in URLs</span>",
+    label: "<span tooltip='For example when viewing some scenes'>Fix session in URLs</span>",
     default: location.hostname.startsWith("nutaku"),
   };
   static shouldRun() {
