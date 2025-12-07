@@ -4,7 +4,7 @@ import Calendar from "./MenuExtensions/Calendar";
 
 type MenuExtensions_configSchema = {
   baseKey: "menuExtensions";
-  label: "Menu Extensions:";
+  label: "<span tooltip='Menu in top right corner'>Menu Extensions:</span>";
   default: true;
   subSettings: [
     {
@@ -24,7 +24,7 @@ export default class MenuExtensions extends HHModule {
   readonly configSchema: HHModule_ConfigSchema = (() => {
     const configSchema = {
       baseKey: "menuExtensions",
-      label: "Menu Extensions:",
+      label: "<span tooltip='Menu in top right corner'>Menu Extensions:</span>",
       default: true,
       subSettings: [
         {
