@@ -66,6 +66,7 @@ class Userscript {
     WhaleBossTournament,
     EventInfo,
     ShardTracker,
+    ChampionFightsFromMap,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,
