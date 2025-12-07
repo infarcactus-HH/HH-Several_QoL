@@ -9,7 +9,7 @@ export default class EventInfo extends HHModule {
   readonly configSchema = {
     baseKey: "eventInfo",
     label:
-      "<span tooltip='Click on the Information top right of event*'>Event Info : Show guides, tips, tricks & more info on events</span>",
+      "<span tooltip='Click on the Information top right of events'>Event Info : Show guides, tips, tricks & more info on events</span>",
     default: true,
   };
   static shouldRun() {
