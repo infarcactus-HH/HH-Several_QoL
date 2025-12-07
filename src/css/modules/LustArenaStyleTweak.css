@@ -21,8 +21,8 @@
   text-decoration: none;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] > .button-notification-reward,
-.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] > .button-notification-icon {
+.lust-arena-style-tweak-wrapper [rel="pvp-arena"] > .button-notification-reward,
+.lust-arena-style-tweak-wrapper [rel="pvp-arena"] > .button-notification-icon {
   display: none;
 }
 
@@ -135,4 +135,34 @@
   height: 100%;
   border-radius: 1px;
   transition: width 0.3s ease;
+}
+
+/* HH++ Fix... */
+.lust-arena-style-tweak-wrapper > .quest-container > [rel="pvp-arena"] span > p {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  font-size: 9px;
+  height: 54px;
+  text-align: center;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+.lust-arena-style-tweak-wrapper > .quest-container > .script-home-shortcut-container {
+  display: none !important;
+}
+.lust-arena-style-tweak-wrapper > .quest-container .script-home-icon {
+  display: none !important;
+}
+.lust-arena-style-tweak-wrapper > .quest-container {
+  width: 16px !important;
+}
+.lust-arena-style-tweak-wrapper > .quest-container > a {
+  width: 0px !important;
+}
+.lust-arena-style-tweak-wrapper > .quest-container > a span {
+  padding: 0px !important;
+  width: 16px !important;
+}
+.lust-arena-style-tweak-wrapper > .quest-container > a p {
+  width: 16px !important;
 }
