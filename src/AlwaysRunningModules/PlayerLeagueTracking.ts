@@ -1,6 +1,6 @@
 import { AlwaysRunningModule } from "../base";
 import { LeagueOpponentIncomplete } from "../types";
-import { GlobalStorageHandler, PlayerStorageHandler } from "../utils/StorageHandler";
+import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerLeagueTracking extends AlwaysRunningModule {
   static shouldRun() {

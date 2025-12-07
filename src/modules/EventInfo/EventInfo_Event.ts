@@ -61,7 +61,7 @@ export default class EventInfo_Event implements SubModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable(".nc-panel-header .nc-pull-right", () => {
       $(".nc-panel-header .nc-pull-right").prepend($notifButton);
     });
-    $notifButton.off("click").on("click", (e) => {
+    $notifButton.off("click").on("click", () => {
       GM_openInTab(this.EventInfoLinks[event], { active: true });
     });
     return $notifButton;

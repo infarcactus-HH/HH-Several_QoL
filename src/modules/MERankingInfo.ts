@@ -26,7 +26,7 @@ export default class MERankingInfo extends HHModule {
     GM_addStyle(meRankingInfoCss);
   }
   hookAjaxRequest() {
-    $(document).ajaxComplete((event, xhr, settings) => {
+    $(document).ajaxComplete((_event, xhr, settings) => {
       if (settings?.data === "action=leaderboard&feature=seasonal_event_top") {
         this.heroData = xhr.responseJSON?.hero_data;
         this.leaderboardData = xhr.responseJSON?.leaderboard;

@@ -131,14 +131,11 @@ export default class GameHelpers {
 
       // Determine which is the decimal separator (the rightmost one)
       let decimalSeparator = "";
-      let decimalPosition = -1;
 
       if (lastDotIndex > lastCommaIndex) {
         decimalSeparator = ".";
-        decimalPosition = lastDotIndex;
       } else if (lastCommaIndex > lastDotIndex) {
         decimalSeparator = ",";
-        decimalPosition = lastCommaIndex;
       }
 
       // Remove all thousands separators (the other one)
