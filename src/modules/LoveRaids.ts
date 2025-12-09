@@ -77,7 +77,7 @@ export default class LoveRaids extends HHModule {
       if (raid === undefined) {
         return;
       }
-      handleRaidCards(raid, element);
+      handleRaidCards(raid, element as HTMLElement);
     });
 
     function handleRaidCards(raid: love_raids, element: HTMLElement) {
@@ -101,6 +101,19 @@ export default class LoveRaids extends HHModule {
     injectCSS();
     const result = updateStorage();
     let currentLoveRaidNotifs = result.loveRaidNotifs;
+    let hiddenRaidIds = new Set<number>(
+      result.reducedLoveRaids.filter((raid) => raid.hidden).map((raid) => raid.id_raid),
+    );
+    let hideHiddenRaids = LoveRaidsStorageHandler.getHideHiddenRaids(); // persisted monkey state
+    let hiddenRaidsCss: Element | undefined;
+    const refreshHiddenRaidsCss = () => {
+      hiddenRaidsCss?.remove();
+      if (hideHiddenRaids && hiddenRaidIds.size > 0) {
+        const selector = [...hiddenRaidIds].map((id) => `[data-raid-id="${id}"]`).join(",");
+        hiddenRaidsCss = GM_addStyle(`${selector}{display:none!important;}`);
+      }
+    };
+    refreshHiddenRaidsCss();
     HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
       modifyPageWithoutGirlDict();
       unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then((girlDict: any) => {
@@ -241,6 +254,7 @@ export default class LoveRaids extends HHModule {
             return;
           }
           const $element = $(element);
+          $element.attr("data-raid-id", raidData.id_raid.toString());
           if (!raidData.all_is_owned) {
             showGirlAvatarForHidden(raidData, $element);
             HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-name > .type_icon", () => {
@@ -250,6 +264,19 @@ export default class LoveRaids extends HHModule {
           }
           // Notif for "favorite" raids
         });
+        function setRaidHiddenState(raidId: number, hidden: boolean) {
+          const reduced = LoveRaidsStorageHandler.getReducedLoveRaids();
+          const updated = reduced.map((raid) =>
+            raid.id_raid === raidId ? { ...raid, hidden } : raid,
+          );
+          LoveRaidsStorageHandler.setReducedLoveRaids(updated);
+          if (hidden) {
+            hiddenRaidIds.add(raidId);
+          } else {
+            hiddenRaidIds.delete(raidId);
+          }
+          refreshHiddenRaidsCss();
+        }
         function showGirlAvatarForHidden(raidData: love_raids, $element: JQuery<HTMLElement>) {
           if (raidData.announcement_type_name !== "full" && raidData.status !== "ongoing") {
             // mysterious ones
@@ -287,6 +314,21 @@ export default class LoveRaids extends HHModule {
             LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
           });
           $raidName.append($notifyToggle);
+
+          // Visibility toggle per raid
+          const isHidden = hiddenRaidIds.has(raidData.id_raid);
+          const $visibilityToggle = $(
+            html`<span tooltip="Toggle raid visibility" class="raid-visibility-toggle"
+              >${isHidden ? "🙈" : "🐵"}</span
+            >`,
+          );
+          $visibilityToggle.on("click", (event) => {
+            event.stopPropagation();
+            const newHidden = !hiddenRaidIds.has(raidData.id_raid);
+            setRaidHiddenState(raidData.id_raid, newHidden);
+            $visibilityToggle.text(newHidden ? "🙈" : "🐵");
+          });
+          $raidName.append($visibilityToggle);
         }
       });
     }
@@ -304,6 +346,10 @@ export default class LoveRaids extends HHModule {
     function updateStorage() {
       // clean up notifications for raids that no longer exist
       const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
+      const previousReduced = LoveRaidsStorageHandler.getReducedLoveRaids();
+      const previousHiddenById = new Map<number, boolean>(
+        previousReduced.map((r) => [r.id_raid, !!r.hidden]),
+      );
       let currentLoveRaidNotifs = loveRaidNotifs.filter((id) =>
         love_raids!.some((raid) => raid.id_raid === id),
       ); // can also be used later in the script
@@ -320,7 +366,8 @@ export default class LoveRaids extends HHModule {
           start = server_now_ts + seconds_until_event_start;
           end = start + event_duration_seconds;
         }
-        return { all_is_owned, id_raid, start, end };
+        const hidden = previousHiddenById.get(id_raid) ?? false;
+        return { all_is_owned, id_raid, start, end, hidden };
       });
       LoveRaidsStorageHandler.setReducedLoveRaids(reducedLoveRaids);
       return { reducedLoveRaids, loveRaidNotifs };
@@ -360,6 +407,26 @@ export default class LoveRaids extends HHModule {
             hidingCss?.remove();
           }
         });
+
+        // Global monkey toggle: OFF (🐵) shows hidden raids, ON (🙈) hides them
+        const $visibilityToggle = $(html`
+          <div
+            class="btn-control love-raids-visibility-toggle"
+            tooltip="Show/hide raids marked as 🙈"
+            style="margin-left: 10px; cursor: pointer; font-size: 1.5rem; line-height: 1;"
+          ></div>
+        `);
+        const updateMonkeyIcon = () => {
+          $visibilityToggle.text(hideHiddenRaids ? "🙈" : "🐵");
+        };
+        updateMonkeyIcon();
+        $toggle.after($visibilityToggle);
+        $visibilityToggle.on("click", () => {
+          hideHiddenRaids = !hideHiddenRaids;
+          updateMonkeyIcon();
+          refreshHiddenRaidsCss();
+          LoveRaidsStorageHandler.setHideHiddenRaids(hideHiddenRaids);
+        });
       });
     }
   }
@@ -384,7 +451,7 @@ export default class LoveRaids extends HHModule {
       raids.forEach((raid) => {
         if (raid.end < server_now_ts) {
           expired += 1;
-        } else if (raid.all_is_owned) {
+        } else if (raid.all_is_owned || raid.hidden) {
           // don't care
         } else if (raid.start < server_now_ts) {
           ongoing += 1;
@@ -412,7 +479,7 @@ export default class LoveRaids extends HHModule {
     function setRaidNotif() {
       const showNotif = raids.reduce((result, raid) => {
         const ongoing = raid.start < server_now_ts && raid.end > server_now_ts;
-        if (ongoing && raidNotifs.includes(raid.id_raid) && !raid.all_is_owned) {
+        if (ongoing && raidNotifs.includes(raid.id_raid) && !raid.all_is_owned && !raid.hidden) {
           if (raid.end > server_now_ts) {
             return true;
           }

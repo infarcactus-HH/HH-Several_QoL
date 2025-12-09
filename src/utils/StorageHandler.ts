@@ -112,6 +112,7 @@ export class LoveRaidsStorageHandler {
       id_raid: number;
       start: number;
       end: number;
+      hidden?: boolean;
     }>,
   ): void {
     GM_setValue(HH_UNIVERSE + "ReducedLoveRaids", data);
@@ -121,6 +122,7 @@ export class LoveRaidsStorageHandler {
     id_raid: number;
     start: number;
     end: number;
+    hidden?: boolean;
   }> {
     return GM_getValue(HH_UNIVERSE + "ReducedLoveRaids", []);
   }
@@ -135,6 +137,12 @@ export class LoveRaidsStorageHandler {
   }
   static getShouldHideCompletedRaids(): boolean {
     return GM_getValue("HideCompletedLoveRaids", true);
+  }
+  static setHideHiddenRaids(shouldHide: boolean) {
+    GM_setValue(HH_UNIVERSE + "HideHiddenLoveRaids", shouldHide);
+  }
+  static getHideHiddenRaids(): boolean {
+    return GM_getValue(HH_UNIVERSE + "HideHiddenLoveRaids", false);
   }
 }
 

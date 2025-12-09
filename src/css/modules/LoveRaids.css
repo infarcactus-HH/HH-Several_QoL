@@ -21,6 +21,7 @@
   background-position: center;
   opacity: 0.5;
   filter: grayscale(1);
+  margin-left: 5px;
 }
 .raid-name[data-notify="true"] .notify-toggle {
   opacity: 1;
@@ -33,4 +34,8 @@
   width: 50px;
   vertical-align: middle;
   cursor: pointer;
+}
+
+.raid-visibility-toggle {
+  margin-left: 5px;
 }
