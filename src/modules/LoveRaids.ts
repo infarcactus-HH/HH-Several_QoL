@@ -246,8 +246,8 @@ export default class LoveRaids extends HHModule {
       HHPlusPlusReplacer.doWhenSelectorAvailable(
         // removes the eye from HH++
         ".raid-content > .eye.btn-control",
-        () => {
-          $(".raid-content > .eye.btn-control").remove();
+        ($els) => {
+          $els.remove();
         },
       );
       HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
