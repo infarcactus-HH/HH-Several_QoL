@@ -14,6 +14,15 @@
     -1px 1px 0 #000;
 }
 
+.several-qol-bestrank-timesreached.old {
+  filter: contrast(0.5);
+}
+.several-qol-bestrank-timesreached > .new-in-league {
+  font-size: 10px;
+  color: #23b56b;
+  font-weight: bold;
+}
+
 .several-qol-bestrank-timesreached > .rank-container {
   background-size: cover;
   text-align: center;

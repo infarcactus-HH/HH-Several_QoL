@@ -4,6 +4,7 @@ import type {
   TrackedGirlRecords,
   StoredPlayerLeagueRank,
   StoredPlayerSeasonInfo,
+  league_player_record,
 } from "../types";
 
 export class GlobalStorageHandler {
@@ -49,20 +50,10 @@ export class PlayerStorageHandler {
 }
 
 export class LeagueStorageHandler {
-  static setLeaguePLayerRecord(
-    data: Array<{
-      bestPlace: number;
-      timesReached: number;
-      checkExpiresAt: number;
-    }>,
-  ): void {
+  static setLeaguePLayerRecord(data: league_player_record): void {
     GM_setValue(HH_UNIVERSE + "LeaguePlayerRecord", data);
   }
-  static getLeaguePlayerRecord(): Array<{
-    bestPlace: number;
-    timesReached: number;
-    checkExpiresAt: number;
-  }> {
+  static getLeaguePlayerRecord(): league_player_record {
     return GM_getValue(HH_UNIVERSE + "LeaguePlayerRecord", {});
   }
 }

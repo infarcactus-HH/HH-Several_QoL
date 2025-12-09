@@ -1,5 +1,5 @@
 import { SubModule } from "../../base";
-import type { LeagueOpponentIncomplete } from "../../types";
+import type { league_player_record, LeagueOpponentIncomplete } from "../../types";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { LeagueStorageHandler } from "../../utils/StorageHandler";
 import { leagueOpponentHistoryCss } from "../../css/modules";
@@ -10,13 +10,7 @@ declare const season_end_at: number;
 declare const league_rewards: any; // don't care about the type
 
 export default class LeagueOpponentHistory implements SubModule {
-  leaguePlayerRecord:
-    | Array<{
-        bestPlace: number;
-        timesReached: number;
-        checkExpiresAt: number;
-      }>
-    | undefined;
+  leaguePlayerRecord: league_player_record | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
 
   run() {
@@ -88,34 +82,30 @@ export default class LeagueOpponentHistory implements SubModule {
     );
     shared.general.hh_ajax(payload, (response: { html: string; success: boolean }) => {
       const match = D3Placement.exec(response.html);
-      const bestPlace = match ? parseInt(match[1]) : null;
-      const timesReached = match ? parseInt(match[2]) : null;
+      const bestPlace = match ? parseInt(match[1]) : -1;
+      const timesReached = match ? parseInt(match[2]) : -1;
       this.updatedPlayerRecordsThisSession.add(opponentId);
-      if (!bestPlace || !timesReached) {
-        console.warn(
-          `Could not find league ${highestLeague} placement info for opponent id `,
-          opponentId,
-        );
-        return;
-      }
 
-      this.updateOpponentRecord(opponentId, bestPlace, timesReached);
+      const newRecord = this.updateOpponentRecord(opponentId, bestPlace, timesReached);
       $opponentRow
         .children("[column='nickname']")
         .find(".several-qol-bestrank-timesreached")
         .remove();
-      $opponentRow
-        .children("[column='nickname']")
-        .append(this.generateRankHtml(bestPlace, timesReached));
+      $opponentRow.children("[column='nickname']").append(this.generateRankHtml(newRecord));
     });
   }
-  updateOpponentRecord(opponentId: number, bestPlace: number, timesReached: number) {
+  updateOpponentRecord(
+    opponentId: number,
+    bestPlace: number,
+    timesReached: number,
+  ): league_player_record[number] {
     this.leaguePlayerRecord![opponentId] = {
       bestPlace: bestPlace,
       timesReached: timesReached,
       checkExpiresAt: server_now_ts + season_end_at + 10, // +10 to avoid edge cases
     };
     LeagueStorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord!);
+    return this.leaguePlayerRecord![opponentId];
   }
   applyRankingsToTable() {
     const allRows = $(".data-row.body-row");
@@ -133,20 +123,30 @@ export default class LeagueOpponentHistory implements SubModule {
         record &&
         !$(row).children("[column='nickname']").find(".several-qol-bestrank-timesreached").length
       ) {
-        $(row)
-          .children("[column='nickname']")
-          .append(this.generateRankHtml(record.bestPlace, record.timesReached));
+        $(row).children("[column='nickname']").append(this.generateRankHtml(record));
       }
     });
   }
-  generateRankHtml(bestPlace: number, timesReached: number) {
-    const $divBestRankTimesReached = $(html`<div class="several-qol-bestrank-timesreached"></div>`);
-    const $rankContainer = $(
-      html`<span class="rank-container ${this.generateRankClass(bestPlace)}">${bestPlace}</span>`,
+  generateRankHtml(record: league_player_record[number]): JQuery<HTMLElement> {
+    const isOld = record.checkExpiresAt < server_now_ts;
+    const $divBestRankTimesReached = $(
+      html`<div
+        class="several-qol-bestrank-timesreached ${isOld ? "old" : ""}"
+        ${isOld ? "tooltip='Old record, click To refresh'" : ""}
+      ></div>`,
     );
-    const $timesReached = $(html`<span class="times-reached">x${timesReached}</span>`);
-    $divBestRankTimesReached.prepend($rankContainer);
-    $divBestRankTimesReached.append($timesReached);
+    if (record.bestPlace === -1 || record.timesReached === -1) {
+      const unknownSpan = html`<span class="new-in-league">NEW</span>`;
+      $divBestRankTimesReached.append(unknownSpan);
+      return $divBestRankTimesReached;
+    }
+    const rankContainer = html`<span
+      class="rank-container ${this.generateRankClass(record.bestPlace)}"
+      >${record.bestPlace}</span
+    >`;
+    const timesReached = html`<span class="times-reached">x${record.timesReached}</span>`;
+    $divBestRankTimesReached.prepend(rankContainer);
+    $divBestRankTimesReached.append(timesReached);
     return $divBestRankTimesReached;
   }
   generateRankClass(bestPlace: number): string {
