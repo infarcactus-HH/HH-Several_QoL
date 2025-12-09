@@ -5,6 +5,7 @@ import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import { loveRaidsCss } from "../css/modules";
 import GameHelpers from "../utils/GameHelpers";
 import html from "../utils/html";
+import { ReducedLoveRaid } from "../types/storage/love_raids";
 
 declare const love_raids: Array<love_raids> | undefined;
 
@@ -64,6 +65,7 @@ export default class LoveRaids extends HHModule {
     if (love_raids === undefined) {
       return;
     }
+    const storedRaids = LoveRaidsStorageHandler.getReducedLoveRaids();
 
     $("a.love-raid-container.raid").each(function (_index, element) {
       const raidSearchParam = URL.parse((element as HTMLLinkElement).href)?.searchParams?.get(
@@ -73,23 +75,28 @@ export default class LoveRaids extends HHModule {
         return;
       }
       const id = +raidSearchParam;
-      const raid = love_raids.find((raid) => raid.id_raid === id);
+      const raid = storedRaids.find((raid) => raid.id_raid === id);
       if (raid === undefined) {
         return;
       }
       handleRaidCards(raid, element as HTMLElement);
     });
 
-    function handleRaidCards(raid: love_raids, element: HTMLElement) {
+    function handleRaidCards(raid: ReducedLoveRaid, element: HTMLElement) {
       console.log("Handling raid card for raid:", raid);
       if (raid.all_is_owned) {
         element.remove();
         return;
       }
-      if (hideRaidCardsUntillStart && raid.status === "upcoming") {
-        if (raid.seconds_until_event_start > 60 * 5) {
-          element.remove();
-        }
+      const untilStart = raid.start - server_now_ts;
+      if (hideRaidCardsUntillStart && untilStart > 60 * 5) {
+        element.remove();
+        return;
+      }
+      if (raid.hidden) {
+        console.log("Raid is hidden, hiding raid card", element);
+        element.style.filter = "opacity(40%) grayscale(100%)";
+        element.setAttribute("tooltip", "This raid is marked as hidden");
       }
     }
   }

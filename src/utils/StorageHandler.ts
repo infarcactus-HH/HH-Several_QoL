@@ -6,6 +6,7 @@ import type {
   StoredPlayerSeasonInfo,
   league_player_record,
 } from "../types";
+import { ReducedLoveRaids } from "../types/storage/love_raids";
 
 export class GlobalStorageHandler {
   static setStoredScriptVersion(version: string): void {
@@ -117,13 +118,7 @@ export class LoveRaidsStorageHandler {
   ): void {
     GM_setValue(HH_UNIVERSE + "ReducedLoveRaids", data);
   }
-  static getReducedLoveRaids(): Array<{
-    all_is_owned: boolean;
-    id_raid: number;
-    start: number;
-    end: number;
-    hidden?: boolean;
-  }> {
+  static getReducedLoveRaids(): ReducedLoveRaids {
     return GM_getValue(HH_UNIVERSE + "ReducedLoveRaids", []);
   }
   static setLoveRaidNotifications(raidNotifs: Array<number>): void {
