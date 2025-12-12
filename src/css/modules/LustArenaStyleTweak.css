@@ -3,6 +3,7 @@
   height: 54px;
   display: flex;
   gap: 5px;
+  align-items: stretch;
 }
 
 .lust-arena-style-tweak-wrapper > [rel="pvp-arena"] p,
@@ -44,6 +45,28 @@
   align-items: center;
 }
 
+.lust-arena-style-tweak-wrapper > [rel="leagues"] {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lust-arena-right-section {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lust-arena-right-section > [rel="season"],
+.lust-arena-right-section > [rel="penta-drill"] {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .lust-arena-style-tweak-wrapper > [rel] img {
   aspect-ratio: 1;
   z-index: 0;
@@ -55,9 +78,8 @@
   max-height: 85%;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="season"] img {
-  max-width: 100%;
-  max-height: 100%;
+.lust-arena-right-section > [rel="season"] img {
+  display: none;
 }
 
 .lust-arena-style-tweak-wrapper > [rel="leagues"] p,
@@ -77,6 +99,26 @@
     -1px 1px 0 #000,
     -1px -1px 0 #000,
     1px -1px 0 #000;
+}
+
+.lust-arena-right-section > [rel="season"] p,
+.lust-arena-right-section > [rel="penta-drill"] p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  text-decoration: none;
+  background-color: var(--lust-arena-left-side-bg-color);
+  color: var(--lust-arena-left-side-color);
+  border: 1px solid var(--lust-arena-left-side-color);
+  border-radius: 3px;
+  text-align: center;
+  width: 100%;
+}
+.lust-arena-right-section > [rel="season"],
+.lust-arena-right-section > [rel="penta-drill"] {
+  text-decoration: none;
 }
 
 /* Season Tooltip Styles */

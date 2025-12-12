@@ -18,8 +18,9 @@ export default class LustArenaStyleTweak implements SubModule {
         `:root {--lust-arena-left-side-bg-color: ${leftSideBgColor};--lust-arena-left-side-color: ${leftSideColor};}`,
       );
       //wrap in a div to be able to target with css
-      $el.wrap('<div class="lust-arena-style-tweak-wrapper"></div>');
-      const $wrapper = $el.parent();
+      const $wrapper = $('<div class="lust-arena-style-tweak-wrapper"></div>');
+      $el.replaceWith($wrapper);
+      console.log("LustArenaStyleTweak: injecting league and season info", $wrapper);
       const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank();
       const $leaguesA = $(
         html`<a href="${shared.general.getDocumentHref("/leagues.html")}" rel="leagues">
@@ -31,18 +32,45 @@ export default class LustArenaStyleTweak implements SubModule {
         </a>`,
       );
       $wrapper.append($leaguesA);
+
+      // Create right section with 2 rows
+      const $rightSection = $('<div class="lust-arena-right-section"></div>');
+
       const $seasonA = $(
-        html`<a href="${shared.general.getDocumentHref("/season.html")}" tooltip rel="season">
-          <img src="${IMAGES_URL}/pictures/design/season_pass_alt.png" alt="Seasons Icon" />
+        html`<a
+          href="${shared.general.getDocumentHref("/season.html")}"
+          tooltip
+          rel="season"
+          class="season-no-image"
+        >
           <p>${GT.design.Season}</p>
         </a>`,
       );
       $seasonA.attr("hh_title", this.generateSeasonTooltip());
-      $wrapper.append($seasonA);
+      const widthSeason = $seasonA.css("width");
+      const lengthSeason = GT.design.Season.length;
+      $seasonA
+        .find("p")
+        .css("font-size", `clamp(14px, calc(${widthSeason} / ${lengthSeason} * 1.75), 14px)`);
+      $rightSection.append($seasonA);
 
-      const width = $seasonA.css("width");
-      const length = GT.design.Season.length;
-      $seasonA.find("p").css("font-size", `clamp(9px, calc(${width} / ${length} * 1.75), 14px)`);
+      const $pentaDrillA = $(
+        html`<a href="${shared.general.getDocumentHref("/penta_drill.html")}" rel="penta-drill">
+          <p>${GT.design.penta_drill}</p>
+        </a>`,
+      );
+      const widthPentaDrill = $pentaDrillA.css("width");
+      const lengthPentaDrill = GT.design.penta_drill.length;
+      $pentaDrillA
+        .find("p")
+        .css(
+          "font-size",
+          `clamp(14px, calc(${widthPentaDrill} / ${lengthPentaDrill} * 1.75), 14px)`,
+        );
+
+      $rightSection.append($pentaDrillA);
+
+      $wrapper.append($rightSection);
     });
   }
   private async injectCSS() {
