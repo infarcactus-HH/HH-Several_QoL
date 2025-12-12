@@ -55,7 +55,7 @@ export default class LustArenaStyleTweak implements SubModule {
       $rightSection.append($seasonA);
 
       const $pentaDrillA = $(
-        html`<a href="${shared.general.getDocumentHref("/penta_drill.html")}" rel="penta-drill">
+        html`<a href="${shared.general.getDocumentHref("/penta-drill.html")}" rel="penta-drill">
           <p>${GT.design.penta_drill}</p>
         </a>`,
       );
