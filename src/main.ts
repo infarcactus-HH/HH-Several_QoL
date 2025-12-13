@@ -21,6 +21,7 @@ import LeaguesQoL from "./modules/LeaguesQoL";
 import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTracking";
 import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
 import StyleTweak from "./modules/StyleTweak";
+import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
 
 class Userscript {
   constructor() {
@@ -73,6 +74,7 @@ class Userscript {
     CustomCSS,
     PlayerSeasonTracking,
     PlayerPrestigeTracking,
+    PlayerDrillTracking,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({

@@ -5,6 +5,7 @@ import type {
   StoredPlayerLeagueRank,
   StoredPlayerSeasonInfo,
   league_player_record,
+  StoredPlayerPentaDrillInfo,
 } from "../types";
 import { ReducedLoveRaids } from "../types/storage/love_raids";
 
@@ -47,6 +48,12 @@ export class PlayerStorageHandler {
    */
   static getPlayerGemsPrestigeBonus(): number {
     return GM_getValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", 0);
+  }
+  static setPlayerPentaDrillInfo(info: StoredPlayerPentaDrillInfo): void {
+    GM_setValue(HH_UNIVERSE + "PlayerPentaDrillInfo", info);
+  }
+  static getPlayerPentaDrillInfo(): StoredPlayerPentaDrillInfo | null {
+    return GM_getValue(HH_UNIVERSE + "PlayerPentaDrillInfo", null);
   }
 }
 

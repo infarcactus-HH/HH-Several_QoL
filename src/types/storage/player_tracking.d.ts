@@ -9,3 +9,10 @@ export type StoredPlayerSeasonInfo = {
   name: string | undefined;
   tier: number;
 };
+
+export type StoredPlayerPentaDrillInfo = {
+  previousTierThreshold: number;
+  nextTierThreshold: number | undefined;
+  potions: number;
+  tier: number;
+};
