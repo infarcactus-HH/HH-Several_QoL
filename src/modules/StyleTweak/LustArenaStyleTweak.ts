@@ -59,7 +59,6 @@ export default class LustArenaStyleTweak implements SubModule {
 
       $wrapper.append($rightSection);
 
-      // Now that elements are in the DOM, measure actual widths (numeric) and set font-sizes
       const numericWidthSeason = $seasonA.width() ?? 0; // returns number (px)
       const lengthSeason = GT.design.Season.length;
       $seasonA

@@ -10,5 +10,6 @@ export type * from "./places_of_power.d";
 export type * from "./popup.d";
 export type * from "./season.d";
 export type * from "./villains.d";
+export type * from "./penta_drill.d";
 
 export type * from "./items";
