@@ -39,14 +39,26 @@ export default class LustArenaStyleTweak implements SubModule {
       const $seasonA = $(
         html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
-          tooltip
           rel="season"
           class="season-no-image"
         >
           <p>${GT.design.Season}</p>
         </a>`,
       );
-      $seasonA.attr("hh_title", this.generateSeasonTooltip());
+      const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
+      if (seasonInfo) {
+        $seasonA.attr(
+          "tooltip",
+          this.generateProgressBarTooltip(
+            seasonInfo.tier,
+            seasonInfo.mojo,
+            seasonInfo.previousTierThreshold,
+            seasonInfo.name ?? GT.design.Season,
+            seasonInfo.nextTierThreshold,
+            IMAGES_URL + "/mojo_logo.svg",
+          ),
+        );
+      }
       // font-size for season will be computed after elements are in DOM
       $rightSection.append($seasonA);
 
@@ -55,6 +67,21 @@ export default class LustArenaStyleTweak implements SubModule {
           <p>${GT.design.penta_drill}</p>
         </a>`,
       );
+      const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
+      if (pentaDrillInfo) {
+        $pentaDrillA.attr(
+          "tooltip",
+          this.generateProgressBarTooltip(
+            pentaDrillInfo.tier,
+            pentaDrillInfo.potions,
+            pentaDrillInfo.previousTierThreshold,
+            GT.design.penta_drill,
+            pentaDrillInfo.nextTierThreshold,
+            "https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/refs/heads/main/images/PDPoints.png",
+            13,
+          ),
+        );
+      }
       $rightSection.append($pentaDrillA);
 
       $wrapper.append($rightSection);
@@ -78,53 +105,45 @@ export default class LustArenaStyleTweak implements SubModule {
   private async injectCSS() {
     GM_addStyle(LustArenaStyleTweakCss);
   }
-  private generateSeasonTooltip(): string {
-    const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
-    if (seasonInfo === null) {
-      return "No stored season info";
-    }
-
-    const name = seasonInfo.name ?? "";
-    const currentMojo = seasonInfo.mojo;
-    const prevTier = seasonInfo.previousTierThreshold;
-    const nextTier = seasonInfo.nextTierThreshold;
-    const tier = seasonInfo.tier;
-
-    // Calculate progress percentage
+  private generateProgressBarTooltip(
+    tier: number,
+    currentAmount: number,
+    currentTier: number,
+    name: string,
+    nextTier?: number,
+    imageUrl?: string,
+    imagesize?: number,
+  ): string {
+    const colors = this.getColors();
     let progressPercent: number;
     if (nextTier === undefined) {
       // Max tier reached
       progressPercent = 100;
     } else {
-      const tierRange = nextTier - prevTier;
-      const mojoInTier = currentMojo - prevTier;
-      console.log("tierRange:", tierRange, "mojoInTier:", mojoInTier);
-      progressPercent = Math.min(100, Math.max(0, (mojoInTier / tierRange) * 100));
+      const tierRange = nextTier - currentTier;
+      const amountInTier = currentAmount - currentTier;
+      progressPercent = Math.min(100, Math.max(0, (amountInTier / tierRange) * 100));
     }
+    const progressDisplay =
+      nextTier !== undefined ? `${currentAmount} / ${nextTier}` : `${currentAmount} (Max)`;
 
-    // Build the mojo display line
-    const mojoDisplay =
-      nextTier !== undefined ? `${currentMojo} / ${nextTier}` : `${currentMojo} (Max)`;
+    const mojoContent = imageUrl
+      ? `${progressDisplay}<img src="${imageUrl}" alt="mojo" class="progressbar-tooltip-mojo-icon" style="${
+          imagesize ? `height: ${imagesize}px; width: auto;` : ""
+        }"/>`
+      : progressDisplay;
 
-    // Build tooltip HTML - must be a single line for tooltip attribute
-    const colors = this.getColors();
-    console.log("progressPercent:", progressPercent);
-    return html`<div class="season-tooltip">
-      <div class="season-tooltip-name">${name}</div>
-      <div class="season-tooltip-tier-row">
-        <span class="season-tooltip-tier" style="color: ${colors.tier}">
+    return html`<div class="progressbar-tooltip">
+      <div class="progressbar-tooltip-name">${name}</div>
+      <div class="progressbar-tooltip-tier-row">
+        <span class="progressbar-tooltip-tier" style="color: ${colors.tier}">
           ${GT.design.tier} ${tier}
         </span>
-        <span class="season-tooltip-mojo"
-          >${mojoDisplay}<img
-            src="${IMAGES_URL}/mojo_logo.svg"
-            alt="mojo"
-            class="season-tooltip-mojo-icon"
-        /></span>
+        <span class="progressbar-tooltip-mojo">${mojoContent}</span>
       </div>
-      <div class="season-tooltip-bar-container">
+      <div class="progressbar-tooltip-bar-container">
         <div
-          class="season-tooltip-bar-fill"
+          class="progressbar-tooltip-bar-fill"
           style="width: ${progressPercent}%; background-image: ${colors.barGradient};"
         />
       </div>

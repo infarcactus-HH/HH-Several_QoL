@@ -128,7 +128,7 @@
 }
 
 /* Season Tooltip Styles */
-.season-tooltip {
+.progressbar-tooltip {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,7 +138,7 @@
   color: var(--lust-arena-left-side-color);
 }
 
-.season-tooltip-name {
+.progressbar-tooltip-name {
   font-size: 16px;
   text-align: center;
   min-height: 1em;
@@ -146,7 +146,7 @@
   margin: 0 10px;
 }
 
-.season-tooltip-tier-row {
+.progressbar-tooltip-tier-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -154,11 +154,11 @@
   font-size: 11px;
 }
 
-.season-tooltip-tier {
+.progressbar-tooltip-tier {
   text-align: left;
 }
 
-.season-tooltip-mojo {
+.progressbar-tooltip-mojo {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -166,11 +166,11 @@
   color: white;
 }
 
-.season-tooltip-mojo-icon {
+.progressbar-tooltip-mojo-icon {
   height: 14px;
 }
 
-.season-tooltip-bar-container {
+.progressbar-tooltip-bar-container {
   width: 100%;
   height: 8px;
   background-color: rgba(0, 0, 0, 0.4);
@@ -179,7 +179,7 @@
   border: 1px solid black;
 }
 
-.season-tooltip-bar-fill {
+.progressbar-tooltip-bar-fill {
   height: 100%;
   border-radius: 1px;
   transition: width 0.3s ease;
