@@ -107,15 +107,7 @@ export class WBTTeamStorageHandler {
 }
 
 export class LoveRaidsStorageHandler {
-  static setReducedLoveRaids(
-    data: Array<{
-      all_is_owned: boolean;
-      id_raid: number;
-      start: number;
-      end: number;
-      hidden?: boolean;
-    }>,
-  ): void {
+  static setReducedLoveRaids(data: ReducedLoveRaids): void {
     GM_setValue(HH_UNIVERSE + "ReducedLoveRaids", data);
   }
   static getReducedLoveRaids(): ReducedLoveRaids {
