@@ -47,11 +47,7 @@ export default class LustArenaStyleTweak implements SubModule {
         </a>`,
       );
       $seasonA.attr("hh_title", this.generateSeasonTooltip());
-      const widthSeason = $seasonA.css("width");
-      const lengthSeason = GT.design.Season.length;
-      $seasonA
-        .find("p")
-        .css("font-size", `clamp(14px, calc(${widthSeason} / ${lengthSeason} * 1.75), 14px)`);
+      // font-size for season will be computed after elements are in DOM
       $rightSection.append($seasonA);
 
       const $pentaDrillA = $(
@@ -59,18 +55,25 @@ export default class LustArenaStyleTweak implements SubModule {
           <p>${GT.design.penta_drill}</p>
         </a>`,
       );
-      const widthPentaDrill = $pentaDrillA.css("width");
-      const lengthPentaDrill = GT.design.penta_drill.length;
-      $pentaDrillA
-        .find("p")
-        .css(
-          "font-size",
-          `clamp(14px, calc(${widthPentaDrill} / ${lengthPentaDrill} * 1.75), 14px)`,
-        );
-
       $rightSection.append($pentaDrillA);
 
       $wrapper.append($rightSection);
+
+      // Now that elements are in the DOM, measure actual widths (numeric) and set font-sizes
+      const numericWidthSeason = $seasonA.width() ?? 0; // returns number (px)
+      const lengthSeason = GT.design.Season.length;
+      $seasonA
+        .find("p")
+        .css(
+          "font-size",
+          `clamp(11px, calc(${numericWidthSeason}px / ${lengthSeason} * 1.75), 14px)`,
+        );
+
+      const numericWidthPenta = $pentaDrillA.width() ?? 0;
+      const lengthPentaDrill = GT.design.penta_drill.length;
+      $pentaDrillA.find("p").css({
+        "font-size": `clamp(9px, calc(${numericWidthPenta}px / ${lengthPentaDrill} * 1.6), 14px)`,
+      });
     });
   }
   private async injectCSS() {
