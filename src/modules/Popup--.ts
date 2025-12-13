@@ -32,6 +32,11 @@ type Popupminusminus_ConfigSchema = {
       default: false;
       label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>";
     },
+    {
+      key: "noPDClaimPopup";
+      default: false;
+      label: "<span tooltip='Does not remove girl obtained popup'>No PD Claim Popup</span>";
+    },
   ];
 };
 
@@ -66,6 +71,11 @@ export default class PopupMinusMinus extends HHModule {
         key: "noMEClaimPopup",
         default: false,
         label: "<span tooltip='Does not remove girl obtained popup'>No ME Claim Popup</span>",
+      },
+      {
+        key: "noPDClaimPopup",
+        default: false,
+        label: "<span tooltip='Does not remove girl obtained popup'>No PD Claim Popup</span>",
       },
     ],
   };
@@ -104,6 +114,9 @@ export default class PopupMinusMinus extends HHModule {
     }
     if (subSettings.noMEClaimPopup && location.pathname === "/seasonal.html") {
       this.noMEClaimPopup();
+    }
+    if (subSettings.noPDClaimPopup && location.pathname === "/penta-drill.html") {
+      this.noPoVPoGClaimPopup();
     }
   }
   overridePopups() {
