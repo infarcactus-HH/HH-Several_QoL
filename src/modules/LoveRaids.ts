@@ -75,25 +75,28 @@ export default class LoveRaids extends HHModule {
         return;
       }
       const id = +raidSearchParam;
-      const raid = storedRaids.find((raid) => raid.id_raid === id);
-      if (raid === undefined) {
-        return;
-      }
-      handleRaidCards(raid, element as HTMLElement);
+      const storedRaid = storedRaids.find((raid) => raid.id_raid === id);
+      const raid = love_raids.find((raid) => raid.id_raid === id)!;
+      handleRaidCards(storedRaid, raid, element as HTMLElement);
     });
 
-    function handleRaidCards(raid: ReducedLoveRaid, element: HTMLElement) {
-      console.log("Handling raid card for raid:", raid);
+    function handleRaidCards(
+      storedRaid: ReducedLoveRaid | undefined,
+      raid: love_raids,
+      element: HTMLElement,
+    ) {
+      console.log("Handling raid card for raid:", storedRaid);
       if (raid.all_is_owned) {
         element.remove();
         return;
       }
-      const untilStart = raid.start - server_now_ts;
-      if (hideRaidCardsUntillStart && untilStart > 60 * 5) {
-        element.remove();
-        return;
+      if (raid.status === "upcoming") {
+        if (hideRaidCardsUntillStart && raid.seconds_until_event_start > 60 * 5) {
+          element.remove();
+          return;
+        }
       }
-      if (raid.hidden) {
+      if (storedRaid?.hidden) {
         console.log("Raid is hidden, hiding raid card", element);
         element.style.filter = "opacity(40%) grayscale(100%)";
         element.setAttribute("tooltip", "This raid is marked as hidden");
