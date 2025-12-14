@@ -6,9 +6,7 @@
   z-index: 1;
 }
 
-.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] p,
-.lust-arena-style-tweak-wrapper > [rel="leagues"],
-.lust-arena-style-tweak-wrapper > [rel="season"] {
+.lust-arena-style-tweak-wrapper > [rel="leagues"] {
   background-color: var(--lust-arena-left-side-bg-color);
   color: var(--lust-arena-left-side-color);
   border: 1px solid var(--lust-arena-left-side-color);
@@ -20,29 +18,6 @@
 .lust-arena-style-tweak-wrapper > [rel] {
   position: relative;
   text-decoration: none;
-}
-
-.lust-arena-style-tweak-wrapper [rel="pvp-arena"] > .button-notification-reward,
-.lust-arena-style-tweak-wrapper [rel="pvp-arena"] > .button-notification-icon {
-  display: none;
-}
-
-.lust-arena-style-tweak-wrapper > [rel="pvp-arena"] span > p {
-  margin-block-start: 0;
-  margin-block-end: 0;
-  font-size: 9px;
-  height: 54px;
-  text-align: center;
-  writing-mode: vertical-rl;
-  rotate: 180deg;
-}
-
-.lust-arena-style-tweak-wrapper > [rel="leagues"],
-.lust-arena-style-tweak-wrapper > [rel="season"] {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .lust-arena-style-tweak-wrapper > [rel="leagues"] {
