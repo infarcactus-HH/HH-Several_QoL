@@ -149,7 +149,7 @@ export default class EventInfo_Event implements SubModule {
                   `Before going\n into more details read <a target="_blank" href="${this.EventInfoLinks["dp_event"]}"><strong>this</strong></a> guide made by bolitho` +
                   `<br><br>There are important things to note for this event:<br>` +
                   `First there are some missions that are not in the daily missions list that can appear on easy & hard side :<br>` +
-                  `- Claim chest n°X on daily missions (idk if you can land on a chest you already claimed)<br>` +
+                  `- Claim chest n°X on daily missions (you cannot land on a chest you already claimed)<br>` +
                   `- Claim X number of PoP<br>` +
                   `- Gain PoV potions<br>` +
                   `- Get shards<br>` +
