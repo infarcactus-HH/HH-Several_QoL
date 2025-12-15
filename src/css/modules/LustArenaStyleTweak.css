@@ -103,6 +103,10 @@
 }
 
 /* Season Tooltip Styles */
+.hh_tooltip_new:has(.progressbar-tooltip) {
+  background-color: var(--lust-arena-left-side-bg-color);
+  color: var(--lust-arena-left-side-color);
+}
 .progressbar-tooltip {
   display: flex;
   flex-direction: column;
