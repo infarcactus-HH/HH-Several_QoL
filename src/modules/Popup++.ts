@@ -4,7 +4,7 @@ export default class PopupPlusPlus extends HHModule {
   readonly configSchema = {
     baseKey: "popupPlusPlus",
     label:
-      "<span tooltip='Stacking popups, click on the popup to make it disappear'>Popup++</span>",
+      "<span tooltip='Stacking point popups, click on the popup to make it disappear'>Popup++</span>",
     default: true,
   };
   static shouldRun() {
