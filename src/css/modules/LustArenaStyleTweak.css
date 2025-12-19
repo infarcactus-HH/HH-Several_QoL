@@ -164,32 +164,19 @@
   transition: width 0.3s ease;
 }
 
-/* HH++ Fix... */
-.lust-arena-style-tweak-wrapper > .quest-container > [rel="pvp-arena"] span > p {
-  margin-block-start: 0;
-  margin-block-end: 0;
-  font-size: 9px;
-  height: 54px;
-  text-align: center;
-  writing-mode: vertical-rl;
-  rotate: 180deg;
+/* Blinking class used by LustArenaStyleTweak to indicate it will end */
+@keyframes several-qol-blink-anim {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-.lust-arena-style-tweak-wrapper > .quest-container > .script-home-shortcut-container {
-  display: none !important;
-}
-.lust-arena-style-tweak-wrapper > .quest-container .script-home-icon {
-  display: none !important;
-}
-.lust-arena-style-tweak-wrapper > .quest-container {
-  width: 16px !important;
-}
-.lust-arena-style-tweak-wrapper > .quest-container > a {
-  width: 0px !important;
-}
-.lust-arena-style-tweak-wrapper > .quest-container > a span {
-  padding: 0px !important;
-  width: 16px !important;
-}
-.lust-arena-style-tweak-wrapper > .quest-container > a p {
-  width: 16px !important;
+.several-qol-blink {
+  animation: several-qol-blink-anim 5s ease-in-out infinite;
+  will-change: opacity;
 }

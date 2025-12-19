@@ -5,6 +5,7 @@ import html from "../../utils/html";
 import { PlayerStorageHandler } from "../../utils/StorageHandler";
 
 export default class LustArenaStyleTweak implements SubModule {
+  private readonly blinkTimeThreshold = 60 * 60 * 24 - 60 * 30; // 23hours 30min
   run() {
     if (this.isInTutoLustArena()) {
       return;
@@ -36,16 +37,19 @@ export default class LustArenaStyleTweak implements SubModule {
       // Create right section with 2 rows
       const $rightSection = $('<div class="lust-arena-right-section"></div>');
 
+      const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
+      const seasonEndsAt = seasonInfo?.endsAt || 0;
       const $seasonA = $(
         html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
           rel="season"
-          class="season-no-image"
+          class="${seasonEndsAt - server_now_ts < this.blinkTimeThreshold
+            ? "several-qol-blink"
+            : ""}"
         >
           <p>${GT.design.Season}</p>
         </a>`,
       );
-      const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
       if (seasonInfo) {
         $seasonA.attr(
           "tooltip",
@@ -62,12 +66,19 @@ export default class LustArenaStyleTweak implements SubModule {
       // font-size for season will be computed after elements are in DOM
       $rightSection.append($seasonA);
 
+      const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
+      const pentaDrillEndsAt = pentaDrillInfo?.endsAt || 0;
       const $pentaDrillA = $(
-        html`<a href="${shared.general.getDocumentHref("/penta-drill.html")}" rel="penta-drill">
+        html`<a
+          href="${shared.general.getDocumentHref("/penta-drill.html")}"
+          rel="penta-drill"
+          class="${pentaDrillEndsAt - server_now_ts < this.blinkTimeThreshold
+            ? "several-qol-blink"
+            : ""}"
+        >
           <p>${GT.design.penta_drill}</p>
         </a>`,
       );
-      const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
       if (pentaDrillInfo) {
         $pentaDrillA.attr(
           "tooltip",
