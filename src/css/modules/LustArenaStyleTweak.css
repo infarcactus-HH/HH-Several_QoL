@@ -54,10 +54,6 @@
   max-height: 85%;
 }
 
-.lust-arena-right-section > [rel="season"] img {
-  display: none;
-}
-
 .lust-arena-style-tweak-wrapper > [rel="leagues"] p,
 .lust-arena-style-tweak-wrapper > [rel="season"] p {
   position: absolute;
