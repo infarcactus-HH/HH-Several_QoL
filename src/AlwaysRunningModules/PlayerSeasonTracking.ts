@@ -42,6 +42,7 @@ export default class PlayerSeasonTracking extends AlwaysRunningModule {
       mojo: seasonMojo,
       name: $("#seasons_tab_title").contents()[0]?.textContent?.trim() || storedSeasonName,
       tier: currentTier,
+      endsAt: (unsafeWindow.season_sec_untill_event_end as number) + server_now_ts || undefined,
     });
   }
 }

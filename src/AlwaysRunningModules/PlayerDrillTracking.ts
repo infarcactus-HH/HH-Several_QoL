@@ -29,6 +29,7 @@ export default class PlayerDrillTracking extends AlwaysRunningModule {
       potions: currentPotions,
       previousTierThreshold: currentTierPathRewards.potions_required,
       nextTierThreshold: nextTierPathRewards ? nextTierPathRewards.potions_required : undefined,
+      endsAt: pentaDrillData.cycle_data.seconds_until_event_end + server_now_ts,
     });
   }
 }

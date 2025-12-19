@@ -8,6 +8,7 @@ export type StoredPlayerSeasonInfo = {
   mojo: number;
   name: string | undefined;
   tier: number;
+  endsAt: number | undefined;
 };
 
 export type StoredPlayerPentaDrillInfo = {
@@ -15,4 +16,5 @@ export type StoredPlayerPentaDrillInfo = {
   nextTierThreshold: number | undefined;
   potions: number;
   tier: number;
+  endsAt: number | undefined;
 };
