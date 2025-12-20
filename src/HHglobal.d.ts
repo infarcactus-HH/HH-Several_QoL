@@ -1,3 +1,4 @@
+import { sharedHeroIncomplete } from "./types";
 import { popupForQueue } from "./types/GameTypes";
 
 export declare global {
@@ -50,7 +51,7 @@ export declare global {
         }) => void,
       ): void; // careful to not activate multiple time the same timer
     };
-    Hero: any;
+    Hero: sharedHeroIncomplete;
     popup_payment: any;
   };
 

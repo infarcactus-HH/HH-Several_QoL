@@ -38,7 +38,7 @@ export default class LustArenaStyleTweak implements SubModule {
       const $rightSection = $('<div class="lust-arena-right-section"></div>');
 
       const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
-      const seasonEndsAt = seasonInfo?.endsAt || 0;
+      const seasonEndsAt = seasonInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
       const $seasonA = $(
         html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
@@ -67,7 +67,8 @@ export default class LustArenaStyleTweak implements SubModule {
       $rightSection.append($seasonA);
 
       const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
-      const pentaDrillEndsAt = pentaDrillInfo?.endsAt || 0;
+      const pentaDrillEndsAt =
+        pentaDrillInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
       const $pentaDrillA = $(
         html`<a
           href="${shared.general.getDocumentHref("/penta-drill.html")}"
