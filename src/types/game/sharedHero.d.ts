@@ -13,13 +13,21 @@ export type sharedHeroInfos = {
   carac2: number;
   carac3: number;
   id: number;
-  caracs: any;
+  caracs: {
+    carac1: number;
+    carac2: number;
+    carac3: number;
+    chance: number;
+    endurance: number;
+    primary_carac_amount: number;
+    secondary_caracs_sum: number;
+  };
   class: Class;
   club_cooldown_ts: number; // time until can join back a club
   harem_endurance: number;
   hc_confirm: boolean;
   hh_skin: "hentai" | (string & {});
-  hh_universe: "nutaku" | (string & {});
+  hh_universe: "nutaku" | "hentai" | "test_h" | (string & {});
   id: number;
   is_cheater: 0 | 1;
   is_tester: 0 | 1;
@@ -29,7 +37,7 @@ export type sharedHeroInfos = {
   no_pachinko_anim: boolean;
   no_static_image_animation: boolean;
   nosound: boolean;
-  on_prod_server: boolean;
+  on_prod_server: boolean; // always true ?
   pwa_rewards_claimed: [] | any; // unsure of the content
   questing: {
     choices_adventure: number; //0;
