@@ -2,6 +2,8 @@ import { Class } from "./common";
 
 export type sharedHeroIncomplete = {
   infos: sharedHeroInfos;
+  currencies: sharedHeroCurrencies;
+  energies: sharedHeroEnergies;
   update: (data: any) => void;
   updates: (data: any) => void;
 };
@@ -51,4 +53,40 @@ export type sharedHeroInfos = {
   screen_ratio: number;
   server_time: string; //"2025-12-20T19:31:10+01:00";
   xp: number;
+};
+
+export type sharedHeroCurrencies = {
+  frames: number;
+  hard_currency: number;
+  laby_coin: number;
+  rejuvenation_stone: number;
+  scrolls_common: number;
+  scrolls_epic: number;
+  scrolls_legendary: number;
+  scrolls_mythic: number;
+  scrolls_rare: number;
+  seasonal_event_cash: number;
+  soft_currency: number;
+  sultry_coins: number;
+  ticket: number;
+};
+
+export type sharedHeroEnergies = {
+  quest: sharedHeroEnergiesType;
+  fight: sharedHeroEnergiesType;
+  challenge: sharedHeroEnergiesType;
+  kiss: sharedHeroEnergiesType;
+  worship: sharedHeroEnergiesType;
+  reply: sharedHeroEnergiesType;
+  drill: sharedHeroEnergiesType;
+};
+
+export type sharedHeroEnergiesType = {
+  amount: number;
+  max_amount: number;
+  max_regen_amount: number;
+  next_refresh_ts: number; // in seconds, when next you'll get an energy
+  recharge_time: number; // in seconds until full recharge
+  seconds_per_point: number;
+  update_ts: number; // not sure
 };
