@@ -677,8 +677,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         html`<div class="${isLocked ? "pop-record-locked" : "pop-record"}"></div>`,
       );
       $popRecord.attr("data-pop-id", key);
-      // Set background image inline (can't be done in CSS)
-      $popRecord.css("background-image", `url(${popRecord.image})`);
+
+      // Add background image as img element
+      const $bgImage = $(html`<img src="${popRecord.image}" class="pop-record-bg" />`);
+      $popRecord.append($bgImage);
 
       // Add click handler for selection
       if (!isLocked) {
