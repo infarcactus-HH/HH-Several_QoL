@@ -33,7 +33,7 @@ export type sharedHeroInfos = {
     secondary_caracs_sum: number;
   };
   class: Class;
-  club_cooldown_ts: number; // time until can join back a club
+  club_cooldown_ts: number; // time until can join back a club, can be negative
   harem_endurance: number;
   hc_confirm: boolean;
   hh_skin: "hentai" | (string & {});
