@@ -9,7 +9,15 @@ export type sharedHeroIncomplete = {
 };
 
 export type sharedHeroInfos = {
-  Xp: any;
+  Xp: {
+    cur: number;
+    left: number;
+    level: number;
+    max: number;
+    min: number;
+    next_max: number;
+    ratio: number;
+  };
   avs_required: boolean;
   carac1: number;
   carac2: number;
