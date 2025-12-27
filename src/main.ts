@@ -22,6 +22,7 @@ import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTrackin
 import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
 import StyleTweak from "./modules/StyleTweak";
 import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
+import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 
 class Userscript {
   constructor() {
@@ -68,6 +69,7 @@ class Userscript {
     EventInfo,
     ShardTracker,
     ChampionFightsFromMap,
+    HHPlusPlusBdsmPatch,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,

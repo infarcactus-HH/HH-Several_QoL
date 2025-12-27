@@ -10,3 +10,4 @@ export { default as eventInfoHomeCss } from "./EventInfo/EventInfo_Home.css";
 export { default as povPoGHideClaimAllUntilLastDayCss } from "./PoVPoGHideClaimAllUntilLastDay.css";
 export { default as VillainReplaceBulbsByMulticolorBulbCss } from "./VillainReplaceBulbsByMulticolorBulb.css";
 export { default as poVInfoCss } from "./PoVInfo.css";
+export { default as HHPlusPlusBdsmPatchPentaDrillCss } from "./HHPlusPlusBdsmPatch/PentaDrill.css";
