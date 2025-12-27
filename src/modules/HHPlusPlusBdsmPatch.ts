@@ -25,7 +25,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
     subSettings: [
       {
         key: "pentaDrillHideRewardsPath",
-        label: "Penta Drill Hide Rewards Path",
+        label: "Penta Drill Hide Completed Rewards Path",
         default: true,
       },
     ],
