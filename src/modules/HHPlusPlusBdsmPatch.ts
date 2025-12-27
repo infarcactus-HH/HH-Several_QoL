@@ -52,7 +52,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
     HHPlusPlusReplacer.doWhenSelectorAvailable("#rewards_row > .rewards_pair", () => {
       hidePathRewards();
     });
-    HHPlusPlusReplacer.doWhenSelectorAvailable("#left_girl", ($girl) => {
+    HHPlusPlusReplacer.doWhenSelectorAvailable("#girls_holder .girl_block img", ($girl) => {
       let isHidden = true;
       $girl.off("click.hhplusplus_bdsm_patch").on("click.hhplusplus_bdsm_patch", () => {
         if (isHidden) {
