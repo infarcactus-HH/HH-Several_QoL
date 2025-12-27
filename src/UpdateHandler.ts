@@ -102,31 +102,24 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 24 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 25 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
-            <div class="changelog-content hh-scroll">
-              <h2>New Feature: Champion Fight From Map! (off by default)</h2>
-              <p>
-                On champion map page allows you to click on champion area to start a fight </br>
-                To go the the champion page, click around the button just not directly on it.
-              </p>
-              <h2>Grouped Featured under a name: Style Tweak (on by default)</h2>
-              <p>
-                Combines:</br>
-                - Multicolor Bulbs (on),</br> 
-                - PoV/PoG claim all until last day (off)</br>
-                - Lust Arena Home Screen Style Tweak (on)</br>
-              </p>
-              <h3>Shard Tracking</h3>
-              <p>
-                Improved interface & shown stat with more details.
-              </p>
-            </div>
-          `);
+          <div class="changelog-content hh-scroll">
+            <h2>New Feature: HH++ BDSM Patch (Temporary fix/addons) (on by default)</h2>
+            <p>
+              Hides completed rewards for PD until it gets added properly in HH++ BDSM. (toggle by
+              clicking the girl)
+            </p>
+            <h3>Lust Arena Style Tweak</h2>
+            <p>Added blinky animation for when Season or PD are about to end</p>
+            <h3>Popup--</h2>
+            <p>Added no popup option for Penta Drill </p>
+          </div>
+        `);
         const $footer = $(html`
           <div class="footer">
             <span>Thank you for using Several QoL! </span>
