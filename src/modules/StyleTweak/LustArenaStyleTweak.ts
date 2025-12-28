@@ -6,6 +6,17 @@ import { PlayerStorageHandler } from "../../utils/StorageHandler";
 
 export default class LustArenaStyleTweak implements SubModule {
   private readonly blinkTimeThreshold = 60 * 60 * 24 - 60 * 30; // 23hours 30min
+  private readonly rgbEasterEggChance = 1000; // 1 in 1000 chance
+
+  /**
+   * Returns the appropriate class for the timeout warning.
+   * Has a 1/1000 chance to return the RGB easter egg class instead of the normal blink.
+   */
+  private getTimeoutWarningClass(): string {
+    const isRgbMode = Math.floor(Math.random() * this.rgbEasterEggChance) === 0;
+    return isRgbMode ? "several-qol-rgb-mode" : "several-qol-blink";
+  }
+
   run() {
     if (this.isInTutoLustArena()) {
       return;
@@ -39,13 +50,12 @@ export default class LustArenaStyleTweak implements SubModule {
 
       const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
       const seasonEndsAt = seasonInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
+      const seasonNeedsWarning = seasonEndsAt - server_now_ts < this.blinkTimeThreshold;
       const $seasonA = $(
         html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
           rel="season"
-          class="${seasonEndsAt - server_now_ts < this.blinkTimeThreshold
-            ? "several-qol-blink"
-            : ""}"
+          class="${seasonNeedsWarning ? this.getTimeoutWarningClass() : ""}"
         >
           <p>${GT.design.Season}</p>
         </a>`,
@@ -69,13 +79,12 @@ export default class LustArenaStyleTweak implements SubModule {
       const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
       const pentaDrillEndsAt =
         pentaDrillInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
+      const pentaDrillNeedsWarning = pentaDrillEndsAt - server_now_ts < this.blinkTimeThreshold;
       const $pentaDrillA = $(
         html`<a
           href="${shared.general.getDocumentHref("/penta-drill.html")}"
           rel="penta-drill"
-          class="${pentaDrillEndsAt - server_now_ts < this.blinkTimeThreshold
-            ? "several-qol-blink"
-            : ""}"
+          class="${pentaDrillNeedsWarning ? this.getTimeoutWarningClass() : ""}"
         >
           <p>${GT.design.penta_drill}</p>
         </a>`,
