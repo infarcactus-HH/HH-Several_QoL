@@ -66,11 +66,8 @@ export default class LoveRaids extends HHModule {
       return;
     }
     const storedRaids = LoveRaidsStorageHandler.getReducedLoveRaids();
-
     $("a.love-raid-container.raid").each(function (_index, element) {
-      const raidSearchParam = URL.parse((element as HTMLLinkElement).href)?.searchParams?.get(
-        "raid",
-      );
+      const raidSearchParam = (element as HTMLLinkElement).href.match(/[?&]raid=(\d+)/)?.[1];
       if (!raidSearchParam) {
         return;
       }
