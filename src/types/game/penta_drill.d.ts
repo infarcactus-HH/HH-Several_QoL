@@ -1,3 +1,4 @@
+import { TODO } from "../base";
 import { GirlMinimalData } from "./girls";
 
 export type penta_drill_data = {
@@ -39,3 +40,26 @@ export type progression_penta_drill = {
   tier: number;
   triggered_reminders: null | any; // should never be useful anyway
 };
+
+export type penta_drill_team_data = {
+  girls: TODO;
+  girls_ids: [number, number, number, number, number, number, number];
+  id_member: number;
+  id_team: number;
+  max_team_size: 7;
+  min_team_size: 7;
+  power_display: number;
+  slot_index: number;
+  synergies: any;
+  theme: null;
+  theme_elements: [];
+  total_power: number;
+};
+
+export type penta_drill_all_teams = [
+  penta_drill_team_data,
+  penta_drill_team_data,
+  penta_drill_team_data,
+  penta_drill_team_data,
+  penta_drill_team_data,
+];
