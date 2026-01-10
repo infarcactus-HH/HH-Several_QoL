@@ -4,8 +4,8 @@ export type sharedHeroIncomplete = {
   infos: sharedHeroInfos;
   currencies: sharedHeroCurrencies;
   energies: sharedHeroEnergies;
-  update: (data: any) => void;
-  updates: (data: any) => void;
+  update: (type: string, maybeNewValue: number, toDiscover?: any, unknown = false) => void; // HH++ bdsm doesn't allow you to input values for the last one
+  updates: (data: any, toDiscover?: boolean) => void; // updates will call update
 };
 
 export type sharedHeroInfos = {
