@@ -102,22 +102,17 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 25 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 26 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>New Feature: HH++ BDSM Patch (Temporary fix/addons) (on by default)</h2>
-            <p>
-              Hides completed rewards for PD until it gets added properly in HH++ BDSM. (toggle by
-              clicking the girl)
-            </p>
-            <h3>Lust Arena Style Tweak</h2>
-            <p>Added blinky animation for when Season or PD are about to end</p>
-            <h3>Popup--</h2>
-            <p>Added no popup option for Penta Drill </p>
+            <h2>New Feature: PD Team preset (Under Laby team presets)</h2>
+            <p>Allows you to save and load your registered Penta Drill team compositions.</p>
+            <h3>Lust Arena Style Tweak</h3>
+            <p>An easter egg was added, maybe you'll get lucky and get it ?</p>
           </div>
         `);
         const $footer = $(html`
