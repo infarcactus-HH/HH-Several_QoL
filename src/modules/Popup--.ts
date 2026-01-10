@@ -177,6 +177,35 @@ export default class PopupMinusMinus extends HHModule {
       }
     }
     if (location.pathname === "/home.html") {
+      function patchClubs() {
+        const d = $("#club-cooldown");
+        let u = 0;
+        if (d.length && ((u = Math.round(parseInt(d.attr("timer")!, 10))), u > 0)) {
+          const C = shared.timer.buildTimer(u, "", "home-button-timer", !1);
+          ($("#club-cooldown").append(C), shared.timer.activateTimers("home-button-timer"));
+        }
+        const m = $(".messenger-reply-timer.timer-box");
+        if (m.length) {
+          const E = parseInt(m.data("time-remaining")),
+            x = `+${parseInt(m.data("amount-energy-replies"))} ${GT.design.messenger_in}`,
+            w = shared.timer.buildTimer(E, x, "energy-replies-refill-timer", !1);
+          (m.append(w), shared.timer.activateTimers("energy-replies-refill-timer"));
+        }
+        $('#homepage [rel="clubs"]')
+          .off("click")
+          .on("click", (t) => {
+            (t.preventDefault(),
+              u <= 0
+                ? (shared.animations.loadingAnimation.start(),
+                  shared.general.navigate($(t.currentTarget).data("href")))
+                : alert(GT.design.club_cooldown_error));
+          });
+        /* $(".left-side-container a").click((t: any) => {
+          "/" === $(t.target).closest("a")!.attr("href")!.substring(0, 1) &&
+            shared.animations.loadingAnimation.start();
+        }); */
+      }
+      patchClubs();
       console.log("Setting up listener to delete cookie on checkbox click");
       $(document).on(
         "change",
