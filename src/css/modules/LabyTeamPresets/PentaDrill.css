@@ -1,0 +1,140 @@
+.boss-bang-panel > .manage-presets {
+  margin-bottom: 10px;
+}
+.popup_wrapper > #popup-laby_team_preset_manager {
+  width: 26rem;
+  height: 500px;
+  top: 5rem;
+  left: 19.5rem;
+}
+#popup-laby_team_preset_manager > #container-laby_team_preset_manager.container-special-bg {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#popup-laby_team_preset_manager close {
+  width: 2rem;
+  height: 2rem;
+  top: 0;
+  right: 0.5rem;
+  background-image: url(/images/clubs/ic_xCross.png);
+  opacity: 1;
+}
+#container-laby_team_preset_manager {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  border: 2px solid #ff9900;
+  display: flex;
+  flex-direction: column;
+}
+
+#container-laby_team_preset_manager > .title {
+  position: absolute;
+  width: 100%;
+  height: 2rem;
+  top: -1rem;
+  left: 0;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.22px;
+  color: #ffb827;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    -2px -2px 5px rgba(255, 159, 0, 0.4),
+    2px -2px 5px rgba(255, 159, 0, 0.4),
+    -2px 2px 5px rgba(255, 159, 0, 0.4),
+    2px 2px 5px rgba(255, 159, 0, 0.4),
+    0px 0px 10px rgba(255, 159, 0, 0.4);
+  text-align: center;
+}
+
+.penta-drill-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.penta-drill-registerer-area {
+  padding: 1rem;
+  border-top: 1px solid #ff9900;
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.penta-drill-team-name-input {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: #1a1a1a;
+  color: #ffb827;
+  border: 1px solid #ff9900;
+  border-radius: 3px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.penta-drill-team-name-input::placeholder {
+  color: #888;
+}
+
+.penta-drill-register-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.penta-drill-empty-state {
+  text-align: center;
+  color: #ffb827;
+  padding: 1rem;
+}
+
+.penta-drill-preset-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: rgba(255, 159, 0, 0.1);
+  border: 1px solid #ff9900;
+  border-radius: 3px;
+}
+
+.penta-drill-delete-btn {
+  flex: 0 0 2rem;
+  height: 2rem;
+  background-image: url(/images/clubs/ic_xCross.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  color: transparent;
+  cursor: pointer;
+}
+
+.penta-drill-preset-name {
+  flex: 1;
+  color: #ffb827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.5rem;
+}
+
+.penta-drill-apply-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}

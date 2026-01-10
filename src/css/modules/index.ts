@@ -11,3 +11,4 @@ export { default as povPoGHideClaimAllUntilLastDayCss } from "./PoVPoGHideClaimA
 export { default as VillainReplaceBulbsByMulticolorBulbCss } from "./VillainReplaceBulbsByMulticolorBulb.css";
 export { default as poVInfoCss } from "./PoVInfo.css";
 export { default as HHPlusPlusBdsmPatchPentaDrillCss } from "./HHPlusPlusBdsmPatch/PentaDrill.css";
+export { default as LabyTeamPresetPentaDrillCss } from "./LabyTeamPresets/PentaDrill.css";

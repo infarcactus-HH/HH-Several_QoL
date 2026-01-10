@@ -6,6 +6,7 @@ import type {
   StoredPlayerSeasonInfo,
   league_player_record,
   StoredPlayerPentaDrillInfo,
+  StoredPentaDrillTeam,
 } from "../types";
 import { ReducedLoveRaids } from "../types/storage/love_raids";
 
@@ -110,6 +111,24 @@ export class WBTTeamStorageHandler {
   }
   static getWBTId(): number {
     return GM_getValue(HH_UNIVERSE + "WBTId", -1);
+  }
+}
+
+export class PentaDrillTeamStorageHandler {
+  static addPentaDrillTeam(team: StoredPentaDrillTeam): void {
+    const existingTeams = this.getPentaDrillTeams();
+    existingTeams.push(team);
+    GM_setValue(HH_UNIVERSE + "PentaDrillTeams", existingTeams);
+  }
+  static getPentaDrillTeams(): Array<StoredPentaDrillTeam> {
+    return GM_getValue(HH_UNIVERSE + "PentaDrillTeams", []);
+  }
+  static deletePentaDrillTeam(index: number): void {
+    const existingTeams = this.getPentaDrillTeams();
+    if (index >= 0 && index < existingTeams.length) {
+      existingTeams.splice(index, 1);
+      GM_setValue(HH_UNIVERSE + "PentaDrillTeams", existingTeams);
+    }
   }
 }
 
