@@ -5,12 +5,12 @@ import LeagueOpponentHistory from "./LeaguesQoL/LeagueOpponentHistory";
 type LeaguesQoL_configSchema = {
   baseKey: "leaguesQoL";
   label: "Leagues QoL :";
-  default: true;
+  default: false;
   subSettings: [
     {
       key: "leagueOpponentHistory";
-      label: "Show history of opponents (click on the row to refresh, only looks for highest league)";
-      default: true;
+      label: "<span tooltip='click on the row to refresh, only looks for highest league'>Show history of opponents</span>";
+      default: false;
     },
     {
       key: "leagueNoPlayerProfileOnNameClick";
@@ -24,13 +24,13 @@ export default class LeaguesQoL extends HHModule {
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "leaguesQoL",
     label: "Leagues QoL :",
-    default: true,
+    default: false,
     subSettings: [
       {
         key: "leagueOpponentHistory",
         label:
           "<span tooltip='click on the row to refresh, only looks for highest league'>Show history of opponents</span>",
-        default: true,
+        default: false,
       },
       {
         key: "leagueNoPlayerProfileOnNameClick",
