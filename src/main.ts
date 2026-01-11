@@ -69,7 +69,6 @@ class Userscript {
     EventInfo,
     ShardTracker,
     ChampionFightsFromMap,
-    HHPlusPlusBdsmPatch,
   ];
   alwaysRunningModules = [
     PlayerLeagueTracking,
