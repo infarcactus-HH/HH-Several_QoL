@@ -15,7 +15,7 @@ type HHPlusPlusBdsmPatch_configSchema = {
     },
   ];
 };
-
+// MODULE NO LONGER USED
 export default class HHPlusPlusBdsmPatch extends HHModule {
   readonly configSchema: HHModule_ConfigSchema = {
     baseKey: "hhPlusPlusBdsmPatch",
