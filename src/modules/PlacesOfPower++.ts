@@ -79,24 +79,23 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $PopSwitcher = $(".switch-tab[data-tab='pop']");
     $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
     $PopSwitcher.attr("tooltip", "By infarctus");
-    $PopSwitcher.on("click", async () => {
+    $PopSwitcher.on("click", () => {
       // Wait for girls to finish updating before building UI
       if (this.isLoadingGirls) {
         shared.animations.loadingAnimation.start();
-        while (this.isLoadingGirls) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-        shared.animations.loadingAnimation.stop();
+        $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
+          shared.animations.loadingAnimation.stop();
+          this.buildCustomPopInfo();
+        });
+      } else {
+        this.buildCustomPopInfo();
       }
-      this.buildCustomPopInfo();
     });
     this.injectCustomStyles();
     const popToStart = Object.values(pop_data).find(
       (pop) => pop.status === "can_start" || pop.status === "pending_reward",
     );
-    if (true || popToStart) {
-      this.girlsHandler();
-    }
+    this.girlsHandler();
   }
 
   updateSuckless() {
@@ -780,5 +779,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     this.sortedGirlsCache[3] = byClass[3].sort((a, b) => b.carac - a.carac).map((x) => x.id);
 
     this.isLoadingGirls = false;
+    $(document).trigger("HH_SQoL_PoP_GirlsLoaded");
   }
 }
