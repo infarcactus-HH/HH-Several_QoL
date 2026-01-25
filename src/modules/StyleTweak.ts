@@ -1,7 +1,7 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import LustArenaStyleTweak from "./StyleTweak/LustArenaStyleTweak";
-import PoVPoGHideClaimAllUntilLastDay from "./StyleTweak/PoVPoGHideClaimAllUntilLastDay";
-import VillainReplaceBulbsByMulticolorBulb from "./StyleTweak/VillainReplaceBulbsByMulticolorBulb";
+import PoVPoGHideClaimAllUntilLastDayStyleTweak from "./StyleTweak/PoVPoGHideClaimAllUntilLastDayStyleTweak";
+import VillainReplaceBulbsByMulticolorBulbStyleTweak from "./StyleTweak/VillainReplaceBulbsByMulticolorBulbStyleTweak";
 
 type StyleTweak_configSchema = {
   baseKey: "styleTweak";
@@ -62,7 +62,7 @@ export default class StyleTweak extends HHModule {
       subSettings.villainReplaceBulbsByMulticolorBulb &&
       location.pathname === "/troll-pre-battle.html"
     ) {
-      new VillainReplaceBulbsByMulticolorBulb().run();
+      new VillainReplaceBulbsByMulticolorBulbStyleTweak().run();
     }
     if (subSettings.lustArenaStyleTweak && location.pathname === "/home.html") {
       new LustArenaStyleTweak().run();
@@ -71,7 +71,7 @@ export default class StyleTweak extends HHModule {
       subSettings.poVPoGHideClaimAllUntilLastDay &&
       (location.pathname === "/path-of-valor.html" || location.pathname === "/path-of-glory.html")
     ) {
-      new PoVPoGHideClaimAllUntilLastDay().run();
+      new PoVPoGHideClaimAllUntilLastDayStyleTweak().run();
     }
   }
 }

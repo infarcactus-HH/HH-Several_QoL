@@ -1,7 +1,7 @@
-import { HHModule, SubModule } from "../../base";
-import { povPoGHideClaimAllUntilLastDayCss } from "../../css/modules";
+import { SubModule } from "../../base";
+import { povPoGHideClaimAllUntilLastDayStyleTweakCss } from "../../css/modules";
 
-export default class PoVPoGHideClaimAllUntilLastDay implements SubModule {
+export default class PoVPoGHideClaimAllUntilLastDayStyleTweak implements SubModule {
   run() {
     const timeRemaining: number | undefined = unsafeWindow.time_remaining;
     if (timeRemaining === undefined) {
@@ -14,6 +14,6 @@ export default class PoVPoGHideClaimAllUntilLastDay implements SubModule {
     }
   }
   private async injectCSS() {
-    GM_addStyle(povPoGHideClaimAllUntilLastDayCss);
+    GM_addStyle(povPoGHideClaimAllUntilLastDayStyleTweakCss);
   }
 }

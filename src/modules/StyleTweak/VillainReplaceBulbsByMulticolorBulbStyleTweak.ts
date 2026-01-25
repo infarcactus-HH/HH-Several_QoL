@@ -1,10 +1,10 @@
 import type { VillainPreBattle } from "../../types";
 import html from "../../utils/html";
-import { VillainReplaceBulbsByMulticolorBulbCss } from "../../css/modules";
+import { VillainReplaceBulbsByMulticolorBulbStyleTweakCss } from "../../css/modules";
 import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
-export default class VillainReplaceBulbsByMulticolorBulb implements SubModule {
+export default class VillainReplaceBulbsByMulticolorBulbStyleTweak implements SubModule {
   run() {
     console.log("VillainReplaceBulbsByMulticolorBulb module running");
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle | undefined;
@@ -30,6 +30,6 @@ export default class VillainReplaceBulbsByMulticolorBulb implements SubModule {
     this.injectCSS();
   }
   private async injectCSS() {
-    GM_addStyle(VillainReplaceBulbsByMulticolorBulbCss);
+    GM_addStyle(VillainReplaceBulbsByMulticolorBulbStyleTweakCss);
   }
 }
