@@ -1,4 +1,5 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import CompactLeagueStyleTweak from "./StyleTweak/CompactLeagueStyleTweak";
 import LustArenaStyleTweak from "./StyleTweak/LustArenaStyleTweak";
 import PoVPoGHideClaimAllUntilLastDayStyleTweak from "./StyleTweak/PoVPoGHideClaimAllUntilLastDayStyleTweak";
 import VillainReplaceBulbsByMulticolorBulbStyleTweak from "./StyleTweak/VillainReplaceBulbsByMulticolorBulbStyleTweak";
@@ -21,7 +22,12 @@ type StyleTweak_configSchema = {
     {
       key: "poVPoGHideClaimAllUntilLastDay";
       label: "PoV/PoG: Hide 'Claim All' until last day";
-      default: true;
+      default: false;
+    },
+    {
+      key: "compactLeagueStyleTweak";
+      label: "Compact League View";
+      default: false;
     },
   ];
 };
@@ -45,6 +51,11 @@ export default class StyleTweak extends HHModule {
       {
         key: "poVPoGHideClaimAllUntilLastDay",
         label: "PoV/PoG: Hide 'Claim All' until last day",
+        default: false,
+      },
+      {
+        key: "compactLeagueStyleTweak",
+        label: "Compact League View",
         default: false,
       },
     ],
@@ -72,6 +83,9 @@ export default class StyleTweak extends HHModule {
       (location.pathname === "/path-of-valor.html" || location.pathname === "/path-of-glory.html")
     ) {
       new PoVPoGHideClaimAllUntilLastDayStyleTweak().run();
+    }
+    if (subSettings.compactLeagueStyleTweak && location.pathname === "/leagues.html") {
+      new CompactLeagueStyleTweak().run();
     }
   }
 }

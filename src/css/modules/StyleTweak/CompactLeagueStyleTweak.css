@@ -1,0 +1,56 @@
+#leagues > .league_content > .league_tiers .league_tier_progress,
+#leagues > .league_content > .league_tiers #toggle_columns {
+  display: none;
+}
+#leagues > .page-title {
+  display: none;
+}
+
+/* Filter button */
+#leagues > .league_content > .league_tiers #league_filter {
+  position: absolute;
+  z-index: 3;
+  right: 250px;
+  top: 2px;
+  /* Fix the bottom shadow box */
+  box-shadow:
+    0 3px 0 rgba(13, 22, 25, 0),
+    inset 0 3px 0 #6df0ff;
+}
+.leagues-container > #leagues > .league_content > .league_tiers .league_filter_box {
+  top: 2.2rem;
+}
+
+/* Mess padding for more info */
+.leagues-container > #leagues > .league_content {
+  padding: 5px 6px 0px 0px;
+}
+
+.leagues-container #leagues .league_content .league_table .data-list .data-row.player-row.pinned {
+  top: 30rem;
+  width: 48.5rem;
+}
+
+/* Border above the pinned player row */
+.leagues-container #leagues .league_content .league_table.player-row-pinned {
+  margin-bottom: 2.35rem;
+}
+
+/* Button row padding adjustment */
+.leagues-container #leagues .league_content .league_buttons {
+  padding-left: 10px;
+  padding-right: 5px;
+}
+
+.leagues-container #leagues .league_content .league_table .data-list .head-row {
+  width: 774px;
+  position: fixed;
+  top: 70px;
+}
+.leagues-container #leagues .league_content .league_table .data-list {
+  padding-top: 31px;
+}
+
+.leagues-container #leagues .league_content .league_table .data-list .data-row.player-row {
+  top: 0px;
+}
