@@ -675,8 +675,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $popRecord.attr("data-pop-id", key);
 
       // Add background image as img element
-      const $bgImage = $(html`<img src="${popRecord.image}" class="pop-record-bg" />`);
-      $popRecord.append($bgImage);
+      const bgImage = html`<img src="${popRecord.image}" class="pop-record-bg" />`;
+      $popRecord.append(bgImage);
 
       // Add click handler for selection
       if (!isLocked) {
@@ -690,13 +690,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         });
 
         // Create icon (top left)
-        const $icon = $(
-          html`<img
-            src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png"
-            class="pop-icon"
-          />`,
-        );
-        $popRecord.append($icon);
+        const icon = html`<img
+          src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png"
+          class="pop-icon"
+        />`;
+
+        $popRecord.append(icon);
 
         const $lvl = $(html`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
         $popRecord.append($lvl);
@@ -742,6 +741,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       pop_data[popId].status = "pending_reward";
       pop_data[popId].remaining_time = 0;
       $popRecord.append('<div class="collect_notif"></div>');
+      timer.$dom_element.parent().parent().remove();
     });
   }
   async injectCustomStyles() {
