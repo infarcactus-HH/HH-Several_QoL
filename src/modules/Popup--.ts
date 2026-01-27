@@ -176,8 +176,12 @@ export default class PopupMinusMinus extends HHModule {
           "disabledPopups=PassReminder,Bundles,News; path=/; max-age=" + 60 * 60 * 24 * 30;
       }
     }
+    // TO MONITOR USEFULLNESS ONCE ITS PUSHED TO PROD
     if (location.pathname === "/home.html") {
       function patchClubs() {
+        if (!$("[rel='clubs']").attr("href")?.includes("javascript:void(0)")) {
+          return;
+        }
         const d = $("#club-cooldown");
         let u = 0;
         if (d.length && ((u = Math.round(parseInt(d.attr("timer")!, 10))), u > 0)) {
