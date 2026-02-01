@@ -41,11 +41,19 @@
   padding-left: 10px;
   padding-right: 5px;
 }
-
-.leagues-container #leagues .league_content .league_table .data-list .head-row {
-  width: 774px;
-  position: fixed;
-  top: 70px;
+@media (min-width: 1025px) {
+  .leagues-container #leagues .league_content .league_table .data-list .head-row {
+    width: 774px;
+    position: fixed;
+    top: 70px;
+  }
+}
+@media (max-width: 1025px) {
+  .leagues-container #leagues .league_content .league_table .data-list .head-row {
+    width: 774px;
+    position: fixed;
+    top: 99px;
+  }
 }
 .leagues-container #leagues .league_content .league_table .data-list {
   padding-top: 31px;
