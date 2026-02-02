@@ -56,6 +56,12 @@ export class PlayerStorageHandler {
   static getPlayerPentaDrillInfo(): StoredPlayerPentaDrillInfo | null {
     return GM_getValue(HH_UNIVERSE + "PlayerPentaDrillInfo", null);
   }
+  static setPlayerClubmatesIds(ids: number[]): void {
+    GM_setValue(HH_UNIVERSE + "PlayerClubmatesIds", ids);
+  }
+  static getPlayerClubmatesIds(): number[] {
+    return GM_getValue(HH_UNIVERSE + "PlayerClubmatesIds", []);
+  }
 }
 
 export class LeagueStorageHandler {

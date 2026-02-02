@@ -22,7 +22,7 @@ import PlayerPrestigeTracking from "./AlwaysRunningModules/PlayerPrestigeTrackin
 import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
 import StyleTweak from "./modules/StyleTweak";
 import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
-import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
+import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
 
 class Userscript {
   constructor() {
@@ -76,6 +76,7 @@ class Userscript {
     PlayerSeasonTracking,
     PlayerPrestigeTracking,
     PlayerDrillTracking,
+    PlayerClubTracking,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({

@@ -13,5 +13,6 @@ export type * from "./villains.d";
 export type * from "./penta_drill.d";
 export type * from "./sharedHero.d";
 export type * from "./penta_drill.d";
+export type * from "./clubs.d";
 
 export type * from "./items";
