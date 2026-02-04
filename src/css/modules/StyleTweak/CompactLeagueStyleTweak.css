@@ -62,3 +62,19 @@
 .leagues-container #leagues .league_content .league_table .data-list .data-row.player-row {
   top: 0px;
 }
+
+.data-column[column="change"] {
+  display: none !important;
+}
+
+.data-list .data-row .data-column[column="place"] {
+  width: 6.7rem;
+  margin-left: 0.4rem;
+  text-align: center;
+}
+
+.head-column[column="player_league_points"] .upDownArrows_mix_icn,
+.head-column[column="player_league_points"] .downArrow_mix_icn,
+.head-column[column="player_league_points"] .upArrow_mix_icn {
+  display: none;
+}
