@@ -2,6 +2,7 @@ import { Class } from "./common";
 
 export type sharedHeroIncomplete = {
   infos: sharedHeroInfos;
+  club: sharedHeroClub;
   currencies: sharedHeroCurrencies;
   energies: sharedHeroEnergies;
   update: (type: string, maybeNewValue: number, toDiscover?: any, unknown = false) => void; // HH++ bdsm doesn't allow you to input values for the last one
@@ -98,3 +99,27 @@ export type sharedHeroEnergiesType = {
   seconds_per_point: number;
   update_ts: number; // not sure
 };
+
+export type sharedHeroClub =
+  | [] // when not in a club
+  | {
+      chat_token: string;
+      co_leaders: number[];
+      created_at: string;
+      created_by: number;
+      ico: ""; // Never has been implemented ?
+      id_club: number;
+      is_co_leader: boolean;
+      is_leader: boolean;
+      leader_id: string; // contains the ID as string
+      leader_name: string;
+      level: string;
+      level_restriction: number | any;
+      max_members: number;
+      member_count: number;
+      name: string;
+      place: number; // place on the leaderboard
+      status: "request_only" | "open" | "closed";
+      total_contribution_points: number;
+      total_upgrades: number;
+    };
