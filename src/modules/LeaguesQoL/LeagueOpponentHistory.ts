@@ -16,14 +16,14 @@ export default class LeagueOpponentHistory implements SubModule {
   run() {
     this.injectCSS();
     this.leaguePlayerRecord = LeagueStorageHandler.getLeaguePlayerRecord();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table", () => {
+    HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table > .data-list", ($el) => {
       this.applyRankingsToOpponentLists();
       this.startObserverClickOnTable();
       this.applyRankingsToTable();
-    });
-    $(document).on("league:table-sorted", () => {
-      this.startObserverClickOnTable();
-      this.applyRankingsToTable();
+      new MutationObserver(() => {
+        this.startObserverClickOnTable();
+        this.applyRankingsToTable();
+      }).observe($el[0], { childList: true });
     });
   }
   private async injectCSS() {

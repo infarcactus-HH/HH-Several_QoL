@@ -23,6 +23,7 @@ import ChampionFightsFromMap from "./modules/ChampionFightsFromMap";
 import StyleTweak from "./modules/StyleTweak";
 import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
 import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
+import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 
 class Userscript {
   constructor() {
@@ -71,6 +72,7 @@ class Userscript {
     ChampionFightsFromMap,
   ];
   alwaysRunningModules = [
+    PlayerBadges,
     PlayerLeagueTracking,
     CustomCSS,
     PlayerSeasonTracking,

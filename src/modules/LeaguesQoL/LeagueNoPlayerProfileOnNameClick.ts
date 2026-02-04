@@ -9,8 +9,5 @@ export default class LeagueNoPlayerProfileOnNameClick implements SubModule {
         $("body").off("click", '.data-row.body-row .data-column[column="nickname"]');
       },
     );
-    $(document).on("league:table-sorted", () => {
-      $("body").off("click", '.data-row.body-row .data-column[column="nickname"]');
-    });
   }
 }

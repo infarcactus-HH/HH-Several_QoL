@@ -1,0 +1,24 @@
+.S_QoL-major-contributor {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/feature/badges/images/badges/major_contributor.png);
+  background-size: contain;
+}
+
+.S_QoL-leaderboard-badge {
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+.lead_table_view .S_QoL-leaderboard-badge {
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  vertical-align: bottom;
+  position: relative;
+  top: 2px;
+}
