@@ -102,17 +102,30 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 26 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 27 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>New Feature: PD Team preset (Under Laby team presets)</h2>
-            <p>Allows you to save and load your registered Penta Drill team compositions.</p>
-            <h3>Lust Arena Style Tweak</h3>
-            <p>An easter egg was added, maybe you'll get lucky and get it ?</p>
+            <h2>New Feature: In Game Badges</h2>
+            <p>
+              For people that have contributed significantly or for people that support me on
+              <a href="https://patreon.com/infarcactusHH" target="_blank" style="color : green"
+                >patreon</a
+              >
+            </p>
+            <h3>Small Feature : Compact League Style Tweak</h3>
+            <p>
+              This style tweak is not meant to be for everyone, mostly people in highest league
+              already
+            </p>
+            <h3>Small Feature: No confirm when buying League Energy (under leagues QoL)</h3>
+            <h3>
+              Fix: Shard Tracker having horizontal scrollbar when reaching a certain amount of
+              tracked ${GT.design.Girls}
+            </h3>
           </div>
         `);
         const $footer = $(html`
