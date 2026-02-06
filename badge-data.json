@@ -1,0 +1,19 @@
+{
+  "nutaku": {
+    "major-contributor": [
+      { "id": "3239327", "name": "infarctus" },
+      { "id": "4443024", "name": "xenicat / xnh0x" }
+    ],
+    "small-contributor": [],
+    "patreon-gold": [],
+    "patreon-silver": [{ "id": "4522765", "name": "x952htaed / alts", "until": 1772971200000 }],
+    "patreon-bronze": []
+  },
+  "hentai": {
+    "major-contributor": [{ "id": "583627", "name": "Arez" }],
+    "small-contributor": [],
+    "patreon-gold": [],
+    "patreon-silver": [],
+    "patreon-bronze": []
+  }
+}
