@@ -142,7 +142,7 @@ class Userscript {
   }
   run() {
     UpdateHandler.run();
-    this.alwaysRunningModules.forEach((module) => {
+    this.alwaysRunningModules.forEach(async (module) => {
       if (module.shouldRun()) {
         new module().run();
       }
