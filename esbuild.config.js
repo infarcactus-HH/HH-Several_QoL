@@ -41,8 +41,11 @@ const userscriptHeader = `// ==UserScript==
 // @grant        GM_info
 // @grant        GM_listValues
 // @grant        GM_cookie
+// @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
 // @run-at       document-end
+// @connect      github.com
+// @connect      raw.githubusercontent.com
 // ==/UserScript==`;
 
 // UserScript header plugin for esbuild, with Terser minification
@@ -338,7 +341,6 @@ const createHtmlMinifyPlugin = ({ minify, debug = false }) => ({
 });
 
 async function build() {
-
   // Ensure dist directory exists
   const distDir = path.join(__dirname, "dist");
   if (!fs.existsSync(distDir)) {

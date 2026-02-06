@@ -24,6 +24,7 @@ import StyleTweak from "./modules/StyleTweak";
 import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
 import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
 import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
+import { Several_QoL_Badges } from "./utils/Several_QoL";
 
 class Userscript {
   constructor() {
@@ -142,6 +143,7 @@ class Userscript {
   }
   run() {
     UpdateHandler.run();
+    Several_QoL_Badges.ensureCacheIsValid();
     this.alwaysRunningModules.forEach(async (module) => {
       if (module.shouldRun()) {
         new module().run();

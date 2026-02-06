@@ -7,6 +7,7 @@ import type {
   league_player_record,
   StoredPlayerPentaDrillInfo,
   StoredPentaDrillTeam,
+  BadgeDataCache,
 } from "../types";
 import { ReducedLoveRaids } from "../types/storage/love_raids";
 
@@ -22,6 +23,12 @@ export class GlobalStorageHandler {
   }
   static getShowUpdatePopup(): boolean {
     return GM_getValue("ShowUpdatePopup", true);
+  }
+  static setBadgeCache(cache: BadgeDataCache): void {
+    GM_setValue("S_QoL_badge_cache", cache);
+  }
+  static getBadgeCache(): BadgeDataCache | null {
+    return GM_getValue("S_QoL_badge_cache", null);
   }
 }
 

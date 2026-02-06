@@ -3,8 +3,23 @@
   background-size: contain;
 }
 
+.S_QoL-small-contributor {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/images/badges/small_contributor.png);
+  background-size: contain;
+}
+
+.S_QoL-patreon-gold {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/images/badges/patreon_gold.png);
+  background-size: contain;
+}
+
 .S_QoL-patreon-silver {
   background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/images/badges/patreon_silver.png);
+  background-size: contain;
+}
+
+.S_QoL-patreon-bronze {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/images/badges/patreon_bronze.png);
   background-size: contain;
 }
 
