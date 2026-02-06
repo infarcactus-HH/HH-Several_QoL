@@ -20,6 +20,16 @@ export class Several_QoL_Badges {
       });
     }
 
+    const patreonSilverSupporters = this.getPatreonSilverForGame();
+    if (patreonSilverSupporters.length > 0) {
+      configs.push({
+        type: "patreon-silver",
+        tooltip: "Patreon Silver Supporter",
+        cssClass: "S_QoL-patreon-silver",
+        userIds: patreonSilverSupporters,
+      });
+    }
+
     /* // Donors
     const donors = this.getDonorsForGame();
     if (donors.length > 0) {
@@ -56,6 +66,16 @@ export class Several_QoL_Badges {
       return [
         "583627", // Arez
       ];
+    }
+    return [];
+  }
+  private static getPatreonSilverForGame(): string[] {
+    if ("nutaku" === HH_UNIVERSE) {
+      let patreonSilverSupporters: string[] = [];
+      if (Date.now() <= 1772971200000) {
+        patreonSilverSupporters.push("4522765"); // x952htaed / alts
+      }
+      return patreonSilverSupporters;
     }
     return [];
   }

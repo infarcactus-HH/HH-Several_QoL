@@ -3,6 +3,11 @@
   background-size: contain;
 }
 
+.S_QoL-patreon-silver {
+  background-image: url(https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/images/badges/patreon_silver.png);
+  background-size: contain;
+}
+
 .S_QoL-leaderboard-badge {
   display: inline-block;
   margin-left: 4px;
