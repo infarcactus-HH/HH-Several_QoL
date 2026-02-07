@@ -41,3 +41,6 @@ You can support me on [patreon](https://patreon.com/infarcactusHH)
   <img width="338" height="334" alt="image" src="https://github.com/user-attachments/assets/969f4f41-3b41-4a33-b43a-88def5407304" />
 - Lust Arena : Style Tweak
 - Legendary & Mythic Villain shard drop tracker
+
+## Wanna talk about Several QoL or it's future ?
+Join HH++ discord server https://discord.gg/hchsquT4Er !
