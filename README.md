@@ -11,8 +11,11 @@ You need [TamperMonkey](https://www.tampermonkey.net) or a similar browser exten
 HH++ bdsm **strongly** recommended, but works 100% without and every feature will be on default
 
 ### Want to support my work ?
-
 You can support me on [patreon](https://patreon.com/infarcactusHH)
+
+
+## Wanna talk about Several QoL or it's future ?
+Join HH++ discord server https://discord.gg/hchsquT4Er !
 
 ## Main Features
 
@@ -41,6 +44,3 @@ You can support me on [patreon](https://patreon.com/infarcactusHH)
   <img width="338" height="334" alt="image" src="https://github.com/user-attachments/assets/969f4f41-3b41-4a33-b43a-88def5407304" />
 - Lust Arena : Style Tweak
 - Legendary & Mythic Villain shard drop tracker
-
-## Wanna talk about Several QoL or it's future ?
-Join HH++ discord server https://discord.gg/hchsquT4Er !
