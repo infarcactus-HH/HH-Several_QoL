@@ -71,3 +71,23 @@ body > div#contains_all > header div.currency {
 body > div#contains_all > header .script-booster-status[href*="shop"] {
   margin-left: 6px;
 }
+
+@media (max-width: 1025px) {
+  body > div#contains_all > header div.square-avatar-wrapper[rel="avatar"] {
+    margin: 0;
+  }
+  body > div#contains_all > header div[rel="xp"] .link-member-progression div[rel="level"] {
+    left: 120px;
+  }
+  body > div#contains_all > header div.energy_counter[type="quest"] a .bar-wrapper,
+  body > div#contains_all > header div.energy_counter[type="fight"] a .bar-wrapper {
+    margin-left: 10px;
+  }
+  body > div#contains_all > nav > .square_blue_btn[rel="open"] {
+    right: 0px;
+  }
+  .sqol-pop-bar-container {
+    margin-left: 0px;
+    margin-top: 15px;
+  }
+}
