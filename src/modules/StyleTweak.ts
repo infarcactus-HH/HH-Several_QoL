@@ -26,7 +26,7 @@ type StyleTweak_configSchema = {
     },
     {
       key: "compactLeagueStyleTweak";
-      label: "Compact League View";
+      label: "<span tooltip='This module is meant to be used alongside Leagues++ & League Tracker'>Compact League View</span>";
       default: false;
     },
   ];
@@ -55,7 +55,8 @@ export default class StyleTweak extends HHModule {
       },
       {
         key: "compactLeagueStyleTweak",
-        label: "Compact League View",
+        label:
+          "<span tooltip='This module is meant to be used alongside Leagues++ & League Tracker'>Compact League View</span>",
         default: false,
       },
     ],
