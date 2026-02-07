@@ -102,30 +102,26 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 27 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 28 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>New Feature: In Game Badges</h2>
+            <h2>[HH++ BDSM Patch] PoP Bar</h2>
             <p>
-              For people that have contributed significantly or for people that support me on
+              I've been asked a lot of times to add this since HH++ removed it temporarily, so here
+              it is!
+            </p>
+            <h3>In Game Badges</h3>
+            <p>
+              If you missed last update, I added badges for
               <a href="https://patreon.com/infarcactusHH" target="_blank" style="color : green"
                 >patreon</a
               >
+              contributors & script contributors
             </p>
-            <h3>Small Feature : Compact League Style Tweak</h3>
-            <p>
-              This style tweak is not meant to be for everyone, mostly people in highest league
-              already
-            </p>
-            <h3>Small Feature: No confirm when buying League Energy (under leagues QoL)</h3>
-            <h3>
-              Fix: Shard Tracker having horizontal scrollbar when reaching a certain amount of
-              tracked ${GT.design.Girls}
-            </h3>
           </div>
         `);
         const $footer = $(html`
