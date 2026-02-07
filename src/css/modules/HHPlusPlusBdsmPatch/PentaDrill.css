@@ -1,5 +1,0 @@
-/* Make the girl in front so that you can click on her */
-#rewards_tab_container > #girls_holder {
-  z-index: 0;
-  width: 23%;
-}
