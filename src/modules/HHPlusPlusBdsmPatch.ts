@@ -44,11 +44,11 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
   }
   private addPoPBar() {
     const hhTrackedTimes = JSON.parse(localStorage.getItem("HHPlusPlusTrackedTimes") || "{}");
-    if (!hhTrackedTimes.pop || !hhTrackedTimes.popDuration) {
+    if (hhTrackedTimes.pop === undefined || hhTrackedTimes.popDuration === undefined) {
       return;
     }
     const remainingTimeSec = hhTrackedTimes.pop - server_now_ts;
-    const durationTimeSec = hhTrackedTimes.popDuration;
+    const durationTimeSec = Math.max(hhTrackedTimes.popDuration, 1); // Avoid division by zero
 
     const DateNowInit = Date.now();
 
