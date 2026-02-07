@@ -31,6 +31,7 @@
   height: 30px;
   min-width: 30px;
   min-height: 30px;
+  cursor: pointer;
 }
 
 .lead_table_view .S_QoL-leaderboard-badge {
