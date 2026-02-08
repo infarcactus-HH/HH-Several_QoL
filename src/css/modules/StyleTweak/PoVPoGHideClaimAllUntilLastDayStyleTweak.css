@@ -4,3 +4,6 @@
 .potions-paths-tier.claim-all-rewards {
   width: 19.5rem;
 }
+.potions-paths-tier.claim-all-rewards.pass-active {
+  width: 16rem;
+}
