@@ -24,7 +24,7 @@ import StyleTweak from "./modules/StyleTweak";
 import PlayerDrillTracking from "./AlwaysRunningModules/PlayerDrillTracking";
 import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
 import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
-import { Several_QoL_Badges } from "./utils/Several_QoL";
+import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 
 class Userscript {

@@ -2,7 +2,7 @@ import { AlwaysRunningModule } from "../base";
 import { PlayerBadgesCss } from "../css/AlwaysRunningModules";
 import { labyLeaderboardXHRResponse } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { Several_QoL_Badges } from "../utils/Several_QoL";
+import { Several_QoL_Badges } from "../utils/Several_QoL_Badges";
 
 export default class PlayerBadges extends AlwaysRunningModule {
   static shouldRun() {
