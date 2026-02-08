@@ -11,7 +11,7 @@ export declare global {
       hc_confirm: (price: string | number, callback: () => void) => void; // opens the confirm popup for premium spending
       hh_ajax: (options: { [key: string]: any }, callback: (response: any) => void) => void; // jQuery ajax wrapper for HH games
       navigate(url: string): void; // navigate to a new page
-      getDocumentHref(url: string): string; // get the full URL for a relative URL (useful for completing sessIds)
+      getDocumentHref(url: string): string; // useful for completing sessIds
       objectivePopup: any;
       loadGirlImageSrc(
         img: JQuery<HTMLElement>,
