@@ -20,7 +20,7 @@ export default class ShardTracker extends HHModule {
   readonly configSchema = {
     baseKey: "villainShardTracker",
     label:
-      "<span tooltip='Display is still a WIP'>Tracks your Legendary & Mythic drops from Villains</span>",
+      "<span tooltip='When on a villain Page, top right of the villain click the book'>Tracks your Legendary & Mythic drops from Villains</span>",
     default: true,
   };
 
