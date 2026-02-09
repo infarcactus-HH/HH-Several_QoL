@@ -1,5 +1,5 @@
 import { AlwaysRunningModule } from "../base";
-import { PlayerBadgesCss } from "../css/AlwaysRunningModules";
+import { PlayerBadgesCss, PlayerBadges_TighterLeaderboards } from "../css/AlwaysRunningModules";
 import { labyLeaderboardXHRResponse } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { Several_QoL_Badges } from "../utils/Several_QoL_Badges";
@@ -73,7 +73,7 @@ export default class PlayerBadges extends AlwaysRunningModule {
       console.log("LeaderboardTweaks detected AJAX:", settings.data);
       if (settings.data.startsWith("action=labyrinth_leaderboard")) {
         HHPlusPlusReplacer.doWhenSelectorAvailable(
-          "#leaderboard_list > .leaderboard_row:has(.leaderboard-nickname-align)",
+          "#leaderboard_holder:has(#outer-hero-row) #leaderboard_list > .leaderboard_row",
           ($el) => {
             this.addLabyrinthLeaderboardBadges(
               $el,
@@ -207,5 +207,6 @@ export default class PlayerBadges extends AlwaysRunningModule {
   }
   private async injectCSS() {
     GM_addStyle(PlayerBadgesCss);
+    GM_addStyle(PlayerBadges_TighterLeaderboards);
   }
 }

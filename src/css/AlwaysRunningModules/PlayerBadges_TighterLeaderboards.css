@@ -1,0 +1,64 @@
+#leaderboard_holder {
+  top: 40px !important;
+}
+
+#leaderboard_holder .leaderboard_list {
+  height: 25.075rem;
+}
+
+#leaderboard_holder .leaderboard_header {
+  margin-bottom: 0px;
+}
+
+#leaderboard_holder #leaderboard_list .leaderboard_row {
+  padding: 0 2px;
+  margin: 0;
+  height: 2.276rem;
+}
+#pov_leaderboard_tab_container .leaderboard_header > div:nth-child(2),
+#pog_leaderboard_tab_container .leaderboard_header > div:nth-child(2) {
+  width: 48.5% !important;
+}
+
+body[page="season"] .leaderboard_header > div:nth-child(2) {
+  width: 35% !important;
+}
+body[page="season"] .leaderboard_header > div:nth-child(3) {
+  width: 18% !important;
+}
+body[page="season"] .leaderboard_header > div:nth-child(4) {
+  width: 15.5% !important;
+}
+
+body[page="season"] #leaderboard_holder #outer-hero-row,
+body[page="penta_drill"] #leaderboard_holder #outer-hero-row,
+body[page="pantheon"] #leaderboard_holder #outer-hero-row {
+  margin-top: 2px;
+}
+
+body[page="penta_drill"] .leaderboard-nickname-align {
+  width: 40% !important;
+}
+
+body[page="pantheon"] #leaderboard_tab_container > .leaderboard_bgr {
+  height: 100%;
+}
+
+.labyrinth_leaderboard-container #leaderboard_holder {
+  margin-top: 0.2rem !important;
+}
+.labyrinth-panel #leaderboard_holder .leaderboard_list {
+  height: 23.6rem !important;
+}
+
+.labyrinth-panel #leaderboard_holder #outer-hero-row {
+  margin-top: 0 !important;
+}
+
+.labyrinth-panel #leaderboard_list .leaderboard_row {
+  height: 2.176rem !important;
+}
+
+.labyrinth_leaderboard-container .labyrinth-filters {
+  padding-bottom: 0.2rem !important;
+}
