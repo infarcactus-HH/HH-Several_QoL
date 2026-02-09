@@ -121,8 +121,6 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
 
         // Update tooltip every second
         const updateTooltip = () => {
-          console.log("Updating PoP tooltip");
-
           const hhTrackedTimesUpdated = JSON.parse(
             localStorage.getItem("HHPlusPlusTrackedTimes") || "{}",
           );
