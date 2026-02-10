@@ -38,7 +38,7 @@ export type GirlArmorItem = {
       release_date: string; //"1900-01-01";
       subtype: number; //6;
       wearer: "girl";
-      weight: 1 | (number & {}); // ??????
+      weight: 1; // ??????
     };
     slot_index: 1 | 2 | 3 | 4 | 5 | 6;
     type: "girl_armor";

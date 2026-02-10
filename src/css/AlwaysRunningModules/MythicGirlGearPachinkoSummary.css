@@ -1,0 +1,11 @@
+#qol-mythic-armor-drops {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-image: linear-gradient(to bottom, #ec0039, #083991);
+  display: none;
+}
+
+.playing-zone[type-panel="equipment"] #qol-mythic-armor-drops {
+  display: block;
+}
