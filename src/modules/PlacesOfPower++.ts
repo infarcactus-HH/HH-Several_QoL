@@ -763,7 +763,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       byClass[1].push({ id: g.id_girl, carac: g.carac1 });
       byClass[2].push({ id: g.id_girl, carac: g.carac2 });
       byClass[3].push({ id: g.id_girl, carac: g.carac3 });
-      if (g.id_places_of_power != null) {
+      if (g.id_places_of_power != null && g.id_places_of_power !== 0) {
         if (!this.currentPoPGirls[g.id_places_of_power]) {
           this.currentPoPGirls[g.id_places_of_power] = [];
         }
