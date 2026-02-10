@@ -1,8 +1,10 @@
+import { HeroClass } from "./common";
+
 export interface OpponentFighter {
   player: {
     burn: null;
     chance: number;
-    class: Class;
+    class: HeroClass;
     club: {
       id_club: number;
       name: string;

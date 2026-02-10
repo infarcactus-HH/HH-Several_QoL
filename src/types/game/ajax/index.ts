@@ -1,3 +1,3 @@
 export * from "./common";
-export * from "./villain.d";
+export * from "./villain";
 export * from "./pachinko";

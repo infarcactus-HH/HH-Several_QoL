@@ -1,4 +1,4 @@
-import { GirlID, GirlRarity } from "../GameTypes";
+import { Rarity, GirlID, HeroClass } from ".";
 
 export type GirlRarity = Rarity | "starting";
 

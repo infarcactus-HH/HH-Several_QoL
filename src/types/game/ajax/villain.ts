@@ -1,4 +1,4 @@
-import { GradeSkins, Shard, BasicRewards, ObjectivePoints, HeroChangesUpdate } from "../";
+import { GradeSkins, Shard, BasicRewards, ObjectivePoints, HeroChangesUpdate } from "..";
 
 export interface DoBattlesTrollsResponse {
   battle_result: "hero_won" | "opponent_won";

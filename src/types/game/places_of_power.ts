@@ -1,3 +1,5 @@
+import { GirlID, HeroClass } from ".";
+
 export interface global_pop_hero_girls_incomplete {
   id_girl: GirlID;
   carac1: number;
@@ -28,11 +30,8 @@ export interface PlacesOfPowerReward {
 
 export interface PlacesOfPowerData {
   base_power: number;
-  class: Class;
+  class: HeroClass;
   criteria: "carac_1" | "carac_2" | "carac_3";
-  // XXX: carac_1 missing?
-  carac_2;
-  carac_3;
   description: string;
   duration: number | null;
   ends_in: number | null;
