@@ -26,6 +26,7 @@ import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
 import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
+import MythicGirlGearPachinkoSummary from "./AlwaysRunningModules/MythicGirlGearPachinkoSummary";
 
 class Userscript {
   constructor() {
@@ -82,6 +83,7 @@ class Userscript {
     PlayerPrestigeTracking,
     PlayerDrillTracking,
     PlayerClubTracking,
+    MythicGirlGearPachinkoSummary,
   ];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
