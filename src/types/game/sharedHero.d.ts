@@ -1,4 +1,4 @@
-import { Class } from "./common";
+import { HeroClass } from "./common";
 
 export type sharedHeroIncomplete = {
   infos: sharedHeroInfos;
@@ -33,7 +33,7 @@ export type sharedHeroInfos = {
     primary_carac_amount: number;
     secondary_caracs_sum: number;
   };
-  class: Class;
+  class: HeroClass;
   club_cooldown_ts: number; // time until can join back a club, can be negative
   harem_endurance: number;
   hc_confirm: boolean;

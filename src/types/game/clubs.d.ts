@@ -1,8 +1,8 @@
-import { Class } from "./common";
+import { HeroClass } from "./common";
 
 export type membersList = Array<{
   avatar: number;
-  class: Class;
+  class: HeroClass;
   contribution_points: number;
   count_girls: number;
   country: string;

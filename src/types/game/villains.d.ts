@@ -7,7 +7,7 @@ import {
   ticketItem,
   orbsItem,
   bulbItem,
-  Class,
+  HeroClass,
   GirlID,
   GirlRarity,
   ObjectivePoints,
@@ -41,7 +41,7 @@ export interface Shard {
     ico_url: string; //'https://hh.hh-content.com/pictures/girls_elements/Sensual.png';
     flavor: string; //'Sensual';
   };
-  girl_class: Class;
+  girl_class: HeroClass;
   grade_offsets: {
     static: Array<number>; // [238, 282, 150, 280];
     animated: Array<number>; //  [238, 282, 150, 280];
