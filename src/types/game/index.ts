@@ -17,3 +17,4 @@ export type * from "./clubs.d";
 export type * from "./laby.d";
 
 export type * from "./items";
+export type * from "./ajax";

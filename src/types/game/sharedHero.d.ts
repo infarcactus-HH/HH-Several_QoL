@@ -86,7 +86,7 @@ export type sharedHeroEnergies = {
   challenge: sharedHeroEnergiesType;
   kiss: sharedHeroEnergiesType;
   worship: sharedHeroEnergiesType;
-  reply?: sharedHeroEnergiesType;
+  reply?: sharedHeroEnergiesType; // replies don't exist on every game
   drill: sharedHeroEnergiesType;
 };
 

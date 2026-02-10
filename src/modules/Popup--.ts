@@ -135,7 +135,6 @@ export default class PopupMinusMinus extends HHModule {
           return; // blocked by override
         }
       }
-      console.log("Allowed popup", t);
       return originalPopupQueuManagerAdd.call(this, { popup: t });
     };
 
@@ -153,7 +152,6 @@ export default class PopupMinusMinus extends HHModule {
           return; // blocked by override
         }
       }
-      console.log("Allowed reward popup", t);
       return originalRewardHandlePopup.call(this, t);
     };
   }
