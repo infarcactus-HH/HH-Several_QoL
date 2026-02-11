@@ -1,6 +1,12 @@
 import { HeroClass, Rarity } from "../common";
 
-export type GirlArmorItem = {
+export type GirlArmorItem =
+  | GirlArmorItemCommonRare
+  | GirlArmorItemEpic
+  | GirlArmorItemLegendary
+  | GirlArmorItemMythic;
+
+type GirlArmorItemBase = {
   type: "girl_armor";
   value: {
     armor: {
@@ -11,7 +17,6 @@ export type GirlArmorItem = {
       defense: number;
       ego: number;
       id_girl_item_armor: 1 | 2 | 3 | 4 | 5;
-      rarity: Rarity;
     };
     carac: {
       carac1: number;
@@ -27,8 +32,6 @@ export type GirlArmorItem = {
     id_member: number;
     id_variation: number;
     level: 1;
-    rarity: Rarity;
-    resonance_bonuses: []; // ONLY IN PACHINKO RESPONSE IT LOOKS LIKE THIS
     skin: {
       ico: string;
       id_item_skin: number;
@@ -42,40 +45,109 @@ export type GirlArmorItem = {
     };
     slot_index: 1 | 2 | 3 | 4 | 5 | 6;
     type: "girl_armor";
-    // need more testing for variation ???
-    variation: GirlArmorVariation;
   };
 };
 
-export type GirlArmorVariation =
-  | null
-  | {
-      class: HeroClass;
-      class_resonance: "ego";
-      element: null;
-      element_resonance: null;
-      figure: null;
-      figure_resonance: null;
-      id_variation: number; //1;
+type GirlArmorItemCommonRare = GirlArmorItemBase & {
+  value: {
+    armor: {
+      rarity: Extract<Rarity, "common" | "rare">;
+    };
+  };
+  rarity: Extract<Rarity, "common" | "rare">;
+  resonance_bonuses: [];
+  variation: null;
+};
+
+type GirlArmorItemEpic = GirlArmorItemBase & {
+  value: {
+    armor: {
       rarity: Extract<Rarity, "epic">;
-    }
-  | {
-      class: HeroClass;
-      class_resonance: "ego";
-      element: string; //null;
-      element_resonance: "defense";
-      figure: null;
-      figure_resonance: null;
-      id_variation: number; //23;
+    };
+  };
+  rarity: Extract<Rarity, "epic">;
+  resonance_bonuses: {
+    class: {
+      identifier: "1" | "2" | "3";
+      resonance: "ego";
+      bonus: number;
+    };
+  };
+  variation: {
+    class: HeroClass;
+    class_resonance: "ego";
+    element: null;
+    element_resonance: null;
+    figure: null;
+    figure_resonance: null;
+    id_variation: number; //1;
+    rarity: Extract<Rarity, "epic">;
+  };
+};
+
+type GirlArmorItemLegendary = GirlArmorItemBase & {
+  value: {
+    armor: {
       rarity: Extract<Rarity, "legendary">;
-    }
-  | {
-      class: HeroClass;
-      class_resonance: "ego";
-      element: string; //null;
-      element_resonance: "defense";
-      figure: number;
-      figure_resonance: "damage";
-      id_variation: number; //41;
+    };
+  };
+  rarity: Extract<Rarity, "legendary">;
+  resonance_bonuses: {
+    class: {
+      identifier: "1" | "2" | "3";
+      resonance: "ego";
+      bonus: number;
+    };
+    element: {
+      identifier: string; //null;
+      resonance: "defense";
+      bonus: number;
+    };
+  };
+  variation: {
+    class: HeroClass;
+    class_resonance: "ego";
+    element: string; //null;
+    element_resonance: "defense";
+    figure: null;
+    figure_resonance: null;
+    id_variation: number; //23;
+    rarity: Extract<Rarity, "legendary">;
+  };
+};
+
+type GirlArmorItemMythic = GirlArmorItemBase & {
+  value: {
+    armor: {
       rarity: Extract<Rarity, "mythic">;
     };
+  };
+  rarity: Extract<Rarity, "mythic">;
+  resonance_bonuses: {
+    class: {
+      identifier: "1" | "2" | "3";
+      resonance: "ego";
+      bonus: number;
+    };
+    element: {
+      identifier: string;
+      resonance: "defense";
+      bonus: number;
+    };
+    figure: {
+      identifier: string;
+      resonance: "damage";
+      bonus: number;
+    };
+  };
+  variation: {
+    class: HeroClass;
+    class_resonance: "ego";
+    element: string; //null;
+    element_resonance: "defense";
+    figure: number;
+    figure_resonance: "damage";
+    id_variation: number; //41;
+    rarity: Extract<Rarity, "mythic">;
+  };
+};
