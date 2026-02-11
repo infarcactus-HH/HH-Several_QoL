@@ -1,4 +1,5 @@
 import { HHModule } from "../base";
+import { Objective } from "../types";
 
 export default class PopupPlusPlus extends HHModule {
   readonly configSchema = {
@@ -17,7 +18,7 @@ export default class PopupPlusPlus extends HHModule {
     this.hasRun = true;
     GM_addStyle("#toast-popups {display:inherit!important;}");
     let lastPoints: Record<string, Record<string, number>> = {};
-    let timeOut: NodeJS.Timeout | null = null;
+    let timeOut: ReturnType<typeof setTimeout> | null = null;
     delete shared.general.objectivePopup.show;
     shared.general.objectivePopup.show = function (t: any) {
       if (this.LastPoints == undefined) {
@@ -45,12 +46,7 @@ export default class PopupPlusPlus extends HHModule {
     };
     function customPopup(_objectivePopupthis: any, objective_points: any) {
       Object.keys(objective_points).map((n: string) => {
-        const currObjective = objective_points[n] as {
-          // XXX: Objective from "../GameTypes"
-          name: string;
-          points_gained: number;
-          title: string;
-        };
+        const currObjective = objective_points[n] as Objective;
         if (!lastPoints[currObjective.title]) {
           lastPoints[currObjective.title] = {};
         }
@@ -84,7 +80,7 @@ export default class PopupPlusPlus extends HHModule {
       $("#toast-popups");
       $("#toast-popups").append($popup);
       $("#toast-popups").css("display", "unset");
-      if (timeOut) {
+      if (timeOut !== null) {
         clearTimeout(timeOut);
         timeOut = null;
       }
