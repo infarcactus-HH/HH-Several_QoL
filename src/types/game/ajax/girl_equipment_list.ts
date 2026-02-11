@@ -1,4 +1,3 @@
-import { TODO } from "../../base";
 import { GirlArmorItem } from "../items";
 
 export type GirlEquipmentListResponse = {
