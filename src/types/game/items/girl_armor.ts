@@ -29,7 +29,7 @@ type GirlArmorItemBase = {
   id_item_skin: number;
   id_member: number;
   id_variation: number;
-  level: 1;
+  level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
   skin: {
     ico: string;
     id_item_skin: number;
