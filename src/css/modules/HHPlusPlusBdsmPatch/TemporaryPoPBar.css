@@ -91,3 +91,8 @@ body > div#contains_all > header .script-booster-status[href*="shop"] {
     margin-top: 15px;
   }
 }
+
+/* Move Promotion on fists to be correctly under fists counter */
+html body > div#contains_all > header .promo_fight_discount_text {
+  left: 225px;
+}
