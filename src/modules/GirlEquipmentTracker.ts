@@ -1,0 +1,91 @@
+import { HHModule } from "../base";
+import { GirlArmorItem, GirlEquipmentListResponse } from "../types";
+
+type StoredEquipment = {
+  slotIndex: GirlArmorItem["slot_index"];
+  figure: number | null;
+  level: GirlArmorItem["level"];
+};
+
+export default class GirlEquipmentTracker extends HHModule {
+  readonly configSchema = {
+    baseKey: "girlEquipmentTracker",
+    label: "Girl Equipment Tracker",
+    default: true,
+  };
+
+  private equipmentData: StoredEquipment[] = [];
+
+  static shouldRun() {
+    return "/waifu.html" === location.pathname;
+  }
+
+  run() {
+    if (this.hasRun || !GirlEquipmentTracker.shouldRun()) {
+      return;
+    }
+    this.hasRun = true;
+    this.fetchAllSlots();
+  }
+
+  private async fetchAllSlots() {
+    const slots: GirlArmorItem["slot_index"][] = [1, 2, 3, 4, 5, 6];
+    for (const slot of slots) {
+      await this.fetchEquipmentWithPagination(slot);
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between slot fetches to avoid overwhelming the server
+    }
+    console.log("All equipment data collected:", this.equipmentData);
+  }
+
+  id_girl_item_armor: any = [];
+
+  private fetchEquipmentWithPagination(
+    slotIndex: GirlArmorItem["slot_index"],
+    page: number = 1,
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      const params = {
+        action: "girl_equipment_list",
+        slot_index: slotIndex,
+        sort_by: "rarity",
+        sorting_order: "desc",
+        page: page,
+        id_girl: 1,
+      };
+
+      shared.general.hh_ajax(params, (response: GirlEquipmentListResponse) => {
+        response.items.forEach((item) => {
+          if (!this.id_girl_item_armor.includes(item.id_girl_item_armor)) {
+            this.id_girl_item_armor.push(item.id_girl_item_armor);
+            console.log("New found:", this.id_girl_item_armor);
+          }
+        });
+        const mythicItems = response.items.filter((item) => item.rarity === "mythic");
+        // Store the items from this page
+        mythicItems.forEach((item) => {
+          this.equipmentData.push({
+            slotIndex: item.slot_index,
+            figure: item.variation?.figure || null,
+            level: item.level,
+          });
+        });
+
+        // Check if all items are mythic, if so fetch the next page
+        if (mythicItems.length === response.items.length && response.items.length > 0) {
+          // Fetch next page for this slot
+          this.fetchEquipmentWithPagination(slotIndex, page + 1).then(resolve);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  getEquipmentBySlot(slotIndex: GirlArmorItem["slot_index"]): StoredEquipment[] {
+    return this.equipmentData.filter((item) => item.slotIndex === slotIndex);
+  }
+
+  getAllEquipment(): StoredEquipment[] {
+    return this.equipmentData;
+  }
+}

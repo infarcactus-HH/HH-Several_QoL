@@ -27,6 +27,7 @@ import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlGearPachinkoSummary from "./AlwaysRunningModules/MythicGirlGearPachinkoSummary";
+import GirlEquipmentTracker from "./modules/GirlEquipmentTracker";
 
 class Userscript {
   constructor() {
@@ -74,6 +75,7 @@ class Userscript {
     ShardTracker,
     ChampionFightsFromMap,
     HHPlusPlusBdsmPatch,
+    GirlEquipmentTracker,
   ];
   alwaysRunningModules = [
     PlayerBadges,
