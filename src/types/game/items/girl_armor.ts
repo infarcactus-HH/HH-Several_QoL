@@ -30,7 +30,7 @@ type GirlArmorItemBase = {
     defense: number;
     ego: number;
   };
-  id_girl_armor: string | number;
+  id_girl_armor: string | number; // Pretty sure it's a string only in pachinko response
   id_girl_item_armor: 1 | 2 | 3 | 4 | 5;
   id_item_skin: number;
   id_member: number;
