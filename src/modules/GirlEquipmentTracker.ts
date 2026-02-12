@@ -6,7 +6,6 @@ type StoredEquipment = {
   slotIndex: GirlArmorItem["slot_index"];
   figure: number | null;
   level: GirlArmorItem["level"];
-  id: number;
 };
 
 export default class GirlEquipmentTracker extends HHModule {
@@ -17,14 +16,6 @@ export default class GirlEquipmentTracker extends HHModule {
   };
 
   private equipmentData: StoredEquipment[] = [];
-  pushEquipmentData(equip: GirlArmorItemMythic & { id_girl_armor: number }) {
-    this.equipmentData.push({
-      slotIndex: equip.slot_index,
-      figure: equip.variation?.figure || null,
-      level: equip.level,
-      id: equip.id_girl_armor,
-    });
-  }
 
   static shouldRun() {
     return "/waifu.html" === location.pathname;
@@ -56,7 +47,11 @@ export default class GirlEquipmentTracker extends HHModule {
       if (girlData.armor.length > 0) {
         girlData.armor.forEach((armorItem) => {
           if (armorItem.rarity === "mythic") {
-            this.pushEquipmentData(armorItem);
+            this.equipmentData.push({
+              slotIndex: armorItem.slot_index,
+              figure: armorItem.variation.figure,
+              level: armorItem.level,
+            });
           }
         });
       }
@@ -91,7 +86,11 @@ export default class GirlEquipmentTracker extends HHModule {
         const mythicItems = response.items.filter((item) => item.rarity === "mythic");
         // Store the items from this page
         mythicItems.forEach((item) => {
-          this.pushEquipmentData(item);
+          this.equipmentData.push({
+            slotIndex: item.slot_index,
+            figure: item.variation.figure,
+            level: item.level,
+          });
         });
 
         // Check if all items are mythic, if so fetch the next page

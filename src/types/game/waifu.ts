@@ -1,5 +1,5 @@
-import { GirlArmorItem } from "./items";
+import { GirlArmorItemEquipped } from "./items";
 
 export type girls_data_listIncomplete = Array<{
-  armor: [] | Array<GirlArmorItem & { id_girl_armor: number }>;
+  armor: [] | Array<GirlArmorItemEquipped>;
 }>;
