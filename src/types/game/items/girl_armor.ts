@@ -24,7 +24,7 @@ type GirlArmorItemBase = {
     defense: number;
     ego: number;
   };
-  id_girl_armor: string; //"341938729";
+  id_girl_armor: string | number;
   id_girl_item_armor: 1 | 2 | 3 | 4 | 5;
   id_item_skin: number;
   id_member: number;
@@ -45,7 +45,7 @@ type GirlArmorItemBase = {
   type: "girl_armor";
 };
 
-type GirlArmorItemCommonRare = GirlArmorItemBase & {
+export type GirlArmorItemCommonRare = GirlArmorItemBase & {
   armor: {
     rarity: Extract<Rarity, "common" | "rare">;
   };
@@ -54,7 +54,7 @@ type GirlArmorItemCommonRare = GirlArmorItemBase & {
   variation: null;
 };
 
-type GirlArmorItemEpic = GirlArmorItemBase & {
+export type GirlArmorItemEpic = GirlArmorItemBase & {
   armor: {
     rarity: Extract<Rarity, "epic">;
   };
@@ -78,7 +78,7 @@ type GirlArmorItemEpic = GirlArmorItemBase & {
   };
 };
 
-type GirlArmorItemLegendary = GirlArmorItemBase & {
+export type GirlArmorItemLegendary = GirlArmorItemBase & {
   armor: {
     rarity: Extract<Rarity, "legendary">;
   };
@@ -107,7 +107,7 @@ type GirlArmorItemLegendary = GirlArmorItemBase & {
   };
 };
 
-type GirlArmorItemMythic = GirlArmorItemBase & {
+export type GirlArmorItemMythic = GirlArmorItemBase & {
   armor: {
     rarity: Extract<Rarity, "mythic">;
   };

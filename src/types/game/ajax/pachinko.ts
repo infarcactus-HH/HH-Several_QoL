@@ -17,7 +17,7 @@ export type EquipmentPachinko_AjaxResponse = {
     };
     data: {
       loot: true;
-      rewards: Array<{ type: "girl_armor"; value: GirlArmorItem }>;
+      rewards: Array<{ type: "girl_armor"; value: GirlArmorItem & { id_girl_armor: string } }>;
     };
     heroChangesUpdate: HeroChangesCurrencyUpdate & OrbChangesUpdate;
     is_free: boolean;
