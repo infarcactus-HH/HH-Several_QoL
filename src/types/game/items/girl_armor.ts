@@ -53,10 +53,10 @@ type GirlArmorItemCommonRare = GirlArmorItemBase & {
     armor: {
       rarity: Extract<Rarity, "common" | "rare">;
     };
+    rarity: Extract<Rarity, "common" | "rare">;
+    resonance_bonuses: [];
+    variation: null;
   };
-  rarity: Extract<Rarity, "common" | "rare">;
-  resonance_bonuses: [];
-  variation: null;
 };
 
 type GirlArmorItemEpic = GirlArmorItemBase & {
@@ -64,24 +64,24 @@ type GirlArmorItemEpic = GirlArmorItemBase & {
     armor: {
       rarity: Extract<Rarity, "epic">;
     };
-  };
-  rarity: Extract<Rarity, "epic">;
-  resonance_bonuses: {
-    class: {
-      identifier: "1" | "2" | "3";
-      resonance: "ego";
-      bonus: number;
-    };
-  };
-  variation: {
-    class: HeroClass;
-    class_resonance: "ego";
-    element: null;
-    element_resonance: null;
-    figure: null;
-    figure_resonance: null;
-    id_variation: number; //1;
     rarity: Extract<Rarity, "epic">;
+    resonance_bonuses: {
+      class: {
+        identifier: "1" | "2" | "3";
+        resonance: "ego";
+        bonus: number;
+      };
+    };
+    variation: {
+      class: HeroClass;
+      class_resonance: "ego";
+      element: null;
+      element_resonance: null;
+      figure: null;
+      figure_resonance: null;
+      id_variation: number; //1;
+      rarity: Extract<Rarity, "epic">;
+    };
   };
 };
 
@@ -90,29 +90,29 @@ type GirlArmorItemLegendary = GirlArmorItemBase & {
     armor: {
       rarity: Extract<Rarity, "legendary">;
     };
-  };
-  rarity: Extract<Rarity, "legendary">;
-  resonance_bonuses: {
-    class: {
-      identifier: "1" | "2" | "3";
-      resonance: "ego";
-      bonus: number;
-    };
-    element: {
-      identifier: string; //null;
-      resonance: "defense";
-      bonus: number;
-    };
-  };
-  variation: {
-    class: HeroClass;
-    class_resonance: "ego";
-    element: string; //null;
-    element_resonance: "defense";
-    figure: null;
-    figure_resonance: null;
-    id_variation: number; //23;
     rarity: Extract<Rarity, "legendary">;
+    resonance_bonuses: {
+      class: {
+        identifier: "1" | "2" | "3";
+        resonance: "ego";
+        bonus: number;
+      };
+      element: {
+        identifier: string; //null;
+        resonance: "defense";
+        bonus: number;
+      };
+    };
+    variation: {
+      class: HeroClass;
+      class_resonance: "ego";
+      element: string; //null;
+      element_resonance: "defense";
+      figure: null;
+      figure_resonance: null;
+      id_variation: number; //23;
+      rarity: Extract<Rarity, "legendary">;
+    };
   };
 };
 
@@ -121,33 +121,33 @@ type GirlArmorItemMythic = GirlArmorItemBase & {
     armor: {
       rarity: Extract<Rarity, "mythic">;
     };
-  };
-  rarity: Extract<Rarity, "mythic">;
-  resonance_bonuses: {
-    class: {
-      identifier: "1" | "2" | "3";
-      resonance: "ego";
-      bonus: number;
-    };
-    element: {
-      identifier: string;
-      resonance: "defense";
-      bonus: number;
-    };
-    figure: {
-      identifier: string;
-      resonance: "damage";
-      bonus: number;
-    };
-  };
-  variation: {
-    class: HeroClass;
-    class_resonance: "ego";
-    element: string; //null;
-    element_resonance: "defense";
-    figure: number;
-    figure_resonance: "damage";
-    id_variation: number; //41;
     rarity: Extract<Rarity, "mythic">;
+    resonance_bonuses: {
+      class: {
+        identifier: "1" | "2" | "3";
+        resonance: "ego";
+        bonus: number;
+      };
+      element: {
+        identifier: string;
+        resonance: "defense";
+        bonus: number;
+      };
+      figure: {
+        identifier: string;
+        resonance: "damage";
+        bonus: number;
+      };
+    };
+    variation: {
+      class: HeroClass;
+      class_resonance: "ego";
+      element: string; //null;
+      element_resonance: "defense";
+      figure: number;
+      figure_resonance: "damage";
+      id_variation: number; //41;
+      rarity: Extract<Rarity, "mythic">;
+    };
   };
 };
