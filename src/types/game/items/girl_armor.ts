@@ -146,7 +146,7 @@ export type GirlArmorItemMythic = GirlArmorItemBase & {
     class_resonance: "ego";
     element: string; //null;
     element_resonance: "defense";
-    figure: number;
+    figure: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     figure_resonance: "damage";
     id_variation: number; //41;
     rarity: Extract<Rarity, "mythic">;

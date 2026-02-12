@@ -66,8 +66,6 @@ export default class GirlEquipmentTracker extends HHModule {
     }
   }
 
-  id_girl_item_armor: any = [];
-
   private fetchEquipmentWithPagination(
     slotIndex: GirlArmorItem["slot_index"],
     page: number = 1,
