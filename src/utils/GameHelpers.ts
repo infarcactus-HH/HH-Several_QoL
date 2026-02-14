@@ -5,7 +5,7 @@ export default class GameHelpers {
   static createPopup(
     type: popupForQueue["popup"]["type"],
     popupID: string,
-    $content: JQuery<HTMLElement>,
+    content: JQuery<HTMLElement> | string,
     title?: string,
   ) {
     switch (type) {
@@ -15,7 +15,7 @@ export default class GameHelpers {
           if (title) {
             $container.append(html`<div class="title">${title}</div>`);
           }
-          $container.append($content);
+          $container.append(content);
         });
         break;
       default:

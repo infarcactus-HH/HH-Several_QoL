@@ -8,6 +8,7 @@ export { default as eventInfoEventCss } from "./EventInfo/EventInfo_Event.css";
 export { default as eventInfoHomeCss } from "./EventInfo/EventInfo_Home.css";
 export { default as poVInfoCss } from "./PoVInfo.css";
 export { default as LabyTeamPresetPentaDrillCss } from "./LabyTeamPresets/PentaDrill.css";
+export { default as GirlEquipmentTrackerCss } from "./GirlEquipmentTracker.css";
 
 export * from "./StyleTweak";
 export * from "./HHPlusPlusBdsmPatch";

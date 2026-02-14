@@ -1,6 +1,6 @@
 import { AlwaysRunningModule } from "../base";
 import { MythicGirlGearPachinkoSummaryCss } from "../css/AlwaysRunningModules";
-import { EquipmentPachinko_AjaxResponse, GirlArmorItem } from "../types";
+import { EquipmentPachinko_AjaxResponse, GirlArmorItemMythic } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 export default class MythicGirlGearPachinkoSummary extends AlwaysRunningModule {
@@ -16,7 +16,7 @@ export default class MythicGirlGearPachinkoSummary extends AlwaysRunningModule {
     this.hookAjaxComplete();
     this.injectCss();
   }
-  obtainedMythicEquips: Array<GirlArmorItem> = [];
+  obtainedMythicEquips: Array<GirlArmorItemMythic> = [];
   hookAjaxComplete() {
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (!(typeof settings?.data === "string")) {
@@ -30,7 +30,7 @@ export default class MythicGirlGearPachinkoSummary extends AlwaysRunningModule {
         for (const equipment of response.rewards.data.rewards) {
           if (equipment.value.rarity === "mythic") {
             console.log("Mythic armor obtained!", equipment);
-            this.obtainedMythicEquips.push(equipment);
+            this.obtainedMythicEquips.push(equipment.value);
             if (this.obtainedMythicEquips.length === 1) {
               this.addMythicSummary();
             }
