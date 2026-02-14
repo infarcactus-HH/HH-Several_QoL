@@ -1,0 +1,219 @@
+#open-girl-equipment-popup-button {
+  margin-bottom: 8px;
+  margin-left: 8px;
+}
+
+#quick-harem-wrapper #open-girl-equipment-popup-button {
+  margin: 0px;
+  width: 23px;
+  height: auto;
+  padding: 0;
+}
+
+#open-girl-equipment-popup-button > img {
+  width: 100%;
+  height: 100%;
+  margin-top: 3px;
+}
+
+#open-girl-equipment-popup-button:disabled > img {
+  filter: grayscale(100%);
+}
+
+/* Popup styles */
+.popup_wrapper > #popup-girl-equipment-tracker-popup {
+  width: 1020px;
+  height: 491px;
+  top: 3.72rem;
+  left: 0.62rem;
+}
+#popup-girl-equipment-tracker-popup > #container-girl-equipment-tracker-popup.container-special-bg {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 15px;
+}
+
+#popup-girl-equipment-tracker-popup close {
+  width: 2rem;
+  height: 2rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-image: url(/images/clubs/ic_xCross.png);
+  opacity: 1;
+}
+
+#container-girl-equipment-tracker-popup {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  border: 2px solid #ff9900;
+  align-content: center;
+}
+
+#container-girl-equipment-tracker-popup > .title {
+  position: absolute;
+  width: 100%;
+  height: 2rem;
+  top: -1rem;
+  left: 0;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.22px;
+  color: #ffb827;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    -2px -2px 5px rgba(255, 159, 0, 0.4),
+    2px -2px 5px rgba(255, 159, 0, 0.4),
+    -2px 2px 5px rgba(255, 159, 0, 0.4),
+    2px 2px 5px rgba(255, 159, 0, 0.4),
+    0px 0px 10px rgba(255, 159, 0, 0.4);
+  text-align: center;
+}
+
+#popup-girl-equipment-tracker-popup .filter-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-left: 10px;
+}
+
+#popup-girl-equipment-tracker-popup .filter-btn {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  width: 85px;
+  height: 25px;
+  border-style: solid;
+  border-color: rgb(255, 154, 154);
+  border-width: 1px;
+  border-radius: 5px;
+  background-color: #ec0039;
+  background-image: radial-gradient(closest-side at 50% 50%, #f36e09 0, #ec0039 51%, #9e0e27 100%);
+}
+
+#popup-girl-equipment-tracker-popup .filter-btn.disabled {
+  filter: grayscale(100%);
+  cursor: pointer;
+}
+
+#popup-girl-equipment-tracker-popup .equipment-list-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  position: relative;
+  border-radius: inherit;
+  align-content: flex-start;
+  row-gap: 23px;
+  margin-top: 12px;
+}
+
+#popup-girl-equipment-tracker-popup .figure-group {
+  background-color: rgb(54, 16, 21);
+  border-style: solid;
+  border-color: rgb(255, 184, 39);
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+.figure-equipment-table {
+  display: block;
+}
+
+.figure-equipment-table .slot-header-row {
+  display: none;
+}
+
+.equipment-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.equipment-row > .equipment-item {
+  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  background-color: rgb(109, 82, 82);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.equipment-item.level-10 {
+  background-color: #ec0039;
+  background-image: radial-gradient(closest-side at 50% 50%, #f36e09 0, #ec0039 51%, #9e0e27 100%);
+  border-style: solid;
+  border-color: rgb(255, 154, 154);
+  border-width: 1px;
+}
+
+.equipment-item.level-9 {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 1) 0%, rgba(161, 0, 33, 1) 100%);
+}
+
+.equipment-item.level-8 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.6) 0%, rgba(161, 0, 33, 0.6) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-7 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.6) 0%, rgba(161, 0, 33, 0.6) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-6 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.5) 0%, rgba(161, 0, 33, 0.5) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-5 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.4) 0%, rgba(161, 0, 33, 0.4) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-4 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.3) 0%, rgba(161, 0, 33, 0.3) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-3 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.2) 0%, rgba(161, 0, 33, 0.2) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.equipment-item.level-2 {
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.15) 0%, rgba(161, 0, 33, 0.15) 100%),
+    linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
+}
+
+.figure-title-row {
+  display: flex;
+  align-items: center;
+}
+.figure-title {
+  font-size: 11px;
+  line-height: 1;
+}
+.figure-title-img {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
