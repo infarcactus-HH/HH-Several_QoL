@@ -1,7 +1,7 @@
 {
   "name": "several-qol",
   "author": "infarcactus",
-  "version": "1.29.0",
+  "version": "1.29.1",
   "description": "A userscript for QoL for the Haremverse",
   "main": "dist/userscript.user.js",
   "scripts": {
