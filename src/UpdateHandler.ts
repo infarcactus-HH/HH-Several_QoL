@@ -102,25 +102,25 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 28 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 29 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>[HH++ BDSM Patch] PoP Bar</h2>
+            <h2>Mythic Girl Equipment Tracker</h2>
             <p>
-              I've been asked a lot of times to add this since HH++ removed it temporarily, so here
-              it is!
+              I've seen way too many tryharders using spreadsheets *myself included* to track their
+              MGE, so now it's fully automatic enjoy
             </p>
-            <h3>In Game Badges</h3>
+            <h3>Misc</h3>
             <p>
-              If you missed last update, I added badges for
-              <a href="https://patreon.com/infarcactusHH" target="_blank" style="color : green"
-                >patreon</a
-              >
-              contributors & script contributors
+              [PoP++] Bugfix: Due to unidentified game behaviour, you couldn't assign girls that were never
+              assigned to a PoP.</br></br>
+              [PoV/PoG Hide Claim All until last day] Bugfix : If you bought the normal PASS there was a waird display on the row that is supposed to have the claim all button</br></br>
+              [Compact League Style Tweak] When reordering now snaps back to the top of the list.</br></br>
+              [QoL Badges] Tighter Leaderboards </br>
             </p>
           </div>
         `);
