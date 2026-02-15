@@ -12,7 +12,28 @@
   "hentai": {
     "major-contributor": [{ "id": "583627", "name": "Arez" }],
     "small-contributor": [],
-    "patreon-gold": [],
+    "patreon-gold": [{ "id": "124704", "name": "Darkyz" }],
+    "patreon-silver": [],
+    "patreon-bronze": []
+  },
+  "comix_c": {
+    "major-contributor": [],
+    "small-contributor": [],
+    "patreon-gold": [{ "id": "29164", "name": "Darkyz" }],
+    "patreon-silver": [],
+    "patreon-bronze": []
+  },
+  "star_t": {
+    "major-contributor": [],
+    "small-contributor": [],
+    "patreon-gold": [{ "id": "1851", "name": "Darkyz" }],
+    "patreon-silver": [],
+    "patreon-bronze": []
+  },
+  "mangarpg_m": {
+    "major-contributor": [],
+    "small-contributor": [],
+    "patreon-gold": [{ "id": "1813", "name": "Darkyz" }],
     "patreon-silver": [],
     "patreon-bronze": []
   }
