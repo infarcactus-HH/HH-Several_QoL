@@ -5,7 +5,7 @@
 
 #quick-harem-wrapper #open-girl-equipment-popup-button {
   margin: 0px;
-  width: 23px;
+  width: 2em;
   height: auto;
   padding: 0;
 }
@@ -23,7 +23,7 @@
 /* Popup styles */
 .popup_wrapper > #popup-girl-equipment-tracker-popup {
   width: 1020px;
-  height: 491px;
+  height: 455px;
   top: 3.72rem;
   left: 0.62rem;
 }
@@ -89,11 +89,11 @@
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  width: 85px;
+  width: 70px;
   height: 25px;
   border-style: solid;
   border-color: rgb(255, 154, 154);
-  border-width: 1px;
+  border-width: 2px;
   border-radius: 5px;
   background-color: #ec0039;
   background-image: radial-gradient(closest-side at 50% 50%, #f36e09 0, #ec0039 51%, #9e0e27 100%);
@@ -120,7 +120,7 @@
   background-color: rgb(54, 16, 21);
   border-style: solid;
   border-color: rgb(255, 184, 39);
-  border-width: 1px;
+  border-width: 2px;
   border-radius: 5px;
 }
 
@@ -136,12 +136,14 @@
   display: flex;
   gap: 4px;
   margin-bottom: 4px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .equipment-row > .equipment-item {
   font-size: 10px;
   width: 20px;
-  height: 20px;
+  height: 17px;
   background-color: rgb(109, 82, 82);
   border-radius: 5px;
   display: flex;
@@ -203,8 +205,12 @@
     radial-gradient(50% 50% at 50% 50%, rgba(255, 0, 51, 0.15) 0%, rgba(161, 0, 33, 0.15) 100%),
     linear-gradient(0deg, rgba(109, 82, 82, 1) 0%, rgba(109, 82, 82, 1) 100%);
 }
+.equipment-item.empty {
+  background: #433232;
+}
 
 .figure-title-row {
+  margin-left: 3px;
   display: flex;
   align-items: center;
 }

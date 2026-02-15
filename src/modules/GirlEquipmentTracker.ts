@@ -8,7 +8,8 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 export default class MythicGirlEquipmentTracker extends HHModule {
   readonly configSchema = {
     baseKey: "girlEquipmentTracker",
-    label: "Girl Equipment Tracker",
+    label:
+      "<span tooltip='Go to edit your waifu on front page or go to Harem++ and click on icon with Girl Equip on it'>Girl Equipment Tracker</span>",
     default: true,
   };
   girlEquipmentButton: JQuery<HTMLElement> = $(
@@ -54,9 +55,9 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     const $container = $("<div class='girl-equipment-popup-container'></div>");
 
     // Add filter toggle
-    const filterToggle = $("<div class='filter-toggle'><span>Filter for:</span></div>");
+    const filterToggle = $("<div class='filter-toggle'><span>Level:</span></div>");
     const $filterAllBtn = $("<span class='filter-btn' data-filter='all'>All</span>");
-    const $filter10Btn = $("<span class='filter-btn disabled' data-filter='10'>Level 10</span>");
+    const $filter10Btn = $("<span class='filter-btn disabled' data-filter='10'>10</span>");
     filterToggle.append($filterAllBtn, $filter10Btn);
     $filter10Btn.on("click", () => {
       $filterAllBtn.addClass("disabled");
