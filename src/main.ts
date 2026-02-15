@@ -51,7 +51,6 @@ class Userscript {
           this.runWithoutBdsm();
         }
       });
-      return;
     } else {
       this.runWithBDSM();
     }
