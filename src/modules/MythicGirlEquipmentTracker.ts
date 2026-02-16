@@ -1,6 +1,6 @@
 import { HHModule } from "../base";
 import { GirlEquipmentTrackerCss } from "../css/modules";
-import { GirlArmorItem, GirlArmorItemMythic, GirlEquipmentListResponse } from "../types";
+import { GirlArmorItem, GirlEquipmentListResponse } from "../types";
 import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
@@ -43,6 +43,7 @@ export default class MythicGirlEquipmentTracker extends HHModule {
       });
     } else {
       HHPlusPlusReplacer.doWhenSelectorAvailable(".change-girl-panel #filter_girls", ($el) => {
+        $el.wrap("<div style='display: flex;'></div>");
         $el.after(this.girlEquipmentButton);
       });
     }

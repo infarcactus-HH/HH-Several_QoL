@@ -27,7 +27,7 @@ import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlGearPachinkoSummary from "./AlwaysRunningModules/MythicGirlGearPachinkoSummary";
-import MythicGirlEquipmentTracker from "./modules/GirlEquipmentTracker";
+import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 
 class Userscript {
   constructor() {
