@@ -31,7 +31,7 @@ const userscriptHeader = `// ==UserScript==
 // @match        https://*.transpornstarharem.com/*
 // @match        https://*.gaypornstarharem.com/*
 // @match        https://*.mangarpg.com/*
-// @match        https://*.amouragent.com/
+// @match        https://*.amouragent.com/*
 // @updateURL    https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @downloadURL  https://github.com/infarcactus-HH/HH-Several_QoL/raw/refs/heads/main/dist/userscript.user.js
 // @grant        GM_addStyle
