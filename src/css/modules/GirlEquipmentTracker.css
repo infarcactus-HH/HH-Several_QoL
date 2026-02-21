@@ -223,3 +223,20 @@
   height: 30px;
   display: block;
 }
+
+.filter-toggle-element {
+  display: flex;
+  position: absolute;
+  top: 12px;
+  right: 70px;
+  gap: 8px;
+}
+
+.filter-toggle-element > span {
+  filter: grayscale(1);
+}
+
+.filter-toggle-element > span.active {
+  filter: unset;
+  background-color: #fff8;
+}

@@ -1,4 +1,5 @@
 import { HeroClass, Rarity } from "../common";
+import { GirlElement } from "../girls";
 
 export type GirlArmorItem =
   | GirlArmorItemCommonRare
@@ -110,7 +111,7 @@ export type GirlArmorItemLegendary = GirlArmorItemBase & {
   variation: {
     class: HeroClass;
     class_resonance: "ego";
-    element: string; //null;
+    element: GirlElement; //null;
     element_resonance: "defense";
     figure: null;
     figure_resonance: null;
@@ -144,7 +145,7 @@ export type GirlArmorItemMythic = GirlArmorItemBase & {
   variation: {
     class: HeroClass;
     class_resonance: "ego";
-    element: string; //null;
+    element: GirlElement; //null;
     element_resonance: "defense";
     figure: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     figure_resonance: "damage";
@@ -207,7 +208,7 @@ type GirlArmorItemLegendaryEquipped = GirlArmorItemBaseEquipped & {
   variation: {
     class: HeroClass;
     class_resonance: "ego";
-    element: string; //null;
+    element: GirlElement; //null;
     element_resonance: "defense";
     figure: null;
     figure_resonance: null;
@@ -241,7 +242,7 @@ type GirlArmorItemMythicEquipped = GirlArmorItemBaseEquipped & {
   variation: {
     class: HeroClass;
     class_resonance: "ego";
-    element: string; //null;
+    element: GirlElement; //null;
     element_resonance: "defense";
     figure: number;
     figure_resonance: "damage";

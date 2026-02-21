@@ -9,6 +9,16 @@ export interface PlainSkin {
 
 export type PlainSkins = Array<PlainSkin>;
 
+export type GirlElement =
+  | "nature"
+  | "sun"
+  | "psychic"
+  | "darkness"
+  | "water"
+  | "stone"
+  | "light"
+  | "fire";
+
 export interface GradeSkin {
   animation_format: "video" | "spine" | [];
   girl_grade_num: number;

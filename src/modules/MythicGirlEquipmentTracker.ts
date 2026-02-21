@@ -1,6 +1,6 @@
 import { HHModule } from "../base";
 import { GirlEquipmentTrackerCss } from "../css/modules";
-import { GirlArmorItem, GirlEquipmentListResponse } from "../types";
+import { GirlArmorItem, GirlElement, GirlEquipmentListResponse } from "../types";
 import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
@@ -15,8 +15,17 @@ export default class MythicGirlEquipmentTracker extends HHModule {
   girlEquipmentButton: JQuery<HTMLElement> = $(
     `<button id="open-girl-equipment-popup-button" class="square_blue_btn" tooltip="Mythic Girl Equipment Tracker" disabled><img src="/images/pictures/design/pachinko/ic_girl_armor_tooltip_icon.png"></img></button>`,
   );
+  filters: {
+    level: "all" | "10";
+    element: GirlElement | null;
+  } = {
+    level: "all",
+    element: null,
+  };
 
-  private equipmentData: { [figure: number]: { [slotIndex: number]: Array<number> } } = {};
+  private equipmentData: {
+    [figure: number]: { [slotIndex: number]: Array<{ level: number; element: GirlElement }> };
+  } = {};
 
   static shouldRun() {
     return "/waifu.html" === location.pathname;
@@ -51,26 +60,59 @@ export default class MythicGirlEquipmentTracker extends HHModule {
 
   private showEquipmentPopup() {
     const $equipmentEquipmentListContainer = $("<div class='equipment-list-container'></div>");
-    $equipmentEquipmentListContainer.append(this.generateEquipmentTable("all"));
+    $equipmentEquipmentListContainer.append(this.generateEquipmentTable());
 
     const $container = $("<div class='girl-equipment-popup-container'></div>");
 
     // Add filter toggle
-    const filterToggle = $("<div class='filter-toggle'><span>Level:</span></div>");
-    const $filterAllBtn = $("<span class='filter-btn' data-filter='all'>All</span>");
-    const $filter10Btn = $("<span class='filter-btn disabled' data-filter='10'>10</span>");
-    filterToggle.append($filterAllBtn, $filter10Btn);
-    $filter10Btn.on("click", () => {
-      $filterAllBtn.addClass("disabled");
-      $filter10Btn.removeClass("disabled");
-      $equipmentEquipmentListContainer.html(this.generateEquipmentTable("10"));
+    const levelFilterToggle = $("<div class='filter-toggle'><span>Level:</span></div>");
+    const $levelFilterAllBtn = $("<span class='filter-btn' data-filter='all'>All</span>");
+    const $levelFilter10Btn = $("<span class='filter-btn disabled' data-filter='10'>10</span>");
+    levelFilterToggle.append($levelFilterAllBtn, $levelFilter10Btn);
+    $levelFilter10Btn.on("click", () => {
+      $levelFilterAllBtn.addClass("disabled");
+      $levelFilter10Btn.removeClass("disabled");
+      this.filters.level = "10";
+      $equipmentEquipmentListContainer.html(this.generateEquipmentTable());
     });
-    $filterAllBtn.on("click", () => {
-      $filterAllBtn.removeClass("disabled");
-      $filter10Btn.addClass("disabled");
-      $equipmentEquipmentListContainer.html(this.generateEquipmentTable("all"));
+    $levelFilterAllBtn.on("click", () => {
+      $levelFilterAllBtn.removeClass("disabled");
+      $levelFilter10Btn.addClass("disabled");
+      this.filters.level = "all";
+      $equipmentEquipmentListContainer.html(this.generateEquipmentTable());
     });
-    $container.append(filterToggle);
+    const $elementFilterToggle = $("<div class='filter-toggle-element'></div>");
+    const elements: GirlElement[] = [
+      "fire",
+      "darkness",
+      "nature",
+      "light",
+      "psychic",
+      "stone",
+      "sun",
+      "water",
+    ];
+    elements.forEach((element) => {
+      const $btn = $(`<span class='${element}_element_icn' data-filter='${element}'></span>`);
+      $btn.on("click", () => {
+        if (this.filters.element === element) {
+          this.filters.element = null;
+          $btn.removeClass("active");
+        } else {
+          this.filters.element = element;
+          $elementFilterToggle.children().removeClass("active");
+          $btn.addClass("active");
+        }
+        $equipmentEquipmentListContainer.html(this.generateEquipmentTable());
+      });
+      if (this.filters.element === element) {
+        $btn.addClass("active");
+      }
+      $elementFilterToggle.append($btn);
+    });
+
+    $container.append(levelFilterToggle);
+    $container.append($elementFilterToggle);
     $container.append($equipmentEquipmentListContainer);
 
     GameHelpers.createPopup(
@@ -81,7 +123,7 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     );
   }
 
-  private generateEquipmentTable(filter: "all" | "10"): string {
+  private generateEquipmentTable(): string {
     let html = "";
 
     // Iterate through each figure (1-12)
@@ -102,20 +144,23 @@ export default class MythicGirlEquipmentTracker extends HHModule {
         html += '<tr class="equipment-row">';
         for (let slot = 1; slot <= 6; slot++) {
           // Get items for this figure and slot
-          const levels = this.equipmentData[figure]?.[slot] || [];
+          const equipsSlot = this.equipmentData[figure]?.[slot] || [];
 
           // Filter based on criteria
-          const filteredLevels = levels.filter((level) => {
-            if (filter === "10") {
-              return level === 10;
+          const filteredLevels = equipsSlot.filter((equip) => {
+            if (this.filters.element && equip.element !== this.filters.element) {
+              return false;
+            }
+            if (this.filters.level === "10") {
+              return equip.level === 10;
             }
             return true; // for "all" filter
           });
-          filteredLevels.sort((a, b) => b - a); // Sort levels in descending order
+          filteredLevels.sort((a, b) => b.level - a.level); // Sort levels in descending order
 
           // Display item if available, otherwise empty cell
           if (row < filteredLevels.length) {
-            html += `<td class="equipment-item level-${filteredLevels[row]}">${filteredLevels[row]}</td>`;
+            html += `<td class="equipment-item level-${filteredLevels[row].level}">${filteredLevels[row].level}</td>`;
           } else {
             html += '<td class="equipment-item empty"></td>';
           }
@@ -156,7 +201,10 @@ export default class MythicGirlEquipmentTracker extends HHModule {
             if (!this.equipmentData[figure][slotIndex]) {
               this.equipmentData[figure][slotIndex] = [];
             }
-            this.equipmentData[figure][slotIndex].push(armorItem.level);
+            this.equipmentData[figure][slotIndex].push({
+              level: armorItem.level,
+              element: armorItem.variation.element,
+            });
           }
         });
       }
@@ -197,7 +245,10 @@ export default class MythicGirlEquipmentTracker extends HHModule {
           if (!this.equipmentData[figure][slotIndex]) {
             this.equipmentData[figure][slotIndex] = [];
           }
-          this.equipmentData[figure][slotIndex].push(item.level);
+          this.equipmentData[figure][slotIndex].push({
+            level: item.level,
+            element: item.variation.element,
+          });
         });
 
         // Check if all items are mythic, if so fetch the next page
