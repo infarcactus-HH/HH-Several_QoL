@@ -66,7 +66,8 @@ export default class GameHelpers {
   }
 
   static getWikiPageForCurrentGame(name: string): string | undefined {
-    const formattedName = name.replace(/ /g, "-");
+    name = name.replace(/ /g, "-");
+    const formattedName = name.replace(/[^a-zA-Z0-9\-]/g, "");
     if (location.host.includes("heroes.com")) {
       return `https://harem-battle.club/wiki/Harem-Heroes/HH:${formattedName}`;
     } else if (location.host.includes("gayharem")) {
