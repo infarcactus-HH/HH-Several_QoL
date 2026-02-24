@@ -28,6 +28,7 @@ import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlGearPachinkoSummary from "./AlwaysRunningModules/MythicGirlGearPachinkoSummary";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
+import { TooltipHook } from "./SingletonModules/TooltipHook";
 
 class Userscript {
   constructor() {
@@ -38,6 +39,10 @@ class Userscript {
       this.applySessionFix();
       this.allModules.push(FixSessID);
     }
+    this.singletonModules.forEach((Module) => {
+      Module.getInstance();
+    });
+
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
       Promise.race([
         new Promise((resolve) => {
@@ -86,6 +91,7 @@ class Userscript {
     PlayerClubTracking,
     MythicGirlGearPachinkoSummary,
   ];
+  singletonModules = [TooltipHook];
   runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",

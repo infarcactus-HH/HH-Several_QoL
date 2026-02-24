@@ -1,5 +1,6 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import { temporaryPoPBarCss } from "../css/modules";
+import { TooltipHook } from "../SingletonModules/TooltipHook";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import html from "../utils/html";
 
@@ -56,18 +57,6 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
     const elapsed = durationTimeSec - remainingTimeSec;
     const progress = Math.max(0, Math.min(1, elapsed / durationTimeSec));
 
-    // Format remaining time for tooltip
-    const clampedRemaining = Math.max(0, remainingTimeSec);
-    const hours = Math.floor(clampedRemaining / 3600);
-    const minutes = Math.floor((clampedRemaining % 3600) / 60);
-    const seconds = Math.floor(clampedRemaining % 60);
-    const timeTooltip =
-      hours > 0
-        ? `${hours}h ${minutes}m ${seconds}s`
-        : minutes > 0
-          ? `${minutes}m ${seconds}s`
-          : `${seconds}s`;
-
     // SVG circular progress ring parameters
     const size = 36;
     const strokeWidth = 3;
@@ -84,7 +73,9 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       <a
         href="${shared.general.getDocumentHref("/activities.html?tab=pop")}"
         class="${containerClass}"
-        tooltip="${timeTooltip} remaining"
+        tooltip="50m 19s"
+        tooltip_extra_classes="QoL-custom-tooltip PoP-tooltip"
+        timeToFinish="${remainingTimeSec}"
       >
         <svg class="sqol-pop-bar-ring" viewBox="0 0 ${size} ${size}">
           <circle
@@ -131,20 +122,10 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
 
           const remainingTimeSecUpdated =
             hhTrackedTimesUpdated.pop - server_now_ts + (DateNowInit - Date.now()) / 1000;
-          const clampedRemainingUpdated = Math.max(0, remainingTimeSecUpdated);
-          const hoursUpdated = Math.floor(clampedRemainingUpdated / 3600);
-          const minutesUpdated = Math.floor((clampedRemainingUpdated % 3600) / 60);
-          const secondsUpdated = Math.floor(clampedRemainingUpdated % 60);
-          const timeTooltipUpdated =
-            hoursUpdated > 0
-              ? `${hoursUpdated}h ${minutesUpdated}m ${secondsUpdated}s`
-              : minutesUpdated > 0
-                ? `${minutesUpdated}m ${secondsUpdated}s`
-                : `${secondsUpdated}s`;
 
-          $popBar.attr("tooltip", `${timeTooltipUpdated} remaining`);
+          $popBar.attr("timeToFinish", remainingTimeSecUpdated / 10);
 
-          if (clampedRemainingUpdated <= 0) {
+          if (remainingTimeSecUpdated <= 0) {
             clearInterval(tooltipInterval);
             $popBar.addClass("sqol-pop-bar-finished");
           }
@@ -153,5 +134,17 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         const tooltipInterval = setInterval(updateTooltip, 1000);
       },
     );
+    HookTooltip();
+    function HookTooltip() {
+      TooltipHook.getInstance().addTooltipOverride(
+        ".PoP-tooltip",
+        (currentTarget, tooltipElement) => {
+          const timeToFinish = Number($(currentTarget).attr("timeToFinish") || "0");
+          const timer = shared.timer.buildTimer(timeToFinish, "", "PoP-tooltip-timer");
+          $(tooltipElement).empty().append(`<div class="PoP-tooltip-content">${timer}</div>`);
+          shared.timer.activateTimers("PoP-tooltip-timer", () => {});
+        },
+      );
+    }
   }
 }
