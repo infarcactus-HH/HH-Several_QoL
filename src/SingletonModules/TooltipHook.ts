@@ -8,7 +8,6 @@ export class TooltipHook {
 
   private constructor() {
     this.hookTooltip();
-    this.startHoverListener();
   }
 
   public static getInstance(): TooltipHook {
@@ -19,22 +18,27 @@ export class TooltipHook {
   }
 
   public addTooltipOverride(
-    selector: string,
+    elementSelector: string,
+    tooltipSelector: string,
     override: (currentTarget: HTMLElement, tooltipElement: HTMLElement) => void,
   ) {
-    this.tooltipOverrides.push({ selector, override });
+    $("body").on("mouseenter touchstart", elementSelector, (e) => {
+      this.currentTarget = e.currentTarget;
+    });
+    this.tooltipOverrides.push({ selector: tooltipSelector, override });
   }
 
   private hookTooltip() {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
-          if ((node as Element).matches?.(".hh_tooltip_new.QoL-custom-tooltip")) {
-            console.log("Tooltip added:", node);
-            console.log("Current target for tooltip:", this.currentTarget);
+          if (
+            node.nodeType === 1 &&
+            (node as Element).matches?.(".hh_tooltip_new.QoL-custom-tooltip")
+          ) {
             for (const { selector, override } of this.tooltipOverrides) {
-              if ((node as HTMLElement).matches(selector)) {
-                override(this.currentTarget!, node as HTMLElement);
+              if ((node as HTMLElement).matches(selector) && this.currentTarget) {
+                override(this.currentTarget, node as HTMLElement);
               }
             }
           }
@@ -43,12 +47,6 @@ export class TooltipHook {
     });
     observer.observe(document.body, {
       childList: true,
-    });
-    console.log("Observer started on body");
-  }
-  private startHoverListener() {
-    $("body").on("mouseenter touchstart", "[tooltip]", (e) => {
-      this.currentTarget = e.currentTarget;
     });
   }
 }

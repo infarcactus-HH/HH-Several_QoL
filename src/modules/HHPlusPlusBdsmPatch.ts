@@ -73,7 +73,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       <a
         href="${shared.general.getDocumentHref("/activities.html?tab=pop")}"
         class="${containerClass}"
-        tooltip="50m 19s"
+        tooltip="50m 50s"
         tooltip_extra_classes="QoL-custom-tooltip PoP-tooltip"
         timeToFinish="${remainingTimeSec}"
       >
@@ -123,7 +123,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
           const remainingTimeSecUpdated =
             hhTrackedTimesUpdated.pop - server_now_ts + (DateNowInit - Date.now()) / 1000;
 
-          $popBar.attr("timeToFinish", remainingTimeSecUpdated / 10);
+          $popBar.attr("timeToFinish", remainingTimeSecUpdated);
 
           if (remainingTimeSecUpdated <= 0) {
             clearInterval(tooltipInterval);
@@ -134,17 +134,15 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         const tooltipInterval = setInterval(updateTooltip, 1000);
       },
     );
-    HookTooltip();
-    function HookTooltip() {
-      TooltipHook.getInstance().addTooltipOverride(
-        ".PoP-tooltip",
-        (currentTarget, tooltipElement) => {
-          const timeToFinish = Number($(currentTarget).attr("timeToFinish") || "0");
-          const timer = shared.timer.buildTimer(timeToFinish, "", "PoP-tooltip-timer");
-          $(tooltipElement).empty().append(`<div class="PoP-tooltip-content">${timer}</div>`);
-          shared.timer.activateTimers("PoP-tooltip-timer", () => {});
-        },
-      );
-    }
+    TooltipHook.getInstance().addTooltipOverride(
+      "[tooltip].sqol-pop-bar-container",
+      ".PoP-tooltip",
+      (currentTarget, tooltipElement) => {
+        const timeToFinish = Number($(currentTarget).attr("timeToFinish") || "0");
+        const timer = shared.timer.buildTimer(timeToFinish, "", "PoP-tooltip-timer");
+        $(tooltipElement).empty().append(`<div class="PoP-tooltip-content">${timer}</div>`);
+        shared.timer.activateTimers("PoP-tooltip-timer", () => {});
+      },
+    );
   }
 }
