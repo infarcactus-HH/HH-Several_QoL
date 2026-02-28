@@ -102,25 +102,23 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 29 && GlobalStorageHandler.getShowUpdatePopup()) {
+    if (storedMinor < 30 && GlobalStorageHandler.getShowUpdatePopup()) {
       UpdateHandler.injectCSS();
       GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>Mythic Girl Equipment Tracker</h2>
+            <h2>Leagues QoL : simv4 FIX (OFF BY DEFAULT)</h2>
             <p>
-              I've seen way too many tryharders using spreadsheets *myself included* to track their
-              MGE, so now it's fully automatic enjoy
+              Due to latest game update simv4 may be inaccurate on league table, This fetches and recomputes opponent data when you click on an opponent row.</br>
+              This requires Leagues++ to work properly.
             </p>
             <h3>Misc</h3>
             <p>
-              [PoP++] Bugfix: Due to unidentified game behaviour, you couldn't assign girls that were never
-              assigned to a PoP.</br></br>
-              [PoV/PoG Hide Claim All until last day] Bugfix : If you bought the normal PASS there was a waird display on the row that is supposed to have the claim all button</br></br>
-              [Compact League Style Tweak] When reordering now snaps back to the top of the list.</br></br>
-              [QoL Badges] Tighter Leaderboards </br>
+              [PoP++] (try at) Bugfix: Wait for element to exist before running, if it didn't appear before it might have fixed it.</br>
+              [MGE Tracker] Feature : added element filtering</br>
+              [PoP Bar] Made tooltip timer real time</br>
             </p>
           </div>
         `);
