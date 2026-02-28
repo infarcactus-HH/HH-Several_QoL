@@ -56,7 +56,8 @@ export default class LeaguesQoL extends HHModule {
       },
       {
         key: "simv4Fix",
-        label: "Fix simv4 by fetching correct opponent date (request intensive, be careful)",
+        label:
+          "<span tooltip='Fetches pre-battle page, skill sim & booster sim may still be a bit inaccurate but the sim on the right is still good'>Fix simv4 by fetching correct opponent date, **requires** Leagues++</span>",
         default: false,
       },
     ],
