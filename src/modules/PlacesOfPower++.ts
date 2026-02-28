@@ -2,6 +2,7 @@ import { HHModule, SubSettingsType } from "../base";
 import type { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../types";
 import { placesOfPowerCss } from "../css/modules";
 import html from "../utils/html";
+import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -85,10 +86,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         shared.animations.loadingAnimation.start();
         $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
           shared.animations.loadingAnimation.stop();
-          this.buildCustomPopInfo();
+          HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
+            this.buildCustomPopInfo();
+          });
         });
       } else {
-        this.buildCustomPopInfo();
+        HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
+          this.buildCustomPopInfo();
+        });
       }
     });
     this.injectCustomStyles();
