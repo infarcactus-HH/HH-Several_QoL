@@ -12,3 +12,4 @@ export { default as GirlEquipmentTrackerCss } from "./GirlEquipmentTracker.css";
 
 export * from "./StyleTweak";
 export * from "./HHPlusPlusBdsmPatch";
+export * from "./LeaguesQoL";

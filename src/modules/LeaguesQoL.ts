@@ -2,6 +2,7 @@ import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import LeagueNoPlayerProfileOnNameClick from "./LeaguesQoL/LeagueNoPlayerProfileOnNameClick";
 import LeagueOpponentHistory from "./LeaguesQoL/LeagueOpponentHistory";
 import NoRefillEnergyConfirm from "./LeaguesQoL/NoRefillEnergyConfirm_LeagueQoL";
+import simv4Fix from "./LeaguesQoL/simv4-fix";
 
 type LeaguesQoL_configSchema = {
   baseKey: "leaguesQoL";
@@ -21,6 +22,11 @@ type LeaguesQoL_configSchema = {
     {
       key: "noRefillEnergyConfirm";
       label: "Disable koban spending confirmation when refilling energy in leagues";
+      default: false;
+    },
+    {
+      key: "simv4Fix";
+      label: "Fix simv4 by fetching correct opponent date (request intensive, be careful)";
       default: false;
     },
   ];
@@ -48,6 +54,11 @@ export default class LeaguesQoL extends HHModule {
         label: "Disable koban spending confirmation when refilling energy in leagues",
         default: false,
       },
+      {
+        key: "simv4Fix",
+        label: "Fix simv4 by fetching correct opponent date (request intensive, be careful)",
+        default: false,
+      },
     ],
   };
   static shouldRun() {
@@ -67,6 +78,9 @@ export default class LeaguesQoL extends HHModule {
     }
     if (subSettings.noRefillEnergyConfirm) {
       new NoRefillEnergyConfirm().run();
+    }
+    if (subSettings.simv4Fix) {
+      new simv4Fix().run();
     }
   }
 }

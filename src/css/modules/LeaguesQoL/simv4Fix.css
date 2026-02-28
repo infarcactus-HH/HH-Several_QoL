@@ -1,0 +1,27 @@
+.player_team_block .sim-points {
+  background-color: red;
+}
+
+.player_team_block.result-QoLed .sim-points {
+  background-color: unset;
+}
+
+.player_team_block .sim-chance {
+  background-color: red;
+}
+
+.player_team_block.result-QoLed .sim-chance {
+  background-color: unset;
+}
+
+.player_team_block .sim-icon-button {
+  display: none;
+}
+
+.player_team_block.result-QoLed .sim-icon-button {
+  display: block;
+}
+
+.player_team_block.full-fight .sim-icon-button {
+  display: block;
+}

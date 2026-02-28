@@ -26,6 +26,7 @@ export default class LeagueOpponentHistory implements SubModule {
       }).observe($el[0], { childList: true });
     });
   }
+
   private async injectCSS() {
     GM_addStyle(leagueOpponentHistoryCss);
   }
@@ -47,7 +48,7 @@ export default class LeagueOpponentHistory implements SubModule {
   }
   startObserverClickOnTable() {
     const self = this;
-    $(".league_table > .data-list > .body-row").on("click.SeveralQoL", function () {
+    $(".league_table > .data-list > .body-row").on("click.SeveralQoL-OpponentHistory", function () {
       const place = parseInt($(this).children("[column='place']").text().trim());
       const selectedOpponent = opponents_list.find((opponents) => opponents.place === place);
       if (!selectedOpponent) {
