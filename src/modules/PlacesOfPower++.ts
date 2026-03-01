@@ -71,31 +71,54 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       unsafeWindow.pop_data !== undefined
     );
   }
+  /**
+   * Build the custom PoP UI, handling the loading state if girls are still being loaded
+   */
+  private buildPopInfoWithLoadingHandling(): void {
+    if (this.isLoadingGirls) {
+      shared.animations.loadingAnimation.start();
+      $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
+        shared.animations.loadingAnimation.stop();
+        HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
+          this.buildCustomPopInfo();
+        });
+      });
+    } else {
+      HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
+        this.buildCustomPopInfo();
+      });
+    }
+  }
+
+  /**
+   * Set up the click handler for the PoP switcher tab
+   */
+  private setupPoPSwitcherClickHandler($PopSwitcher: JQuery<HTMLElement>): void {
+    $PopSwitcher.on("click", () => {
+      this.buildPopInfoWithLoadingHandling();
+    });
+  }
+
   run(subSettings: SubSettingsType<configSchema>) {
     if (this.hasRun || !PlacesOfPowerPlusPlus.shouldRun()) {
       return;
     }
     this.hasPopupEnabled = subSettings?.rewardPopup ?? true;
     this.hasRun = true;
+
     const $PopSwitcher = $(".switch-tab[data-tab='pop']");
     $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
     $PopSwitcher.attr("tooltip", "By infarctus");
-    $PopSwitcher.on("click", () => {
-      // Wait for girls to finish updating before building UI
-      if (this.isLoadingGirls) {
-        shared.animations.loadingAnimation.start();
-        $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
-          shared.animations.loadingAnimation.stop();
-          HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
-            this.buildCustomPopInfo();
-          });
-        });
-      } else {
-        HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
-          this.buildCustomPopInfo();
-        });
-      }
-    });
+
+    if (location.search.includes("tab=pop")) {
+      HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
+        this.buildPopInfoWithLoadingHandling();
+        this.setupPoPSwitcherClickHandler($PopSwitcher);
+      });
+    } else {
+      this.setupPoPSwitcherClickHandler($PopSwitcher);
+    }
+
     this.injectCustomStyles();
     this.girlsHandler();
   }
