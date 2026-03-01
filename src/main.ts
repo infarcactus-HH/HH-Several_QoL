@@ -26,7 +26,6 @@ import PlayerClubTracking from "./AlwaysRunningModules/PlayerClubTracking";
 import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
-import MythicGirlGearPachinkoSummary from "./AlwaysRunningModules/MythicGirlGearPachinkoSummary";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import { TooltipHook } from "./SingletonModules/TooltipHook";
 
@@ -89,7 +88,6 @@ class Userscript {
     PlayerPrestigeTracking,
     PlayerDrillTracking,
     PlayerClubTracking,
-    MythicGirlGearPachinkoSummary,
   ];
   singletonModules = [TooltipHook];
   runWithBDSM() {

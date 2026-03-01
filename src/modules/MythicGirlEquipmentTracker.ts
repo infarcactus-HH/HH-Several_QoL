@@ -1,6 +1,13 @@
 import { HHModule } from "../base";
 import { GirlEquipmentTrackerCss } from "../css/modules";
-import { GirlArmorItem, GirlElement, GirlEquipmentListResponse } from "../types";
+import { MythicGirlGearPachinkoSummaryCss } from "../css/AlwaysRunningModules";
+import {
+  EquipmentPachinko_AjaxResponse,
+  GirlArmorItem,
+  GirlArmorItemMythic,
+  GirlElement,
+  GirlEquipmentListResponse,
+} from "../types";
 import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
@@ -9,7 +16,7 @@ export default class MythicGirlEquipmentTracker extends HHModule {
   readonly configSchema = {
     baseKey: "girlEquipmentTracker",
     label:
-      "<span tooltip='Go to edit your waifu on front page or go to Harem++ and click on icon with Girl Equip on it'>Girl Equipment Tracker</span>",
+      "<span tooltip='Go to edit your waifu on front page or go to Harem++ and click on icon with Girl Equip on it'>Mythic Girl Equipment Tracker / MGE Pachinko summary</span>",
     default: true,
   };
   girlEquipmentButton: JQuery<HTMLElement> = $(
@@ -23,12 +30,14 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     element: null,
   };
 
+  obtainedMythicEquips: Array<GirlArmorItemMythic> = [];
+
   private equipmentData: {
     [figure: number]: { [slotIndex: number]: Array<{ level: number; element: GirlElement }> };
   } = {};
 
   static shouldRun() {
-    return "/waifu.html" === location.pathname;
+    return location.pathname === "/waifu.html" || location.pathname === "/pachinko.html";
   }
 
   run() {
@@ -37,8 +46,61 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     }
     this.hasRun = true;
     this.injectCSS();
-    this.init();
-    this.AddButton();
+
+    if (location.pathname === "/pachinko.html") {
+      console.log("MythicGirlEquipmentTracker module running (pachinko)");
+      this.hookAjaxComplete();
+      this.addMythicSummary();
+    } else if (location.pathname === "/waifu.html") {
+      console.log("MythicGirlEquipmentTracker module running (waifu)");
+      this.init();
+      this.AddButton();
+    }
+  }
+
+  private hookAjaxComplete() {
+    $(document).ajaxComplete((_event, xhr, settings) => {
+      if (!(typeof settings?.data === "string")) {
+        return;
+      }
+      if (settings.data.includes("action=play&what=pachinko6")) {
+        const response = xhr.responseJSON as EquipmentPachinko_AjaxResponse;
+        if (!response || !response.success) {
+          return;
+        }
+        for (const equipment of response.rewards.data.rewards) {
+          if (equipment.value.rarity === "mythic") {
+            console.log("Mythic armor obtained!", equipment);
+            this.obtainedMythicEquips.push(equipment.value);
+            if (this.obtainedMythicEquips.length === 1) {
+              this.addMythicSummary();
+            }
+            console.log(this.obtainedMythicEquips);
+          }
+        }
+      }
+    });
+  }
+
+  private addMythicSummary() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable(
+      `.playing-zone[type-panel="equipment"]`,
+      ($panel) => {
+        if (this.obtainedMythicEquips.length === 0) {
+          return;
+        }
+        const $summary = $(
+          `<img id="qol-mythic-armor-drops" src="https://hh.hh-content.com/design/ic_books_gray.svg" tooltip="Show Mythic armors obtained this sessions">`,
+        );
+        $panel.append($summary);
+        $summary.on("click", () => {
+          shared.reward_popup.Reward.handlePopup({
+            data: { loot: true, rewards: this.obtainedMythicEquips },
+            title: "Mythic armors obtained :",
+          });
+        });
+      },
+    );
   }
 
   private AddButton() {
@@ -264,5 +326,6 @@ export default class MythicGirlEquipmentTracker extends HHModule {
 
   private async injectCSS() {
     GM_addStyle(GirlEquipmentTrackerCss);
+    GM_addStyle(MythicGirlGearPachinkoSummaryCss);
   }
 }
