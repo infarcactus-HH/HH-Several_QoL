@@ -38,7 +38,7 @@ export interface GradeSkinPreview {
   rarity: GirlRarity;
   release_date: string; // "2025-10-08"
   shards_added: number;
-  type: string; // "base" ?
+  type: string; // "base", "medium" ?
 }
 
 export type GradeSkins = Array<GradeSkinPreview>;
@@ -198,6 +198,7 @@ export type CompleteGirl = {
     event_troll?: Array<GirlSourceList>;
     pachinko_event?: Array<GirlSourceList>;
     event_champion_girl?: Array<GirlSourceList>;
+    harem?: Array<GirlSourceList>; // when you have the girl
   };
   style: string; // "Fluffer", "Candaulist", "Smut"
   ts_pay?: number;
