@@ -9,6 +9,7 @@ import type {
   StoredPentaDrillTeam,
   BadgeDataCache,
 } from "../types";
+import { GirlGlobalStorage } from "../types/storage/GirlGlobalStorage";
 import { ReducedLoveRaids } from "../types/storage/love_raids";
 
 export class GlobalStorageHandler {
@@ -231,5 +232,14 @@ export class ShardTrackerStorageHandler {
       const { [id_girl]: _removed, ...rest } = records;
       this.setTrackedGirls(rest);
     }
+  }
+}
+
+export class GirlGlobalStorageHandler {
+  static setGirlGlobalStorage(data: GirlGlobalStorage): void {
+    GM_setValue(HH_UNIVERSE + "GirlGlobalStorage", data);
+  }
+  static getGirlGlobalStorage(): GirlGlobalStorage {
+    return GM_getValue(HH_UNIVERSE + "GirlGlobalStorage", {});
   }
 }

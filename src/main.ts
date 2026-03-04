@@ -28,6 +28,7 @@ import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import { TooltipHook } from "./SingletonModules/TooltipHook";
+import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
 
 class Userscript {
   constructor() {
@@ -88,6 +89,7 @@ class Userscript {
     PlayerPrestigeTracking,
     PlayerDrillTracking,
     PlayerClubTracking,
+    GirlMonitoring,
   ];
   singletonModules = [TooltipHook];
   runWithBDSM() {
