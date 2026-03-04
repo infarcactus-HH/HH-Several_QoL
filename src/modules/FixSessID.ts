@@ -8,20 +8,20 @@ export default class FixSessID extends HHModule {
     label: "<span tooltip='For example when viewing some scenes'>Fix session in URLs</span>",
     default: location.hostname.startsWith("nutaku"),
   };
-  static shouldRun() {
+  static shouldRun_() {
     return location.hostname.startsWith("nutaku");
   }
   run() {
-    if (this.hasRun || !FixSessID.shouldRun()) {
+    if (this._hasRun || !FixSessID.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     if (location.pathname === "/home.html") {
       $(document).on(
         "click.severalQoL_toggleFixSessID",
         `input[name="severalQoL_fixSessID"]`,
         () => {
-          sessionStorageHandler.clearSessID();
+          sessionStorageHandler.clearSessID_();
         },
       );
     }
@@ -29,9 +29,9 @@ export default class FixSessID extends HHModule {
     if (!unsafeWindow.PLATFORM_SESS || !unsafeWindow.PLATFORM_COOKIELESS) {
       return;
     }
-    sessionStorageHandler.setSessID(unsafeWindow.PLATFORM_SESS as string);
+    sessionStorageHandler.setSessID_(unsafeWindow.PLATFORM_SESS as string);
     $(document).on("click", "#girl_preview_btn", () => {
-      HHPlusPlusReplacer.doWhenSelectorAvailable(".scene-preview_wrapper.unlocked", ($element) => {
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(".scene-preview_wrapper.unlocked", ($element) => {
         $element.each((_, sceneDiv) => {
           const $scenePreviewImage = $(sceneDiv).find("img.scene-preview");
           if ($scenePreviewImage.length === 0) {

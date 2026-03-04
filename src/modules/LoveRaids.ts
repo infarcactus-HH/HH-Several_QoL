@@ -36,36 +36,36 @@ export default class LoveRaids extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return (
       location.pathname.includes("/home.html") ||
       (unsafeWindow.love_raids !== undefined && love_raids?.length)
     );
   }
   run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !LoveRaids.shouldRun()) {
+    if (this._hasRun || !LoveRaids.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     switch (location.pathname) {
       case "/home.html":
-        this.homePageModifications();
+        this._homePageModifications();
         break;
       case "/love-raids.html":
-        this.loveRaidsPageModifications();
+        this._loveRaidsPageModifications();
         break;
       default:
-        HHPlusPlusReplacer.doWhenSelectorAvailable("a.love-raid-container.raid", () => {
-          this.handleRaidCards(subSettings.hideRaidCardsUntillStart);
+        HHPlusPlusReplacer.doWhenSelectorAvailable_("a.love-raid-container.raid", () => {
+          this._handleRaidCards(subSettings.hideRaidCardsUntillStart);
         });
         break;
     }
   }
-  handleRaidCards(hideRaidCardsUntillStart: boolean) {
+  private _handleRaidCards(hideRaidCardsUntillStart: boolean) {
     if (love_raids === undefined) {
       return;
     }
-    const storedRaids = LoveRaidsStorageHandler.getReducedLoveRaids();
+    const storedRaids = LoveRaidsStorageHandler.getReducedLoveRaids_();
     $("a.love-raid-container.raid").each(function (_index, element) {
       const raidSearchParam = (element as HTMLLinkElement).href.match(/[?&]raid=(\d+)/)?.[1];
       if (!raidSearchParam) {
@@ -100,7 +100,7 @@ export default class LoveRaids extends HHModule {
       }
     }
   }
-  loveRaidsPageModifications() {
+  private _loveRaidsPageModifications() {
     if (love_raids === undefined) {
       console.log("love_raids data is undefined, cannot modify page");
       return;
@@ -111,7 +111,7 @@ export default class LoveRaids extends HHModule {
     let hiddenRaidIds = new Set<number>(
       result.reducedLoveRaids.filter((raid) => raid.hidden).map((raid) => raid.id_raid),
     );
-    let hideHiddenRaids = LoveRaidsStorageHandler.getHideHiddenRaids(); // persisted monkey state
+    let hideHiddenRaids = LoveRaidsStorageHandler.getHideHiddenRaids_(); // persisted monkey state
     let hiddenRaidsCss: Element | undefined;
     const refreshHiddenRaidsCss = () => {
       hiddenRaidsCss?.remove();
@@ -121,7 +121,7 @@ export default class LoveRaids extends HHModule {
       }
     };
     refreshHiddenRaidsCss();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".raid-card", () => {
       modifyPageWithoutGirlDict();
       unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary().then((girlDict: any) => {
         modifyPageWithGirlDict(girlDict);
@@ -203,7 +203,7 @@ export default class LoveRaids extends HHModule {
         const skin = objectives[1];
         // @prettier-ignore
         //raidCard.querySelector(".raid-name > span > span")!.textContent = `${name} ${GT.design.love_raid}`;
-        HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-name span span", () => {
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(".raid-name span span", () => {
           $raidCard.find(".raid-name > span > span").first().text(`${name} ${GT.design.love_raid}`);
           if (wikiLink) {
             $raidCard
@@ -243,14 +243,14 @@ export default class LoveRaids extends HHModule {
     }
     function modifyPageWithoutGirlDict() {
       handleHidingCompletedRaids();
-      HHPlusPlusReplacer.doWhenSelectorAvailable(
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(
         // removes the eye from HH++
         ".raid-content > .eye.btn-control",
         ($els) => {
           $els.remove();
         },
       );
-      HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-card", () => {
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(".raid-card", () => {
         if (love_raids === undefined) {
           return;
         }
@@ -264,7 +264,7 @@ export default class LoveRaids extends HHModule {
           $element.attr("data-raid-id", raidData.id_raid.toString());
           if (!raidData.all_is_owned) {
             showGirlAvatarForHidden(raidData, $element);
-            HHPlusPlusReplacer.doWhenSelectorAvailable(".raid-name > .type_icon", () => {
+            HHPlusPlusReplacer.doWhenSelectorAvailable_(".raid-name > .type_icon", () => {
               addNotificationForFavoriteRaid(raidData, $element);
             });
             return;
@@ -272,11 +272,11 @@ export default class LoveRaids extends HHModule {
           // Notif for "favorite" raids
         });
         function setRaidHiddenState(raidId: number, hidden: boolean) {
-          const reduced = LoveRaidsStorageHandler.getReducedLoveRaids();
+          const reduced = LoveRaidsStorageHandler.getReducedLoveRaids_();
           const updated = reduced.map((raid) =>
             raid.id_raid === raidId ? { ...raid, hidden } : raid,
           );
-          LoveRaidsStorageHandler.setReducedLoveRaids(updated);
+          LoveRaidsStorageHandler.setReducedLoveRaids_(updated);
           if (hidden) {
             hiddenRaidIds.add(raidId);
           } else {
@@ -318,7 +318,7 @@ export default class LoveRaids extends HHModule {
               currentLoveRaidNotifs.push(raidData.id_raid);
               $raidName.attr("data-notify", "true");
             }
-            LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
+            LoveRaidsStorageHandler.setLoveRaidNotifications_(currentLoveRaidNotifs);
           });
           $raidName.append($notifyToggle);
 
@@ -352,15 +352,15 @@ export default class LoveRaids extends HHModule {
     }
     function updateStorage() {
       // clean up notifications for raids that no longer exist
-      const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
-      const previousReduced = LoveRaidsStorageHandler.getReducedLoveRaids();
+      const loveRaidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications_();
+      const previousReduced = LoveRaidsStorageHandler.getReducedLoveRaids_();
       const previousHiddenById = new Map<number, boolean>(
         previousReduced.map((r) => [r.id_raid, !!r.hidden]),
       );
       let currentLoveRaidNotifs = loveRaidNotifs.filter((id) =>
         love_raids!.some((raid) => raid.id_raid === id),
       ); // can also be used later in the script
-      LoveRaidsStorageHandler.setLoveRaidNotifications(currentLoveRaidNotifs);
+      LoveRaidsStorageHandler.setLoveRaidNotifications_(currentLoveRaidNotifs);
       const reducedLoveRaids = love_raids!.map((raid) => {
         const { id_raid, all_is_owned } = raid;
         let start, end;
@@ -376,16 +376,16 @@ export default class LoveRaids extends HHModule {
         const hidden = previousHiddenById.get(id_raid) ?? false;
         return { all_is_owned, id_raid, start, end, hidden };
       });
-      LoveRaidsStorageHandler.setReducedLoveRaids(reducedLoveRaids);
+      LoveRaidsStorageHandler.setReducedLoveRaids_(reducedLoveRaids);
       return { reducedLoveRaids, loveRaidNotifs };
     }
     function handleHidingCompletedRaids() {
-      let shouldHideCompletedRaids = LoveRaidsStorageHandler.getShouldHideCompletedRaids();
+      let shouldHideCompletedRaids = LoveRaidsStorageHandler.getShouldHideCompletedRaids_();
       let hidingCss: Element | undefined;
       if (shouldHideCompletedRaids) {
         hidingCss = GM_addStyle(`.raid-card.grey-overlay{display:none!important;}`);
       }
-      HHPlusPlusReplacer.doWhenSelectorAvailable(".head-section > a", ($element) => {
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(".head-section > a", ($element) => {
         const $toggle = $(html`
           <div
             class="eye btn-control love-raids-hide-completed-btn"
@@ -401,7 +401,7 @@ export default class LoveRaids extends HHModule {
         $element.after($toggle);
         $toggle.on("click", () => {
           shouldHideCompletedRaids = !shouldHideCompletedRaids;
-          LoveRaidsStorageHandler.setShouldHideCompletedRaids(shouldHideCompletedRaids);
+          LoveRaidsStorageHandler.setShouldHideCompletedRaids_(shouldHideCompletedRaids);
           $toggle
             .find("img")
             .attr(
@@ -432,16 +432,16 @@ export default class LoveRaids extends HHModule {
           hideHiddenRaids = !hideHiddenRaids;
           updateMonkeyIcon();
           refreshHiddenRaidsCss();
-          LoveRaidsStorageHandler.setHideHiddenRaids(hideHiddenRaids);
+          LoveRaidsStorageHandler.setHideHiddenRaids_(hideHiddenRaids);
         });
       });
     }
   }
-  homePageModifications() {
+  private _homePageModifications() {
     console.log("Modifying home page for love raids notifications");
-    const raids = LoveRaidsStorageHandler.getReducedLoveRaids();
-    const raidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(`.raids`, () => {
+    const raids = LoveRaidsStorageHandler.getReducedLoveRaids_();
+    const raidNotifs = LoveRaidsStorageHandler.getLoveRaidNotifications_();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(`.raids`, () => {
       if (raids.length !== 0 && raidNotifs.length !== 0) {
         setRaidNotif();
       }

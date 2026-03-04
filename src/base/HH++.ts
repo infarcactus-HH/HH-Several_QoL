@@ -19,9 +19,9 @@ export type SubSettingsType<T extends HHModule_ConfigSchema> = T["subSettings"] 
 
 export abstract class HHModule {
   public group = "severalQoL";
-  protected hasRun = false;
+  protected _hasRun = false;
 
   abstract readonly configSchema: HHModule_ConfigSchema;
   abstract run(subSettings: any /*SubSettingsType<HHModule_ConfigSchema>*/): void;
-  //static shouldRun(): boolean; < NEEDS to be defined as static
+  //static shouldRun_(): boolean; < NEEDS to be defined as static
 }

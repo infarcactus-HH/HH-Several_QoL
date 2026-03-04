@@ -61,32 +61,32 @@ export default class StyleTweak extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
   run(subSettings: SubSettingsType<StyleTweak_configSchema>) {
-    if (this.hasRun || !StyleTweak.shouldRun()) {
+    if (this._hasRun || !StyleTweak.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("StyleTweak module running");
     if (
       subSettings.villainReplaceBulbsByMulticolorBulb &&
       location.pathname === "/troll-pre-battle.html"
     ) {
-      new VillainReplaceBulbsByMulticolorBulbStyleTweak().run();
+      new VillainReplaceBulbsByMulticolorBulbStyleTweak().run_();
     }
     if (subSettings.lustArenaStyleTweak && location.pathname === "/home.html") {
-      new LustArenaStyleTweak().run();
+      new LustArenaStyleTweak().run_();
     }
     if (
       subSettings.poVPoGHideClaimAllUntilLastDay &&
       (location.pathname === "/path-of-valor.html" || location.pathname === "/path-of-glory.html")
     ) {
-      new PoVPoGHideClaimAllUntilLastDayStyleTweak().run();
+      new PoVPoGHideClaimAllUntilLastDayStyleTweak().run_();
     }
     if (subSettings.compactLeagueStyleTweak && location.pathname === "/leagues.html") {
-      new CompactLeagueStyleTweak().run();
+      new CompactLeagueStyleTweak().run_();
     }
   }
 }

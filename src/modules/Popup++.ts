@@ -8,14 +8,14 @@ export default class PopupPlusPlus extends HHModule {
       "<span tooltip='Stacking point popups, click on the popup to make it disappear'>Popup++</span>",
     default: true,
   };
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
   run() {
-    if (this.hasRun || !PopupPlusPlus.shouldRun()) {
+    if (this._hasRun || !PopupPlusPlus.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     GM_addStyle("#toast-popups {display:inherit!important;}");
     let lastPoints: Record<string, Record<string, number>> = {};
     let timeOut: ReturnType<typeof setTimeout> | null = null;

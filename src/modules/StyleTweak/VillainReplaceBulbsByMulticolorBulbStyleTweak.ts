@@ -5,14 +5,14 @@ import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
 export default class VillainReplaceBulbsByMulticolorBulbStyleTweak implements SubModule {
-  run() {
+  run_() {
     console.log("VillainReplaceBulbsByMulticolorBulb module running");
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle | undefined;
     if (!opponentFighter) {
       return;
     }
     if (opponentFighter.rewards.data.rewards.find((reward) => reward.type === "scrolls_common")) {
-      HHPlusPlusReplacer.doWhenSelectorAvailable(
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(
         ".slot.size_small[class*='slot_scrolls_']",
         ($el) => {
           const multicolorBulbHtml = html`<div
@@ -27,9 +27,9 @@ export default class VillainReplaceBulbsByMulticolorBulbStyleTweak implements Su
         },
       );
     }
-    this.injectCSS();
+    this._injectCSS();
   }
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(VillainReplaceBulbsByMulticolorBulbStyleTweakCss);
   }
 }

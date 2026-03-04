@@ -5,24 +5,24 @@ import html from "../../utils/html";
 import { PlayerStorageHandler } from "../../utils/StorageHandler";
 
 export default class LustArenaStyleTweak implements SubModule {
-  private readonly blinkTimeThreshold = 60 * 60 * 24 - 60 * 30; // 23hours 30min
-  private readonly rgbEasterEggChance = 1000; // 1 in 1000 chance
+  private readonly _blinkTimeThreshold = 60 * 60 * 24 - 60 * 30; // 23hours 30min
+  private readonly _rgbEasterEggChance = 1000; // 1 in 1000 chance
 
   /**
    * Returns the appropriate class for the timeout warning.
    * Has a 1/1000 chance to return the RGB easter egg class instead of the normal blink.
    */
-  private getTimeoutWarningClass(): string {
-    const isRgbMode = Math.floor(Math.random() * this.rgbEasterEggChance) === 0;
+  private _getTimeoutWarningClass(): string {
+    const isRgbMode = Math.floor(Math.random() * this._rgbEasterEggChance) === 0;
     return isRgbMode ? "several-qol-rgb-mode" : "several-qol-blink";
   }
 
-  run() {
-    if (this.isInTutoLustArena()) {
+  run_() {
+    if (this._isInTutoLustArena()) {
       return;
     }
-    this.injectCSS();
-    HHPlusPlusReplacer.doWhenSelectorAvailable('.main-container [rel="pvp-arena"]', ($el) => {
+    this._injectCSS();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_('.main-container [rel="pvp-arena"]', ($el) => {
       const $MapContainer = $('.left-side-container [rel="map"] > .notif-position > span');
       const leftSideBgColor = $MapContainer.css("background-color");
       const leftSideColor = $MapContainer.children().css("color");
@@ -33,7 +33,7 @@ export default class LustArenaStyleTweak implements SubModule {
       const $wrapper = $('<div class="lust-arena-style-tweak-wrapper"></div>');
       $el.replaceWith($wrapper);
       console.log("LustArenaStyleTweak: injecting league and season info", $wrapper);
-      const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank();
+      const leagueInfo = PlayerStorageHandler.getPlayerLeagueRank_();
       const $leaguesA = $(
         html`<a href="${shared.general.getDocumentHref("/leagues.html")}" rel="leagues">
           <img
@@ -48,14 +48,14 @@ export default class LustArenaStyleTweak implements SubModule {
       // Create right section with 2 rows
       const $rightSection = $('<div class="lust-arena-right-section"></div>');
 
-      const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo();
-      const seasonEndsAt = seasonInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
-      const seasonNeedsWarning = seasonEndsAt - server_now_ts < this.blinkTimeThreshold;
+      const seasonInfo = PlayerStorageHandler.getPlayerSeasonInfo_();
+      const seasonEndsAt = seasonInfo?.endsAt || server_now_ts + this._blinkTimeThreshold + 1;
+      const seasonNeedsWarning = seasonEndsAt - server_now_ts < this._blinkTimeThreshold;
       const $seasonA = $(
         html`<a
           href="${shared.general.getDocumentHref("/season.html")}"
           rel="season"
-          class="${seasonNeedsWarning ? this.getTimeoutWarningClass() : ""}"
+          class="${seasonNeedsWarning ? this._getTimeoutWarningClass() : ""}"
         >
           <p>${GT.design.Season}</p>
         </a>`,
@@ -63,7 +63,7 @@ export default class LustArenaStyleTweak implements SubModule {
       if (seasonInfo) {
         $seasonA.attr(
           "tooltip",
-          this.generateProgressBarTooltip(
+          this._generateProgressBarTooltip(
             seasonInfo.tier,
             seasonInfo.mojo,
             seasonInfo.previousTierThreshold,
@@ -76,15 +76,15 @@ export default class LustArenaStyleTweak implements SubModule {
       // font-size for season will be computed after elements are in DOM
       $rightSection.append($seasonA);
 
-      const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo();
+      const pentaDrillInfo = PlayerStorageHandler.getPlayerPentaDrillInfo_();
       const pentaDrillEndsAt =
-        pentaDrillInfo?.endsAt || server_now_ts + this.blinkTimeThreshold + 1;
-      const pentaDrillNeedsWarning = pentaDrillEndsAt - server_now_ts < this.blinkTimeThreshold;
+        pentaDrillInfo?.endsAt || server_now_ts + this._blinkTimeThreshold + 1;
+      const pentaDrillNeedsWarning = pentaDrillEndsAt - server_now_ts < this._blinkTimeThreshold;
       const $pentaDrillA = $(
         html`<a
           href="${shared.general.getDocumentHref("/penta-drill.html")}"
           rel="penta-drill"
-          class="${pentaDrillNeedsWarning ? this.getTimeoutWarningClass() : ""}"
+          class="${pentaDrillNeedsWarning ? this._getTimeoutWarningClass() : ""}"
         >
           <p>${GT.design.penta_drill}</p>
         </a>`,
@@ -92,7 +92,7 @@ export default class LustArenaStyleTweak implements SubModule {
       if (pentaDrillInfo) {
         $pentaDrillA.attr(
           "tooltip",
-          this.generateProgressBarTooltip(
+          this._generateProgressBarTooltip(
             pentaDrillInfo.tier,
             pentaDrillInfo.potions,
             pentaDrillInfo.previousTierThreshold,
@@ -123,10 +123,10 @@ export default class LustArenaStyleTweak implements SubModule {
       });
     });
   }
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(LustArenaStyleTweakCss);
   }
-  private generateProgressBarTooltip(
+  private _generateProgressBarTooltip(
     tier: number,
     currentAmount: number,
     currentTier: number,
@@ -135,7 +135,7 @@ export default class LustArenaStyleTweak implements SubModule {
     imageUrl?: string,
     imagesize?: number,
   ): string {
-    const colors = this.getColors();
+    const colors = this._getColors();
     let progressPercent: number;
     if (nextTier === undefined) {
       // Max tier reached
@@ -171,7 +171,7 @@ export default class LustArenaStyleTweak implements SubModule {
     </div>`;
   }
 
-  private getColors(): { barGradient: string; tier: string } {
+  private _getColors(): { barGradient: string; tier: string } {
     const $barDummy = $(
       html`<div class="progress-section">
         <div class="general-progress-bar">
@@ -194,7 +194,7 @@ export default class LustArenaStyleTweak implements SubModule {
 
     return { barGradient, tier };
   }
-  private isInTutoLustArena(): boolean {
+  private _isInTutoLustArena(): boolean {
     if (tutoFeatures.season && !tutoData.home4_1) {
       return true;
     }

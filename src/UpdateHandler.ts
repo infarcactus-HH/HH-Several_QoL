@@ -7,13 +7,13 @@ import html from "./utils/html";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
-  static run() {
+  static run_() {
     const currentVersion = GM_info.script.version;
-    const storedVersion = GlobalStorageHandler.getStoredScriptVersion();
+    const storedVersion = GlobalStorageHandler.getStoredScriptVersion_();
     console.log(
       `HH++ Several QoL: Current version ${currentVersion}, stored version ${storedVersion}`,
     );
-    UpdateHandler.addOptionToHHPlusPlusConfig();
+    UpdateHandler._addOptionToHHPlusPlusConfig();
     if (storedVersion === currentVersion) {
       return;
     }
@@ -102,9 +102,9 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 30 && GlobalStorageHandler.getShowUpdatePopup()) {
-      UpdateHandler.injectCSS();
-      GameHelpers.createCommonPopup("update-several-qol", (popup, _t) => {
+    if (storedMinor < 30 && GlobalStorageHandler.getShowUpdatePopup_()) {
+      UpdateHandler._injectCSS();
+      GameHelpers.createCommonPopup_("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
@@ -136,7 +136,7 @@ export default class UpdateHandler {
         $toggleUpdatePopup.on("change", () => {
           const show = $toggleUpdatePopup.prop("checked");
           console.log("Setting show update popup to ", show);
-          GlobalStorageHandler.setShowUpdatePopup(show);
+          GlobalStorageHandler.setShowUpdatePopup_(show);
         });
         $footer.append($toggleUpdatePopup);
         $container.append($footer);
@@ -144,14 +144,14 @@ export default class UpdateHandler {
     } else {
       console.log("No update actions needed");
     }
-    GlobalStorageHandler.setStoredScriptVersion(currentVersion);
+    GlobalStorageHandler.setStoredScriptVersion_(currentVersion);
   }
-  static async injectCSS() {
+  private static async _injectCSS() {
     GM_addStyle(updateHandlerCss);
   }
-  static addOptionToHHPlusPlusConfig() {
-    let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
+  private static _addOptionToHHPlusPlusConfig() {
+    let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup_();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
       ".hh-plus-plus-config-button" +
         (unsafeWindow.hhPlusPlusConfig?.BoobStrapped ? ".boob-strapped" : ":not(.boob-strapped)"),
       ($element) => {
@@ -159,33 +159,36 @@ export default class UpdateHandler {
         $element.on("click.severalQoLAddConfig", () => {
           $element.off("click.severalQoLAddConfig");
           console.log("clicked on config");
-          HHPlusPlusReplacer.doWhenSelectorAvailable(".group-panel[rel='severalQoL']", ($panel) => {
-            console.log("Injecting option into HH++ config");
-            const $container = $(
-              html`<div class="config-setting ${updatePopupEnabled ? "enabled" : ""}">
-                <label class="base-setting">
-                  <span tooltip="It will only appear for important update, or new features"
-                    >Show update Popup</span
-                  >
-                </label>
-              </div>`,
-            );
-            const $checkbox = $(
-              `<input type="checkbox" ${updatePopupEnabled ? 'checked="checked"' : ""}>`,
-            );
-            $container.find("label").append($checkbox);
-            $checkbox.on("change", () => {
-              updatePopupEnabled = !updatePopupEnabled;
-              console.log(`Update popup enabled set to ${updatePopupEnabled}`);
-              GlobalStorageHandler.setShowUpdatePopup(updatePopupEnabled);
-              if (updatePopupEnabled) {
-                $container.addClass("enabled");
-              } else {
-                $container.removeClass("enabled");
-              }
-            });
-            $panel.children().first().append($container);
-          });
+          HHPlusPlusReplacer.doWhenSelectorAvailable_(
+            ".group-panel[rel='severalQoL']",
+            ($panel) => {
+              console.log("Injecting option into HH++ config");
+              const $container = $(
+                html`<div class="config-setting ${updatePopupEnabled ? "enabled" : ""}">
+                  <label class="base-setting">
+                    <span tooltip="It will only appear for important update, or new features"
+                      >Show update Popup</span
+                    >
+                  </label>
+                </div>`,
+              );
+              const $checkbox = $(
+                `<input type="checkbox" ${updatePopupEnabled ? 'checked="checked"' : ""}>`,
+              );
+              $container.find("label").append($checkbox);
+              $checkbox.on("change", () => {
+                updatePopupEnabled = !updatePopupEnabled;
+                console.log(`Update popup enabled set to ${updatePopupEnabled}`);
+                GlobalStorageHandler.setShowUpdatePopup_(updatePopupEnabled);
+                if (updatePopupEnabled) {
+                  $container.addClass("enabled");
+                } else {
+                  $container.removeClass("enabled");
+                }
+              });
+              $panel.children().first().append($container);
+            },
+          );
         });
       },
     );

@@ -4,21 +4,21 @@ import { EventInfoStorageHandler } from "../../utils/StorageHandler";
 import { eventInfoHomeCss } from "../../css/modules";
 
 export default class EventInfo_Home implements SubModule {
-  run() {
-    this.injectCSS();
-    HHPlusPlusReplacer.doWhenSelectorAvailable("[rel='path-of-valor']", () => {
-      this.PoVPoGHandler();
+  run_() {
+    this._injectCSS();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("[rel='path-of-valor']", () => {
+      this._PoVPoGHandler();
     });
-    this.SMEventHandler();
+    this._SMEventHandler();
   }
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(eventInfoHomeCss);
   }
-  SMEventHandler() {
-    const SMShopRefreshTime = EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS();
+  private _SMEventHandler() {
+    const SMShopRefreshTime = EventInfoStorageHandler.getSMShopRefreshTimeComparedToServerTS_();
     const $smEventTimerBox = $("[rel='sm_event'][href!='#']").find(".timer-box");
     if (SMShopRefreshTime != 0 && !$smEventTimerBox) {
-      EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS(0);
+      EventInfoStorageHandler.setSMShopRefreshTimeComparedToServerTS_(0);
       return;
     }
     if (SMShopRefreshTime > server_now_ts) {
@@ -36,9 +36,9 @@ export default class EventInfo_Home implements SubModule {
       );
     }
   }
-  PoVPoGHandler() {
-    const PoVEndTime = EventInfoStorageHandler.getPoVEndTimeComparedToServerTS();
-    const PoGEndTime = EventInfoStorageHandler.getPoGEndTimeComparedToServerTS();
+  private _PoVPoGHandler() {
+    const PoVEndTime = EventInfoStorageHandler.getPoVEndTimeComparedToServerTS_();
+    const PoGEndTime = EventInfoStorageHandler.getPoGEndTimeComparedToServerTS_();
     if (PoVEndTime !== 0) {
       addPoVPoGTimer(PoVEndTime, $("[rel='path-of-valor']"), 14 * 24 * 60 * 60); // 14 days
     }

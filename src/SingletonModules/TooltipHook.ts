@@ -7,10 +7,10 @@ export class TooltipHook {
   }> = [];
 
   private constructor() {
-    this.hookTooltip();
+    this._hookTooltip();
   }
 
-  public static getInstance(): TooltipHook {
+  public static getInstance_(): TooltipHook {
     if (!TooltipHook._instance) {
       TooltipHook._instance = new TooltipHook();
     }
@@ -28,7 +28,7 @@ export class TooltipHook {
     this.tooltipOverrides.push({ selector: tooltipSelector, override });
   }
 
-  private hookTooltip() {
+  private _hookTooltip() {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {

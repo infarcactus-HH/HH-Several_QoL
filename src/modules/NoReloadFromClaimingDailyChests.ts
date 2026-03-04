@@ -35,23 +35,23 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
   run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !NoReloadFromClaimingDailyChests.shouldRun()) {
+    if (this._hasRun || !NoReloadFromClaimingDailyChests.shouldRun_()) {
       return location.pathname.includes("/activities.html");
     }
-    this.hasRun = true;
+    this._hasRun = true;
     const $DailyGoals = $(".switch-tab[data-tab='daily_goals']");
     $DailyGoals.on("click", () => {
       console.log("Clicked daily goals");
-      HHPlusPlusReplacer.doWhenSelectorAvailable(".progress-bar-claim-reward", () => {
-        this.applyNoReloadFix(subSettings.popupEnabled);
+      HHPlusPlusReplacer.doWhenSelectorAvailable_(".progress-bar-claim-reward", () => {
+        this._applyNoReloadFix(subSettings.popupEnabled);
       });
     });
   }
-  applyNoReloadFix(popupEnabled: boolean) {
+  private _applyNoReloadFix(popupEnabled: boolean) {
     const self = this;
     $(".progress-bar-claim-reward")
       .off("click")
@@ -77,7 +77,7 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
           } else {
             shared.Hero.updates(t.rewards.heroChangesUpdate, false);
           }
-          self.checkIfAllChestsClaimed();
+          self._checkIfAllChestsClaimed();
           shared.animations.loadingAnimation.stop();
         });
       });
@@ -87,7 +87,7 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
     );
   }
 
-  checkIfAllChestsClaimed() {
+  private _checkIfAllChestsClaimed() {
     if (
       daily_goals_member_progression.taken_rewards_array.length >=
       Math.min(Math.floor(daily_goals_member_progression.potions_amount / 20), 5)

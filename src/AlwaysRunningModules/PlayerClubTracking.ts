@@ -3,20 +3,20 @@ import { membersList } from "../types";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerClubTracking extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/clubs.html";
   }
-  run() {
-    if (this.hasRun || !PlayerClubTracking.shouldRun()) {
+  run_() {
+    if (this._hasRun || !PlayerClubTracking.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("PlayerClubTracking module running");
     const membersList = unsafeWindow.members_list as membersList;
     if (!membersList || membersList.length === 0) {
       return;
     }
     const idClubmates = membersList.map((member) => member.id_member);
-    PlayerStorageHandler.setPlayerClubmatesIds(idClubmates);
+    PlayerStorageHandler.setPlayerClubmatesIds_(idClubmates);
   }
 }

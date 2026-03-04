@@ -7,15 +7,15 @@ export default class WhaleBossTournament extends HHModule {
     label: "Renames WBT to Whale Boss Tournament",
     default: false,
   };
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname.includes("/home.html");
   }
   run() {
-    if (this.hasRun || !WhaleBossTournament.shouldRun()) {
+    if (this._hasRun || !WhaleBossTournament.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".world-boss .title", ($element) => {
+    this._hasRun = true;
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".world-boss .title", ($element) => {
       $element.each((_, el) => {
         const $el = $(el);
         if ($el.parent().attr("rel") === "world-boss-co-op") {

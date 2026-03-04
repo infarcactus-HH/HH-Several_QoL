@@ -3,18 +3,18 @@ import { LeagueOpponentIncomplete } from "../types";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerLeagueTracking extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/leagues.html";
   }
-  run() {
-    if (this.hasRun || !PlayerLeagueTracking.shouldRun()) {
+  run_() {
+    if (this._hasRun || !PlayerLeagueTracking.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("PlayerLeagueTracking module running");
-    this.syncPlayerLeagueRank();
+    this._syncPlayerLeagueRank();
   }
-  syncPlayerLeagueRank() {
+  private _syncPlayerLeagueRank() {
     const currentLeagueTier = unsafeWindow.current_tier_number as number | undefined;
     if (currentLeagueTier === undefined) {
       return;
@@ -28,7 +28,7 @@ export default class PlayerLeagueTracking extends AlwaysRunningModule {
     if (!player) {
       return;
     }
-    PlayerStorageHandler.setPlayerLeagueRank({
+    PlayerStorageHandler.setPlayerLeagueRank_({
       league: currentLeagueTier,
       rank: player.place,
     });

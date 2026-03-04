@@ -43,20 +43,20 @@ export default class MenuExtensions extends HHModule {
     }
     return configSchema;
   })();
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
   run(subSettings: SubSettingsType<MenuExtensions_configSchema>) {
-    if (this.hasRun || !MenuExtensions.shouldRun()) {
+    if (this._hasRun || !MenuExtensions.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("MenuExtensions module running");
     if (subSettings.calendar) {
-      new Calendar().run();
+      new Calendar().run_();
     }
     if (location.hostname.startsWith("nutaku") && subSettings.logout) {
-      new NutakuLogout().run();
+      new NutakuLogout().run_();
     }
   }
 }

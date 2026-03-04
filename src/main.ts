@@ -35,11 +35,11 @@ class Userscript {
       return;
     } // do not run on integrations page otherwise it breaks on phone
     if (location.hostname.startsWith("nutaku")) {
-      this.applySessionFix();
-      this.allModules.push(FixSessID);
+      this._applySessionFix();
+      this._allModules.push(FixSessID);
     }
-    this.singletonModules.forEach((Module) => {
-      Module.getInstance();
+    this._singletonModules.forEach((Module) => {
+      Module.getInstance_();
     });
 
     if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
@@ -50,18 +50,18 @@ class Userscript {
         new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
       ]).then((result) => {
         if (result === "hh++-bdsm:loaded") {
-          this.runWithBDSM();
+          this._runWithBDSM();
         } else {
-          this.runWithoutBdsm();
+          this._runWithoutBdsm();
         }
       });
     } else {
-      this.runWithBDSM();
+      this._runWithBDSM();
     }
-    this.run();
+    this._run();
   }
 
-  allModules = [
+  private _allModules = [
     PopupMinusMinus,
     StyleTweak,
     PlacesOfPowerPlusPlus,
@@ -80,7 +80,7 @@ class Userscript {
     HHPlusPlusBdsmPatch,
     MythicGirlEquipmentTracker,
   ];
-  alwaysRunningModules = [
+  private _alwaysRunningModules = [
     PlayerBadges,
     PlayerLeagueTracking,
     CustomCSS,
@@ -89,19 +89,19 @@ class Userscript {
     PlayerDrillTracking,
     PlayerClubTracking,
   ];
-  singletonModules = [TooltipHook];
-  runWithBDSM() {
+  private _singletonModules = [TooltipHook];
+  private _runWithBDSM() {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
       name: "<span tooltip='By infarctus'>Several QoL</span>",
     });
     if (location.pathname.includes("/home.html")) {
-      this.allModules.forEach((module) => {
+      this._allModules.forEach((module) => {
         unsafeWindow.hhPlusPlusConfig.registerModule(new module());
       });
     } else {
-      this.allModules.forEach((module) => {
-        if (module.shouldRun()) {
+      this._allModules.forEach((module) => {
+        if (module.shouldRun_()) {
           unsafeWindow.hhPlusPlusConfig.registerModule(new module());
         }
       });
@@ -109,13 +109,13 @@ class Userscript {
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
-  runWithoutBdsm() {
-    this.allModules.forEach((module) => {
+  private _runWithoutBdsm() {
+    this._allModules.forEach((module) => {
       if (module === null) return;
       const moduleInstance = new module();
       try {
         const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
-        if (module.shouldRun() && schema.default) {
+        if (module.shouldRun_() && schema.default) {
           try {
             if (schema.subSettings) {
               const subSettings = schema.subSettings.reduce(
@@ -138,9 +138,9 @@ class Userscript {
       }
     });
   }
-  applySessionFix() {
-    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID() != "") {
-      const storedSessID = sessionStorageHandler.getSessID();
+  private _applySessionFix() {
+    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID_() != "") {
+      const storedSessID = sessionStorageHandler.getSessID_();
       if (!storedSessID) {
         return;
       }
@@ -150,12 +150,12 @@ class Userscript {
       window.location.replace(newURL);
     }
   }
-  run() {
-    UpdateHandler.run();
+  private _run() {
+    UpdateHandler.run_();
     Several_QoL_Badges.ensureCacheIsValid();
-    this.alwaysRunningModules.forEach(async (module) => {
-      if (module.shouldRun()) {
-        new module().run();
+    this._alwaysRunningModules.forEach(async (module) => {
+      if (module.shouldRun_()) {
+        new module().run_();
       }
     });
   }

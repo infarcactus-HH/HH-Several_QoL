@@ -3,14 +3,14 @@ import { penta_drill_data } from "../types";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerDrillTracking extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/penta-drill.html";
   }
-  run() {
-    if (this.hasRun || !PlayerDrillTracking.shouldRun()) {
+  run_() {
+    if (this._hasRun || !PlayerDrillTracking.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("PlayerDrillTracking module running");
     const pentaDrillData = unsafeWindow.penta_drill_data as penta_drill_data | undefined;
     if (!pentaDrillData) {
@@ -24,7 +24,7 @@ export default class PlayerDrillTracking extends AlwaysRunningModule {
     const nextTierPathRewards = pentaDrillData.path_rewards.find(
       (pr) => pr.tier === currentTier + 1,
     );
-    PlayerStorageHandler.setPlayerPentaDrillInfo({
+    PlayerStorageHandler.setPlayerPentaDrillInfo_({
       tier: currentTier,
       potions: currentPotions,
       previousTierThreshold: currentTierPathRewards.potions_required,

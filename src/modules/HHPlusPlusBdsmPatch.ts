@@ -31,19 +31,19 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
   run(subSettings: SubSettingsType<HHPlusPlusBdsmPatch_configSchema>) {
-    if (this.hasRun || !HHPlusPlusBdsmPatch.shouldRun()) {
+    if (this._hasRun || !HHPlusPlusBdsmPatch.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     if (subSettings.temporaryPoPBar) {
-      this.addPoPBar();
+      this._addPoPBar();
     }
   }
-  private addPoPBar() {
+  private _addPoPBar() {
     const hhTrackedTimes = JSON.parse(localStorage.getItem("HHPlusPlusTrackedTimes") || "{}");
     if (hhTrackedTimes.pop === undefined || hhTrackedTimes.popDuration === undefined) {
       return;
@@ -105,7 +105,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
 
     GM_addStyle(temporaryPoPBarCss);
 
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
       "#contains_all header>.script-booster-status",
       ($scriptBoostStatus) => {
         $scriptBoostStatus.after($popBar);
@@ -134,7 +134,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         const tooltipInterval = setInterval(updateTooltip, 1000);
       },
     );
-    TooltipHook.getInstance().addTooltipOverride(
+    TooltipHook.getInstance_().addTooltipOverride(
       "[tooltip].sqol-pop-bar-container",
       ".PoP-tooltip",
       (currentTarget, tooltipElement) => {

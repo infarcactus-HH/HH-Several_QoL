@@ -3,11 +3,11 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import html from "../../utils/html";
 
 export default class NutakuLogout implements SubModule {
-  run() {
-    this.addLogoutOption();
+  run_() {
+    this._addLogoutOption();
   }
-  addLogoutOption() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
+  private _addLogoutOption() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
       "#contains_all > nav > [rel='content'] > div",
       ($navDiv) => {
         const logoutLink = html`<a

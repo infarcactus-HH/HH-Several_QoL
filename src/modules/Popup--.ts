@@ -79,58 +79,58 @@ export default class PopupMinusMinus extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
-  popupQueueManagerAddOverrides: Array<{
+  private _popupQueueManagerAddOverrides: Array<{
     fn: (t: popupForQueue["popup"]) => boolean;
     permanent: boolean;
   }> = [];
-  reward_popupRewardHandlePopupOverrides: Array<{
+  private _reward_popupRewardHandlePopupOverrides: Array<{
     fn: (t: any) => boolean;
     permanent: boolean;
   }> = []; // carefull with this one
   run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
-    if (this.hasRun || !PopupMinusMinus.shouldRun()) {
+    if (this._hasRun || !PopupMinusMinus.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
-    this.overridePopups();
+    this._hasRun = true;
+    this._overridePopups();
 
     if (subSettings.noLevelUpPopup) {
-      this.noLevelUpPopup();
+      this._noLevelUpPopup();
     }
     if (subSettings.noMissionPopup && location.pathname === "/activities.html") {
-      this.noMissionPopup();
+      this._noMissionPopup();
     }
     if (subSettings.noAnnoyingReminders) {
-      this.noAnnoyingReminders();
+      this._noAnnoyingReminders();
     }
     if (
       subSettings.noPoVPoGClaimPopup &&
       ["/path-of-glory.html", "/path-of-valor.html"].includes(location.pathname)
     ) {
-      this.noPoVPoGClaimPopup();
+      this._noPoVPoGClaimPopup();
     }
     if (subSettings.noMEClaimPopup && location.pathname === "/seasonal.html") {
-      this.noMEClaimPopup();
+      this._noMEClaimPopup();
     }
     if (subSettings.noPDClaimPopup && location.pathname === "/penta-drill.html") {
-      this.noPoVPoGClaimPopup();
+      this._noPoVPoGClaimPopup();
     }
   }
-  overridePopups() {
+  private _overridePopups() {
     const self = this;
     const originalPopupQueuManagerAdd = shared.PopupQueueManager.add;
     shared.PopupQueueManager.add = function ({ popup: t }) {
-      for (let i = self.popupQueueManagerAddOverrides.length - 1; i >= 0; i--) {
-        const overrideData = self.popupQueueManagerAddOverrides[i];
+      for (let i = self._popupQueueManagerAddOverrides.length - 1; i >= 0; i--) {
+        const overrideData = self._popupQueueManagerAddOverrides[i];
         const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked popup by override", t);
           // Remove if no more usages left
           if (!overrideData.permanent) {
-            self.popupQueueManagerAddOverrides.splice(i, 1);
+            self._popupQueueManagerAddOverrides.splice(i, 1);
           }
           return; // blocked by override
         }
@@ -140,14 +140,14 @@ export default class PopupMinusMinus extends HHModule {
 
     const originalRewardHandlePopup = shared.reward_popup.Reward.handlePopup;
     shared.reward_popup.Reward.handlePopup = function (t: any) {
-      for (let i = self.reward_popupRewardHandlePopupOverrides.length - 1; i >= 0; i--) {
-        const overrideData = self.reward_popupRewardHandlePopupOverrides[i];
+      for (let i = self._reward_popupRewardHandlePopupOverrides.length - 1; i >= 0; i--) {
+        const overrideData = self._reward_popupRewardHandlePopupOverrides[i];
         const shouldBlock = overrideData.fn(t);
         if (shouldBlock) {
           console.log("Blocked reward popup by override", t);
           // Remove if no more usages left
           if (!overrideData.permanent) {
-            self.reward_popupRewardHandlePopupOverrides.splice(i, 1);
+            self._reward_popupRewardHandlePopupOverrides.splice(i, 1);
           }
           return; // blocked by override
         }
@@ -155,7 +155,7 @@ export default class PopupMinusMinus extends HHModule {
       return originalRewardHandlePopup.call(this, t);
     };
   }
-  noAnnoyingReminders() {
+  private _noAnnoyingReminders() {
     setCookie();
     function setCookie() {
       console.log("Setting cookie to disable annoying popups");
@@ -238,8 +238,8 @@ export default class PopupMinusMinus extends HHModule {
       );
     }
   }
-  noMissionPopup() {
-    this.reward_popupRewardHandlePopupOverrides.push({
+  private _noMissionPopup() {
+    this._reward_popupRewardHandlePopupOverrides.push({
       fn: (t: any) => {
         if (t.callback === "handleMissionPopup") {
           console.log("Blocked mission popup", t);
@@ -257,8 +257,8 @@ export default class PopupMinusMinus extends HHModule {
       permanent: true,
     });
   }
-  noLevelUpPopup() {
-    this.popupQueueManagerAddOverrides.push({
+  private _noLevelUpPopup() {
+    this._popupQueueManagerAddOverrides.push({
       fn: (t: popupForQueue["popup"]) => {
         if (
           t.type === "common" &&
@@ -271,11 +271,11 @@ export default class PopupMinusMinus extends HHModule {
       permanent: true,
     });
   }
-  noPoVPoGClaimPopup() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim']", ($el) => {
+  private _noPoVPoGClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("button[rel='claim']", ($el) => {
       console.log("Setting up PoV/PoG popup blocker");
       $el.on("click.noPovPoGPopup", () => {
-        this.popupQueueManagerAddOverrides.push({
+        this._popupQueueManagerAddOverrides.push({
           fn: (t: popupForQueue["popup"]) => {
             if (t.type === "common" && t.popup_name === "rewards") {
               t.onClose();
@@ -289,11 +289,11 @@ export default class PopupMinusMinus extends HHModule {
       });
     });
   }
-  noMEClaimPopup() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable("button[rel='claim'].mega-claim-reward", ($el) => {
+  private _noMEClaimPopup() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("button[rel='claim'].mega-claim-reward", ($el) => {
       console.log("Setting up ME popup blocker");
       $el.on("click.noPovPoGPopup", () => {
-        this.popupQueueManagerAddOverrides.push({
+        this._popupQueueManagerAddOverrides.push({
           fn: (t: popupForQueue["popup"]) => {
             if (t.type === "common" && t.popup_name === "rewards") {
               t.onClose();

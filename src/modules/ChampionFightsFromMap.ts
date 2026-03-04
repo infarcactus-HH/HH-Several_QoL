@@ -8,14 +8,14 @@ export default class ChampionFightsFromMap extends HHModule {
     label: `<span tooltip="Don't click on the button directly to access champ page">Champion Fights From Map</span>`,
     default: false,
   };
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/champions-map.html";
   }
   run() {
-    if (this.hasRun || !ChampionFightsFromMap.shouldRun()) {
+    if (this._hasRun || !ChampionFightsFromMap.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("ChampionFightsFromMap module running");
     $("a[champions_id]").each(function () {
       const $this = $(this);

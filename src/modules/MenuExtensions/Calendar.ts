@@ -5,17 +5,17 @@ import GameHelpers from "../../utils/GameHelpers";
 import { calendarCss } from "../../css/modules";
 
 export default class Calendar implements SubModule {
-  run() {
-    this.injectCSS();
-    this.addCalendarOption();
+  run_() {
+    this._injectCSS();
+    this._addCalendarOption();
   }
 
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(calendarCss);
   }
 
-  addCalendarOption() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
+  private _addCalendarOption() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
       "#contains_all > nav > [rel='content'] > div",
       ($navDiv) => {
         const calendarURL = `https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/refs/heads/main/images/calendar/${GameHelpers.getGameKey()}.jpg`;
@@ -29,7 +29,7 @@ export default class Calendar implements SubModule {
 
         const $calendarPopup = $(html`<img src="${calendarURL}" alt="calendar" />`);
         $calendarMenuItem.on("click", function () {
-          GameHelpers.createPopup("common", "calendar-qol", $calendarPopup, "Calendar");
+          GameHelpers.createPopup_("common", "calendar-qol", $calendarPopup, "Calendar");
         });
       },
     );

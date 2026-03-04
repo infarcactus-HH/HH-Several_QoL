@@ -13,24 +13,24 @@ export default class LeagueOpponentHistory implements SubModule {
   leaguePlayerRecord: league_player_record | undefined;
   updatedPlayerRecordsThisSession: Set<number> = new Set();
 
-  run() {
-    this.injectCSS();
-    this.leaguePlayerRecord = LeagueStorageHandler.getLeaguePlayerRecord();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table > .data-list", ($el) => {
-      this.applyRankingsToOpponentLists();
-      this.startObserverClickOnTable();
-      this.applyRankingsToTable();
+  run_() {
+    this._injectCSS();
+    this.leaguePlayerRecord = LeagueStorageHandler.getLeaguePlayerRecord_();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".league_table > .data-list", ($el) => {
+      this._applyRankingsToOpponentLists();
+      this._startObserverClickOnTable();
+      this._applyRankingsToTable();
       new MutationObserver(() => {
-        this.startObserverClickOnTable();
-        this.applyRankingsToTable();
+        this._startObserverClickOnTable();
+        this._applyRankingsToTable();
       }).observe($el[0], { childList: true });
     });
   }
 
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(leagueOpponentHistoryCss);
   }
-  applyRankingsToOpponentLists() {
+  private _applyRankingsToOpponentLists() {
     if (this.leaguePlayerRecord === undefined) {
       return;
     }
@@ -46,7 +46,7 @@ export default class LeagueOpponentHistory implements SubModule {
       }
     });
   }
-  startObserverClickOnTable() {
+  private _startObserverClickOnTable() {
     const self = this;
     $(".league_table > .data-list > .body-row").on("click.SeveralQoL-OpponentHistory", function () {
       const place = parseInt($(this).children("[column='place']").text().trim());
@@ -66,10 +66,10 @@ export default class LeagueOpponentHistory implements SubModule {
       if (self.updatedPlayerRecordsThisSession.has(selectedOpponent.player.id_fighter)) {
         return;
       }
-      self.sendRequestAndAnalyzeOpponent(selectedOpponent.player.id_fighter, $(this));
+      self._sendRequestAndAnalyzeOpponent(selectedOpponent.player.id_fighter, $(this));
     });
   }
-  sendRequestAndAnalyzeOpponent(opponentId: number, $opponentRow: JQuery<HTMLElement>) {
+  private _sendRequestAndAnalyzeOpponent(opponentId: number, $opponentRow: JQuery<HTMLElement>) {
     const payload = {
       action: "fetch_hero",
       id: "profile",
@@ -87,15 +87,15 @@ export default class LeagueOpponentHistory implements SubModule {
       const timesReached = match ? parseInt(match[2]) : -1;
       this.updatedPlayerRecordsThisSession.add(opponentId);
 
-      const newRecord = this.updateOpponentRecord(opponentId, bestPlace, timesReached);
+      const newRecord = this._updateOpponentRecord(opponentId, bestPlace, timesReached);
       $opponentRow
         .children("[column='nickname']")
         .find(".several-qol-bestrank-timesreached")
         .remove();
-      $opponentRow.children("[column='nickname']").append(this.generateRankHtml(newRecord));
+      $opponentRow.children("[column='nickname']").append(this._generateRankHtml(newRecord));
     });
   }
-  updateOpponentRecord(
+  private _updateOpponentRecord(
     opponentId: number,
     bestPlace: number,
     timesReached: number,
@@ -105,10 +105,10 @@ export default class LeagueOpponentHistory implements SubModule {
       timesReached: timesReached,
       checkExpiresAt: server_now_ts + season_end_at + 10, // +10 to avoid edge cases
     };
-    LeagueStorageHandler.setLeaguePLayerRecord(this.leaguePlayerRecord!);
+    LeagueStorageHandler.setLeaguePLayerRecord_(this.leaguePlayerRecord!);
     return this.leaguePlayerRecord![opponentId];
   }
-  applyRankingsToTable() {
+  private _applyRankingsToTable() {
     const allRows = $(".data-row.body-row");
     if (this.leaguePlayerRecord === undefined) {
       return;
@@ -124,11 +124,11 @@ export default class LeagueOpponentHistory implements SubModule {
         record &&
         !$(row).children("[column='nickname']").find(".several-qol-bestrank-timesreached").length
       ) {
-        $(row).children("[column='nickname']").append(this.generateRankHtml(record));
+        $(row).children("[column='nickname']").append(this._generateRankHtml(record));
       }
     });
   }
-  generateRankHtml(record: league_player_record[number]): JQuery<HTMLElement> {
+  private _generateRankHtml(record: league_player_record[number]): JQuery<HTMLElement> {
     const isOld = record.checkExpiresAt < server_now_ts;
     const $divBestRankTimesReached = $(
       html`<div
@@ -142,7 +142,7 @@ export default class LeagueOpponentHistory implements SubModule {
       return $divBestRankTimesReached;
     }
     const rankContainer = html`<span
-      class="rank-container ${this.generateRankClass(record.bestPlace)}"
+      class="rank-container ${this._generateRankClass(record.bestPlace)}"
       >${record.bestPlace}</span
     >`;
     const timesReached = html`<span class="times-reached">x${record.timesReached}</span>`;
@@ -150,7 +150,7 @@ export default class LeagueOpponentHistory implements SubModule {
     $divBestRankTimesReached.append(timesReached);
     return $divBestRankTimesReached;
   }
-  generateRankClass(bestPlace: number): string {
+  private _generateRankClass(bestPlace: number): string {
     if (bestPlace == 1) {
       return "several-qol-top1";
     } else if (bestPlace <= 4) {

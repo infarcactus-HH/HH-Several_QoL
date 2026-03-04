@@ -12,132 +12,132 @@ import type {
 import { ReducedLoveRaids } from "../types/storage/love_raids";
 
 export class GlobalStorageHandler {
-  static setStoredScriptVersion(version: string): void {
+  static setStoredScriptVersion_(version: string): void {
     GM_setValue("StoredScriptVersion", version);
   }
-  static getStoredScriptVersion(): string {
+  static getStoredScriptVersion_(): string {
     return GM_getValue("StoredScriptVersion", "0.0.0");
   }
-  static setShowUpdatePopup(show: boolean): void {
+  static setShowUpdatePopup_(show: boolean): void {
     GM_setValue("ShowUpdatePopup", show);
   }
-  static getShowUpdatePopup(): boolean {
+  static getShowUpdatePopup_(): boolean {
     return GM_getValue("ShowUpdatePopup", true);
   }
-  static setBadgeCache(cache: BadgeDataCache): void {
+  static setBadgeCache_(cache: BadgeDataCache): void {
     GM_setValue("S_QoL_badge_cache", cache);
   }
-  static getBadgeCache(): BadgeDataCache | null {
+  static getBadgeCache_(): BadgeDataCache | null {
     return GM_getValue("S_QoL_badge_cache", null);
   }
 }
 
 export class PlayerStorageHandler {
-  static setPlayerLeagueRank(info: StoredPlayerLeagueRank): void {
+  static setPlayerLeagueRank_(info: StoredPlayerLeagueRank): void {
     GM_setValue(HH_UNIVERSE + "PlayerLeagueRank", info);
   }
-  static getPlayerLeagueRank(): StoredPlayerLeagueRank {
+  static getPlayerLeagueRank_(): StoredPlayerLeagueRank {
     return GM_getValue(HH_UNIVERSE + "PlayerLeagueRank", { league: 1, rank: -1 });
   }
-  static setPlayerSeasonInfo(info: StoredPlayerSeasonInfo): void {
+  static setPlayerSeasonInfo_(info: StoredPlayerSeasonInfo): void {
     GM_setValue(HH_UNIVERSE + "PlayerSeasonInfo", info);
   }
-  static getPlayerSeasonInfo(): StoredPlayerSeasonInfo | null {
+  static getPlayerSeasonInfo_(): StoredPlayerSeasonInfo | null {
     return GM_getValue(HH_UNIVERSE + "PlayerSeasonInfo", null);
   }
   /**
    * @param bonus percentage bonus for gems gained from prestige
    */
-  static setPlayerGemsPrestigeBonus(bonus: number): void {
+  static setPlayerGemsPrestigeBonus_(bonus: number): void {
     GM_setValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", bonus);
   }
   /**
    * @returns percentage bonus for gems gained from prestige, 0 if not set
    */
-  static getPlayerGemsPrestigeBonus(): number {
+  static getPlayerGemsPrestigeBonus_(): number {
     return GM_getValue(HH_UNIVERSE + "PlayerGemsPrestigeBonus", 0);
   }
-  static setPlayerPentaDrillInfo(info: StoredPlayerPentaDrillInfo): void {
+  static setPlayerPentaDrillInfo_(info: StoredPlayerPentaDrillInfo): void {
     GM_setValue(HH_UNIVERSE + "PlayerPentaDrillInfo", info);
   }
-  static getPlayerPentaDrillInfo(): StoredPlayerPentaDrillInfo | null {
+  static getPlayerPentaDrillInfo_(): StoredPlayerPentaDrillInfo | null {
     return GM_getValue(HH_UNIVERSE + "PlayerPentaDrillInfo", null);
   }
-  static setPlayerClubmatesIds(ids: number[]): void {
+  static setPlayerClubmatesIds_(ids: number[]): void {
     GM_setValue(HH_UNIVERSE + "PlayerClubmatesIds", ids);
   }
-  static getPlayerClubmatesIds(): number[] {
+  static getPlayerClubmatesIds_(): number[] {
     return GM_getValue(HH_UNIVERSE + "PlayerClubmatesIds", []);
   }
 }
 
 export class LeagueStorageHandler {
-  static setLeaguePLayerRecord(data: league_player_record): void {
+  static setLeaguePLayerRecord_(data: league_player_record): void {
     GM_setValue(HH_UNIVERSE + "LeaguePlayerRecord", data);
   }
-  static getLeaguePlayerRecord(): league_player_record {
+  static getLeaguePlayerRecord_(): league_player_record {
     return GM_getValue(HH_UNIVERSE + "LeaguePlayerRecord", {});
   }
 }
 
 export class EventInfoStorageHandler {
-  static setSMShopRefreshTimeComparedToServerTS(ts: number): void {
+  static setSMShopRefreshTimeComparedToServerTS_(ts: number): void {
     // gives like timeout + server_now_ts
     GM_setValue(HH_UNIVERSE + "SMShopRefreshTime", ts);
   }
-  static getSMShopRefreshTimeComparedToServerTS(): number {
+  static getSMShopRefreshTimeComparedToServerTS_(): number {
     return GM_getValue(HH_UNIVERSE + "SMShopRefreshTime", 0);
   }
-  static setPoVEndTimeComparedToServerTS(ts: number): void {
+  static setPoVEndTimeComparedToServerTS_(ts: number): void {
     // gives like end_time + server_now_ts
     GM_setValue(HH_UNIVERSE + "PoVEndTime", ts);
   }
-  static getPoVEndTimeComparedToServerTS(): number {
+  static getPoVEndTimeComparedToServerTS_(): number {
     return GM_getValue(HH_UNIVERSE + "PoVEndTime", 0);
   }
-  static setPoGEndTimeComparedToServerTS(ts: number): void {
+  static setPoGEndTimeComparedToServerTS_(ts: number): void {
     // gives like end_time + server_now_ts
     GM_setValue(HH_UNIVERSE + "PoGEndTime", ts);
   }
-  static getPoGEndTimeComparedToServerTS(): number {
+  static getPoGEndTimeComparedToServerTS_(): number {
     return GM_getValue(HH_UNIVERSE + "PoGEndTime", 0);
   }
 }
 
 export class LabyTeamStorageHandler {
-  static setTeamPreset(data: Record<number, string>): void {
+  static setTeamPreset_(data: Record<number, string>): void {
     GM_setValue(HH_UNIVERSE + "LabyTeamPreset", data);
   }
-  static getTeamPreset(): Record<number, string> | undefined {
+  static getTeamPreset_(): Record<number, string> | undefined {
     return GM_getValue(HH_UNIVERSE + "LabyTeamPreset", undefined);
   }
 }
 export class WBTTeamStorageHandler {
-  static setTeamPreset(data: Record<number, string>): void {
+  static setTeamPreset_(data: Record<number, string>): void {
     GM_setValue(HH_UNIVERSE + "WBTTeamPreset", data);
   }
-  static getTeamPreset(): Record<number, string> | undefined {
+  static getTeamPreset_(): Record<number, string> | undefined {
     return GM_getValue(HH_UNIVERSE + "WBTTeamPreset", undefined);
   }
-  static setWBTId(id: number): void {
+  static setWBTId_(id: number): void {
     GM_setValue(HH_UNIVERSE + "WBTId", id);
   }
-  static getWBTId(): number {
+  static getWBTId_(): number {
     return GM_getValue(HH_UNIVERSE + "WBTId", -1);
   }
 }
 
 export class PentaDrillTeamStorageHandler {
-  static addPentaDrillTeam(team: StoredPentaDrillTeam): void {
-    const existingTeams = this.getPentaDrillTeams();
+  static addPentaDrillTeam_(team: StoredPentaDrillTeam): void {
+    const existingTeams = this.getPentaDrillTeams_();
     existingTeams.push(team);
     GM_setValue(HH_UNIVERSE + "PentaDrillTeams", existingTeams);
   }
-  static getPentaDrillTeams(): Array<StoredPentaDrillTeam> {
+  static getPentaDrillTeams_(): Array<StoredPentaDrillTeam> {
     return GM_getValue(HH_UNIVERSE + "PentaDrillTeams", []);
   }
-  static deletePentaDrillTeam(index: number): void {
-    const existingTeams = this.getPentaDrillTeams();
+  static deletePentaDrillTeam_(index: number): void {
+    const existingTeams = this.getPentaDrillTeams_();
     if (index >= 0 && index < existingTeams.length) {
       existingTeams.splice(index, 1);
       GM_setValue(HH_UNIVERSE + "PentaDrillTeams", existingTeams);
@@ -146,40 +146,40 @@ export class PentaDrillTeamStorageHandler {
 }
 
 export class LoveRaidsStorageHandler {
-  static setReducedLoveRaids(data: ReducedLoveRaids): void {
+  static setReducedLoveRaids_(data: ReducedLoveRaids): void {
     GM_setValue(HH_UNIVERSE + "ReducedLoveRaids", data);
   }
-  static getReducedLoveRaids(): ReducedLoveRaids {
+  static getReducedLoveRaids_(): ReducedLoveRaids {
     return GM_getValue(HH_UNIVERSE + "ReducedLoveRaids", []);
   }
-  static setLoveRaidNotifications(raidNotifs: Array<number>): void {
+  static setLoveRaidNotifications_(raidNotifs: Array<number>): void {
     GM_setValue(HH_UNIVERSE + "LoveRaidNotifications", raidNotifs);
   }
-  static getLoveRaidNotifications(): Array<number> {
+  static getLoveRaidNotifications_(): Array<number> {
     return GM_getValue(HH_UNIVERSE + "LoveRaidNotifications", []);
   }
-  static setShouldHideCompletedRaids(shouldHide: boolean) {
+  static setShouldHideCompletedRaids_(shouldHide: boolean) {
     GM_setValue("HideCompletedLoveRaids", shouldHide);
   }
-  static getShouldHideCompletedRaids(): boolean {
+  static getShouldHideCompletedRaids_(): boolean {
     return GM_getValue("HideCompletedLoveRaids", true);
   }
-  static setHideHiddenRaids(shouldHide: boolean) {
+  static setHideHiddenRaids_(shouldHide: boolean) {
     GM_setValue(HH_UNIVERSE + "HideHiddenLoveRaids", shouldHide);
   }
-  static getHideHiddenRaids(): boolean {
+  static getHideHiddenRaids_(): boolean {
     return GM_getValue(HH_UNIVERSE + "HideHiddenLoveRaids", false);
   }
 }
 
 export class sessionStorageHandler {
-  static setSessID(sessID: string): void {
+  static setSessID_(sessID: string): void {
     GM_setValue(location.hostname + "SessID", sessID);
   }
-  static getSessID(): string {
+  static getSessID_(): string {
     return GM_getValue(location.hostname + "SessID", "");
   }
-  static clearSessID(): void {
+  static clearSessID_(): void {
     GM_deleteValue(location.hostname + "SessID");
   }
 }
@@ -187,7 +187,7 @@ export class sessionStorageHandler {
 // XXX: it'll be more like a villain tracker if we start tracking boosters or
 //   other bonus stuff too
 export class ShardTrackerStorageHandler {
-  static setCurrentTrackingState(trollID: number, girlIds: GirlID[] = []): void {
+  static setCurrentTrackingState_(trollID: number, girlIds: GirlID[] = []): void {
     // XXX: we forgot to rename the key
     GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID,
@@ -195,41 +195,41 @@ export class ShardTrackerStorageHandler {
     });
   }
 
-  private static currentStoredRecords: TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
-  static getCurrentTrackingState(): { trollID: number; girlIds: GirlID[] } {
+  private static _currentStoredRecords: TrackedGirlRecords | null = null; // Cannot get or set without going through this variable
+  static getCurrentTrackingState_(): { trollID: number; girlIds: GirlID[] } {
     return GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackingState", {
       trollID: -1,
       girlIds: [],
     }) as { trollID: number; girlIds: GirlID[] };
   }
 
-  static getTrackedGirls(): TrackedGirlRecords {
-    if (this.currentStoredRecords === null) {
-      this.currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
+  static getTrackedGirls_(): TrackedGirlRecords {
+    if (this._currentStoredRecords === null) {
+      this._currentStoredRecords = GM_getValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", {});
     }
-    return this.currentStoredRecords!;
+    return this._currentStoredRecords!;
   }
 
-  static setTrackedGirls(records: TrackedGirlRecords): void {
-    this.currentStoredRecords = records;
-    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", this.currentStoredRecords);
+  static setTrackedGirls_(records: TrackedGirlRecords): void {
+    this._currentStoredRecords = records;
+    GM_setValue(HH_UNIVERSE + "VillainShardTrackerTrackedGirls", this._currentStoredRecords);
   }
 
-  static getTrackedGirl(id_girl: GirlID): TrackedGirl | undefined {
-    const records = this.getTrackedGirls();
+  static getTrackedGirl_(id_girl: GirlID): TrackedGirl | undefined {
+    const records = this.getTrackedGirls_();
     return records[id_girl];
   }
 
-  static upsertTrackedGirl(id_girl: GirlID, record: TrackedGirl): void {
-    const records = this.getTrackedGirls();
-    this.setTrackedGirls({ ...records, [id_girl]: record });
+  static upsertTrackedGirl_(id_girl: GirlID, record: TrackedGirl): void {
+    const records = this.getTrackedGirls_();
+    this.setTrackedGirls_({ ...records, [id_girl]: record });
   }
 
-  static removeTrackedGirl(id_girl: GirlID): void {
-    const records = this.getTrackedGirls();
+  static removeTrackedGirl_(id_girl: GirlID): void {
+    const records = this.getTrackedGirls_();
     if (records[id_girl]) {
       const { [id_girl]: _removed, ...rest } = records;
-      this.setTrackedGirls(rest);
+      this.setTrackedGirls_(rest);
     }
   }
 }

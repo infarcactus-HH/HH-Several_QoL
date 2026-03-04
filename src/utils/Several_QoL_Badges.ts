@@ -9,14 +9,14 @@ export interface BadgeConfig {
 }
 
 export class Several_QoL_Badges {
-  private static readonly BADGE_DATA_URL =
+  private static readonly _BADGE_DATA_URL =
     "https://raw.githubusercontent.com/infarcactus-HH/HH-Several_QoL/main/badge-data.json";
-  private static badgeCache: BadgeDataCache | null = null;
+  private static _badgeCache: BadgeDataCache | null = null;
 
   /**
    * Computes the next 12:00 UTC boundary from the current time.
    */
-  private static computeNextRefresh(): number {
+  private static _computeNextRefresh(): number {
     const now = Date.now();
     const msPerDay = 24 * 60 * 60 * 1000;
     const msPerHour = 60 * 60 * 1000;
@@ -25,22 +25,22 @@ export class Several_QoL_Badges {
     return now < todayNoonUTC ? todayNoonUTC : todayNoonUTC + msPerDay;
   }
 
-  private static shouldInvalidateCache(): boolean {
-    if (!this.badgeCache) return true;
-    return Date.now() >= this.badgeCache.nextRefreshAt;
+  private static _shouldInvalidateCache(): boolean {
+    if (!this._badgeCache) return true;
+    return Date.now() >= this._badgeCache.nextRefreshAt;
   }
 
-  private static initializeCache(): void {
-    const cached = GlobalStorageHandler.getBadgeCache();
+  private static _initializeCache(): void {
+    const cached = GlobalStorageHandler.getBadgeCache_();
     if (cached) {
-      this.badgeCache = cached;
+      this._badgeCache = cached;
     }
   }
 
   /**
    * Strips `name` fields from badge entries (used only as comments in the JSON).
    */
-  private static stripNames(
+  private static _stripNames(
     data: Record<string, Record<string, BadgeEntry[]>>,
   ): Record<string, Record<string, BadgeEntry[]>> {
     const cleaned: Record<string, Record<string, BadgeEntry[]>> = {};
@@ -58,19 +58,19 @@ export class Several_QoL_Badges {
     return cleaned;
   }
 
-  private static fetchBadgeDataFromGitHub(): void {
+  private static _fetchBadgeDataFromGitHub(): void {
     GM_xmlhttpRequest({
       method: "GET",
-      url: this.BADGE_DATA_URL,
+      url: this._BADGE_DATA_URL,
       onload: (response: GM_XMLHttpRequestResponse) => {
         if (response.status === 200) {
           try {
             const rawData = JSON.parse(response.responseText);
-            this.badgeCache = {
-              data: this.stripNames(rawData),
-              nextRefreshAt: this.computeNextRefresh(),
+            this._badgeCache = {
+              data: this._stripNames(rawData),
+              nextRefreshAt: this._computeNextRefresh(),
             };
-            GlobalStorageHandler.setBadgeCache(this.badgeCache);
+            GlobalStorageHandler.setBadgeCache_(this._badgeCache);
           } catch (error) {
             console.error("[Several_QoL] Failed to parse badge data:", error);
           }
@@ -87,7 +87,7 @@ export class Several_QoL_Badges {
    * Entries can be plain strings (permanent) or objects with an `until` timestamp.
    * Expired entries (Date.now() > until) are filtered out.
    */
-  private static resolveEntries(entries: BadgeEntry[]): string[] {
+  private static _resolveEntries(entries: BadgeEntry[]): string[] {
     const now = Date.now();
     return entries
       .map((entry) => {
@@ -98,30 +98,30 @@ export class Several_QoL_Badges {
       .filter((id): id is string => id !== null);
   }
 
-  private static getBadgeDataForGame(badgeType: string): string[] {
+  private static _getBadgeDataForGame(badgeType: string): string[] {
     // Initialize cache from GM storage if not already loaded
-    if (this.badgeCache === null) {
-      this.initializeCache();
+    if (this._badgeCache === null) {
+      this._initializeCache();
     }
 
     // Check if a 12:00 UTC boundary has been crossed since last fetch
-    if (this.shouldInvalidateCache()) {
-      this.fetchBadgeDataFromGitHub();
+    if (this._shouldInvalidateCache()) {
+      this._fetchBadgeDataFromGitHub();
     }
 
     // Return cached data (with expired entries filtered) or empty array
-    const entries = this.badgeCache?.data[HH_UNIVERSE]?.[badgeType];
+    const entries = this._badgeCache?.data[HH_UNIVERSE]?.[badgeType];
     if (entries) {
-      return this.resolveEntries(entries);
+      return this._resolveEntries(entries);
     }
     return [];
   }
 
-  static getBadgeConfigurations(): BadgeConfig[] {
+  static getBadgeConfigurations_(): BadgeConfig[] {
     const configs: BadgeConfig[] = [];
 
     // Major Script Contributors
-    const majorContributors = this.getMajorContributorsForGame();
+    const majorContributors = this._getMajorContributorsForGame();
     if (majorContributors.length > 0) {
       configs.push({
         type: "major-contributor",
@@ -132,7 +132,7 @@ export class Several_QoL_Badges {
     }
 
     // Small Script Contributors
-    const smallContributors = this.getSmallContributorsForGame();
+    const smallContributors = this._getSmallContributorsForGame();
     if (smallContributors.length > 0) {
       configs.push({
         type: "small-contributor",
@@ -143,7 +143,7 @@ export class Several_QoL_Badges {
     }
 
     // Patreon Gold Supporters
-    const patreonGoldSupporters = this.getPatreonGoldForGame();
+    const patreonGoldSupporters = this._getPatreonGoldForGame();
     if (patreonGoldSupporters.length > 0) {
       configs.push({
         type: "patreon-gold",
@@ -154,7 +154,7 @@ export class Several_QoL_Badges {
     }
 
     // Patreon Silver Supporters
-    const patreonSilverSupporters = this.getPatreonSilverForGame();
+    const patreonSilverSupporters = this._getPatreonSilverForGame();
     if (patreonSilverSupporters.length > 0) {
       configs.push({
         type: "patreon-silver",
@@ -165,7 +165,7 @@ export class Several_QoL_Badges {
     }
 
     // Patreon Bronze Supporters
-    const patreonBronzeSupporters = this.getPatreonBronzeForGame();
+    const patreonBronzeSupporters = this._getPatreonBronzeForGame();
     if (patreonBronzeSupporters.length > 0) {
       configs.push({
         type: "patreon-bronze",
@@ -183,31 +183,31 @@ export class Several_QoL_Badges {
    * Call this on script startup to check for outdated badges.
    */
   static ensureCacheIsValid(): void {
-    if (this.badgeCache === null) {
-      this.initializeCache();
+    if (this._badgeCache === null) {
+      this._initializeCache();
     }
-    if (this.shouldInvalidateCache()) {
-      this.fetchBadgeDataFromGitHub();
+    if (this._shouldInvalidateCache()) {
+      this._fetchBadgeDataFromGitHub();
     }
   }
 
-  private static getMajorContributorsForGame(): string[] {
-    return this.getBadgeDataForGame("major-contributor");
+  private static _getMajorContributorsForGame(): string[] {
+    return this._getBadgeDataForGame("major-contributor");
   }
 
-  private static getSmallContributorsForGame(): string[] {
-    return this.getBadgeDataForGame("small-contributor");
+  private static _getSmallContributorsForGame(): string[] {
+    return this._getBadgeDataForGame("small-contributor");
   }
 
-  private static getPatreonSilverForGame(): string[] {
-    return this.getBadgeDataForGame("patreon-silver");
+  private static _getPatreonSilverForGame(): string[] {
+    return this._getBadgeDataForGame("patreon-silver");
   }
 
-  private static getPatreonBronzeForGame(): string[] {
-    return this.getBadgeDataForGame("patreon-bronze");
+  private static _getPatreonBronzeForGame(): string[] {
+    return this._getBadgeDataForGame("patreon-bronze");
   }
 
-  private static getPatreonGoldForGame(): string[] {
-    return this.getBadgeDataForGame("patreon-gold");
+  private static _getPatreonGoldForGame(): string[] {
+    return this._getBadgeDataForGame("patreon-gold");
   }
 }

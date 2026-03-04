@@ -62,26 +62,26 @@ export default class LeaguesQoL extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname.includes("/leagues.html");
   }
   run(subSettings: SubSettingsType<LeaguesQoL_configSchema>) {
-    if (this.hasRun || !LeaguesQoL.shouldRun()) {
+    if (this._hasRun || !LeaguesQoL.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
     console.log("LeaguesQoL module running");
     if (subSettings.leagueOpponentHistory) {
-      new LeagueOpponentHistory().run();
+      new LeagueOpponentHistory().run_();
     }
     if (subSettings.leagueNoPlayerProfileOnNameClick) {
-      new LeagueNoPlayerProfileOnNameClick().run();
+      new LeagueNoPlayerProfileOnNameClick().run_();
     }
     if (subSettings.noRefillEnergyConfirm) {
-      new NoRefillEnergyConfirm().run();
+      new NoRefillEnergyConfirm().run_();
     }
     if (subSettings.simv4Fix) {
-      new simv4Fix().run();
+      new simv4Fix().run_();
     }
   }
 }
