@@ -33,20 +33,22 @@ export default class runTimingHandler {
   });
 
   private static _HHPlusPlusRun = new Promise<boolean>((resolve) => {
-    void runTimingHandler._GameScriptsRun.then(() => {
+    void runTimingHandler._JQueryLoaded.then(() => {
       if (unsafeWindow.HHPlusPlus != null) {
         resolve(true);
       } else {
         $(document).one("hh++-bdsm:loaded", () => resolve(true));
-        queueMicrotask(() => {
-          // last fallback
-          if (unsafeWindow.HHPlusPlus != null) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        });
       }
+    });
+    void runTimingHandler._GameScriptsRun.then(() => {
+      queueMicrotask(() => {
+        // last fallback
+        if (unsafeWindow.HHPlusPlus != null) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
     });
   });
 
