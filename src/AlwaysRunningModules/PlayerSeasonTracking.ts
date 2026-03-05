@@ -1,4 +1,5 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { SeasonTiers } from "../types/game/season";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
@@ -6,11 +7,12 @@ export default class PlayerSeasonTracking extends AlwaysRunningModule {
   static shouldRun_() {
     return location.pathname === "/season.html" || location.pathname === "/season-arena.html";
   }
-  run_() {
+  async run_() {
     if (this._hasRun || !PlayerSeasonTracking.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerSeasonTracking module running");
     this._syncPlayerSeasonInfo();
   }

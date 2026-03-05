@@ -1,3 +1,5 @@
+import runTimingHandler from "../runTimingHandler";
+
 export class TooltipHook {
   private static _instance: TooltipHook | null = null;
   currentTarget: HTMLElement | null = null;
@@ -28,7 +30,7 @@ export class TooltipHook {
     this.tooltipOverrides.push({ selector: tooltipSelector, override });
   }
 
-  private _hookTooltip() {
+  private async _hookTooltip() {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
@@ -45,6 +47,7 @@ export class TooltipHook {
         }
       }
     });
+    await runTimingHandler.afterDomContentLoaded_();
     observer.observe(document.body, {
       childList: true,
     });
