@@ -24,14 +24,16 @@ export default class runTimingHandler {
 
   private static _GameScriptsRun = new Promise<void>((resolve) => {
     void runTimingHandler._DomContentLoaded.then(() => {
-      unsafeWindow.$(() => {
-        resolve();
+      queueMicrotask(() => {
+        unsafeWindow.$(() => {
+          resolve();
+        });
       });
     });
   });
 
   private static _HHPlusPlusRun = new Promise<boolean>((resolve) => {
-    void runTimingHandler._JQueryLoaded.then(() => {
+    void runTimingHandler._GameScriptsRun.then(() => {
       if (unsafeWindow.HHPlusPlus != null) {
         resolve(true);
       } else {
