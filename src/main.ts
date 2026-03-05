@@ -94,8 +94,10 @@ class Userscript {
     }
     const hhPlusPlusLoaded = await runTimingHandler.afterHHPlusPlusRun_();
     if (hhPlusPlusLoaded) {
+      console.log("HH++ detected, registering modules through its config");
       this._runWithBDSM(instancesToRegister);
     } else {
+      console.log("HH++ not detected, running modules without BDSM");
       this._runWithoutBdsm(instancesToRegister);
     }
   }
@@ -107,10 +109,10 @@ class Userscript {
       key: "severalQoL",
       name: "<span tooltip='By infarctus'>Several QoL</span>",
     });
-    instancesToRegister.forEach((instance) => {
+    await runTimingHandler.afterGameScriptsRun_();
+    instancesToRegister.forEach(async (instance) => {
       unsafeWindow.hhPlusPlusConfig.registerModule(instance);
     });
-    await runTimingHandler.afterGameScriptsRun_();
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
