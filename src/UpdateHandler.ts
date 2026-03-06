@@ -4,10 +4,11 @@ import { GlobalStorageHandler } from "./utils/StorageHandler";
 import updateHandlerCss from "./css/UpdateHandler.css";
 import { GirlID, Grade, TrackedGirlRecords } from "./types";
 import html from "./utils/html";
+import runTimingHandler from "./runTimingHandler";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
-  static run_() {
+  static async run_() {
     const currentVersion = GM_info.script.version;
     const storedVersion = GlobalStorageHandler.getStoredScriptVersion_();
     console.log(
@@ -18,10 +19,14 @@ export default class UpdateHandler {
       return;
     }
     const [storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
+    console.warn(
+      `HH++ Several QoL: Detected version change from ${storedVersion} to ${currentVersion}`,
+    );
+    console.warn("major", storedMajor, "minor", storedMinor, "patch", storedPatch);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
-    if (storedMinor === 21 && storedPatch < 5) {
+    if (storedMajor == 1 && storedMinor === 21 && storedPatch < 5) {
       //Fix Broken Shard tracked girls storage from between v1.21.3 to 1.21.0
       const values = GM_listValues().filter((v) => v.includes("VillainShardTrackerTrackedGirls"));
       values.forEach((v) => {
@@ -104,6 +109,7 @@ export default class UpdateHandler {
 
     if (storedMajor == 1 && GlobalStorageHandler.getShowUpdatePopup_()) {
       UpdateHandler._injectCSS();
+      await runTimingHandler.afterGameScriptsRun_();
       GameHelpers.createCommonPopup_("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
@@ -117,7 +123,7 @@ export default class UpdateHandler {
             <h3>Misc</h3>
             <p>
               [PoP++] Fixed a race condition</br>
-              [MGE Tracker] Now wproperly states it includes a MGE pachinko summary</br>
+              [MGE Tracker] Now properly states it includes a MGE pachinko summary</br>
             </p>
           </div>
         `);
