@@ -66,10 +66,33 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   static shouldRun_() {
     return (
-      location.pathname.includes("/activities.html") &&
-      !location.search.includes("?tab=pop&index=") &&
-      unsafeWindow.pop_data !== undefined
+      location.pathname.includes("/activities.html") && !location.search.includes("?tab=pop&index=")
     );
+  }
+  run(subSettings: SubSettingsType<configSchema>) {
+    if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
+      return;
+    }
+    this._hasPopupEnabled = subSettings?.rewardPopup ?? true;
+    this._hasRun = true;
+    if (unsafeWindow.pop_data === undefined) {
+      return;
+    }
+    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
+    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
+    $PopSwitcher.attr("tooltip", "By infarctus");
+
+    if (location.search.includes("tab=pop")) {
+      HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
+        this._buildPopInfoWithLoadingHandling();
+        this._setupPoPSwitcherClickHandler($PopSwitcher);
+      });
+    } else {
+      this._setupPoPSwitcherClickHandler($PopSwitcher);
+    }
+
+    this._injectCustomStyles();
+    this._girlsHandler();
   }
   /**
    * Build the custom PoP UI, handling the loading state if girls are still being loaded
@@ -97,30 +120,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $PopSwitcher.on("click", () => {
       this._buildPopInfoWithLoadingHandling();
     });
-  }
-
-  run(subSettings: SubSettingsType<configSchema>) {
-    if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
-      return;
-    }
-    this._hasPopupEnabled = subSettings?.rewardPopup ?? true;
-    this._hasRun = true;
-
-    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
-    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
-    $PopSwitcher.attr("tooltip", "By infarctus");
-
-    if (location.search.includes("tab=pop")) {
-      HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
-        this._buildPopInfoWithLoadingHandling();
-        this._setupPoPSwitcherClickHandler($PopSwitcher);
-      });
-    } else {
-      this._setupPoPSwitcherClickHandler($PopSwitcher);
-    }
-
-    this._injectCustomStyles();
-    this._girlsHandler();
   }
 
   private _updateSuckless() {

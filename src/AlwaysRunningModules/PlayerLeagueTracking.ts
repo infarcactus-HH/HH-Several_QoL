@@ -1,4 +1,5 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { LeagueOpponentIncomplete } from "../types";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
@@ -6,11 +7,12 @@ export default class PlayerLeagueTracking extends AlwaysRunningModule {
   static shouldRun_() {
     return location.pathname === "/leagues.html";
   }
-  run_() {
+  async run_() {
     if (this._hasRun || !PlayerLeagueTracking.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerLeagueTracking module running");
     this._syncPlayerLeagueRank();
   }

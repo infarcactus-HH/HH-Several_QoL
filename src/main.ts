@@ -1,4 +1,4 @@
-import type { HHModule_ConfigSchema } from "./base";
+import type { HHModule, HHModule_ConfigSchema } from "./base";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
@@ -28,6 +28,7 @@ import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import { TooltipHook } from "./SingletonModules/TooltipHook";
+import runTimingHandler from "./runTimingHandler";
 
 class Userscript {
   constructor() {
@@ -42,22 +43,7 @@ class Userscript {
       Module.getInstance_();
     });
 
-    if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
-      Promise.race([
-        new Promise((resolve) => {
-          $(document).one("hh++-bdsm:loaded", () => resolve("hh++-bdsm:loaded"));
-        }),
-        new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
-      ]).then((result) => {
-        if (result === "hh++-bdsm:loaded") {
-          this._runWithBDSM();
-        } else {
-          this._runWithoutBdsm();
-        }
-      });
-    } else {
-      this._runWithBDSM();
-    }
+    this._runModules();
     this._run();
   }
 
@@ -90,32 +76,53 @@ class Userscript {
     PlayerClubTracking,
   ];
   private _singletonModules = [TooltipHook];
-  private _runWithBDSM() {
-    unsafeWindow.hhPlusPlusConfig.registerGroup({
-      key: "severalQoL",
-      name: "<span tooltip='By infarctus'>Several QoL</span>",
-    });
+
+  private async _runModules() {
+    const instancesToRegister: InstanceType<(typeof this._allModules)[number]>[] = [];
     if (location.pathname.includes("/home.html")) {
       this._allModules.forEach((module) => {
-        unsafeWindow.hhPlusPlusConfig.registerModule(new module());
+        const instance = new module();
+        instancesToRegister.push(instance);
       });
     } else {
       this._allModules.forEach((module) => {
         if (module.shouldRun_()) {
-          unsafeWindow.hhPlusPlusConfig.registerModule(new module());
+          const instance = new module();
+          instancesToRegister.push(instance);
         }
       });
     }
+    const hhPlusPlusLoaded = await runTimingHandler.afterHHPlusPlusRun_();
+    if (hhPlusPlusLoaded) {
+      console.log("HH++ detected, registering modules through its config");
+      this._runWithBDSM(instancesToRegister);
+    } else {
+      console.log("HH++ not detected, running modules without BDSM");
+      this._runWithoutBdsm(instancesToRegister);
+    }
+  }
+
+  private async _runWithBDSM(
+    instancesToRegister: InstanceType<(typeof this._allModules)[number]>[],
+  ) {
+    unsafeWindow.hhPlusPlusConfig.registerGroup({
+      key: "severalQoL",
+      name: "<span tooltip='By infarctus'>Several QoL</span>",
+    });
+    await runTimingHandler.afterGameScriptsRun_();
+    instancesToRegister.forEach(async (instance) => {
+      unsafeWindow.hhPlusPlusConfig.registerModule(instance);
+    });
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
-  private _runWithoutBdsm() {
-    this._allModules.forEach((module) => {
-      if (module === null) return;
-      const moduleInstance = new module();
+  private async _runWithoutBdsm(
+    instancesToRegister: InstanceType<(typeof this._allModules)[number]>[],
+  ) {
+    instancesToRegister.forEach(async (module) => {
       try {
-        const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
-        if (module.shouldRun_() && schema.default) {
+        const schema = module.configSchema as HHModule_ConfigSchema;
+        if (schema.default) {
           try {
             if (schema.subSettings) {
               const subSettings = schema.subSettings.reduce(
@@ -125,9 +132,11 @@ class Userscript {
                 },
                 {} as Record<string, any>,
               );
-              moduleInstance.run(subSettings as any);
+              await runTimingHandler.afterGameScriptsRun_();
+              module.run(subSettings as any);
             } else {
-              moduleInstance.run(undefined as any);
+              await runTimingHandler.afterGameScriptsRun_();
+              module.run(undefined as any);
             }
           } catch (e) {
             console.error("Error running module with subsettings", module, e);

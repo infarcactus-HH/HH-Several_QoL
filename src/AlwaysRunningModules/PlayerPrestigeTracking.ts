@@ -1,4 +1,5 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 type prestigeTier = {
@@ -17,11 +18,12 @@ export default class PlayerPrestigeTracking extends AlwaysRunningModule {
   static shouldRun_() {
     return location.pathname === "/home.html";
   }
-  run_() {
+  async run_() {
     if (this._hasRun || !PlayerPrestigeTracking.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerPrestigeTracking module running");
     this._hookOrHandlePrestige();
   }

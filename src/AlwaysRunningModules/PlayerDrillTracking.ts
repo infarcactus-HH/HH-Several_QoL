@@ -1,4 +1,5 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { penta_drill_data } from "../types";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
@@ -6,11 +7,12 @@ export default class PlayerDrillTracking extends AlwaysRunningModule {
   static shouldRun_() {
     return location.pathname === "/penta-drill.html";
   }
-  run_() {
+  async run_() {
     if (this._hasRun || !PlayerDrillTracking.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerDrillTracking module running");
     const pentaDrillData = unsafeWindow.penta_drill_data as penta_drill_data | undefined;
     if (!pentaDrillData) {

@@ -37,16 +37,19 @@ export default class LoveRaids extends HHModule {
     ],
   };
   static shouldRun_() {
-    return (
-      location.pathname.includes("/home.html") ||
-      (unsafeWindow.love_raids !== undefined && love_raids?.length)
-    );
+    return true;
   }
   run(subSettings: SubSettingsType<configSchema>) {
     if (this._hasRun || !LoveRaids.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    if (
+      !location.pathname.includes("/home.html") &&
+      (unsafeWindow.love_raids === undefined || !love_raids?.length)
+    ) {
+      return;
+    }
     switch (location.pathname) {
       case "/home.html":
         this._homePageModifications();

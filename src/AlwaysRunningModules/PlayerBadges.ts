@@ -1,8 +1,9 @@
 import { AlwaysRunningModule } from "../base";
 import { PlayerBadgesCss, PlayerBadges_TighterLeaderboards } from "../css/AlwaysRunningModules";
+import runTimingHandler from "../runTimingHandler";
 import { labyLeaderboardXHRResponse } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { Several_QoL_Badges } from "../utils/Several_QoL_Badges";
+import { BadgeConfig, Several_QoL_Badges } from "../utils/Several_QoL_Badges";
 
 export default class PlayerBadges extends AlwaysRunningModule {
   static shouldRun_() {
@@ -17,14 +18,16 @@ export default class PlayerBadges extends AlwaysRunningModule {
       "/leagues.html",
     ].some((path) => location.pathname === path);
   }
-  private readonly _badgeConfigs = Several_QoL_Badges.getBadgeConfigurations_();
-  run_() {
+  private _badgeConfigs: Array<BadgeConfig> = [];
+  async run_() {
     if (this._hasRun || !PlayerBadges.shouldRun_()) {
       return;
     }
     this._hasRun = true;
     this._injectCSS();
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerBadges module running");
+    this._badgeConfigs = Several_QoL_Badges.getBadgeConfigurations_();
     if (this._badgeConfigs.length === 0) {
       return;
     }
