@@ -19,10 +19,6 @@ export default class UpdateHandler {
       return;
     }
     const [storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
-    console.warn(
-      `HH++ Several QoL: Detected version change from ${storedVersion} to ${currentVersion}`,
-    );
-    console.warn("major", storedMajor, "minor", storedMinor, "patch", storedPatch);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
