@@ -17,7 +17,7 @@ export default class UpdateHandler {
     if (storedVersion === currentVersion) {
       return;
     }
-    const [_storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
+    const [storedMajor, storedMinor, storedPatch] = storedVersion.split(".").map(Number);
     //const [currentMajor, currentMinor, currentPatch] = currentVersion
     //  .split(".")
     //  .map(Number);
@@ -40,7 +40,7 @@ export default class UpdateHandler {
       });
     }
 
-    if (storedMinor === 21 && storedPatch < 5) {
+    if (storedMajor == 1 && storedMinor === 21 && storedPatch < 5) {
       // Switch to PlayerLeagueRank being stored as separate league and rank to an object
       GM_listValues()
         .filter((v) => v.includes("LeagueCurrentRank"))
@@ -49,7 +49,7 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor === 21 && storedPatch < 5) {
+    if (storedMajor == 1 && storedMinor === 21 && storedPatch < 5) {
       //Fix potentially wrongly parsed grades in tracked girls storage from between v1.21.4 to 1.21.0
 
       // grades for potentially wrongly set girls
@@ -102,23 +102,22 @@ export default class UpdateHandler {
         });
     }
 
-    if (storedMinor < 30 && GlobalStorageHandler.getShowUpdatePopup_()) {
+    if (storedMajor == 1 && GlobalStorageHandler.getShowUpdatePopup_()) {
       UpdateHandler._injectCSS();
       GameHelpers.createCommonPopup_("update-several-qol", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>Leagues QoL : simv4 FIX (OFF BY DEFAULT)</h2>
+            <h2>Major Changes : Changes made to the script to make it run faster</h2>
             <p>
-              Due to latest game update simv4 may be inaccurate on league table, This fetches and recomputes opponent data when you click on an opponent row.</br>
-              This requires Leagues++ to work properly.
+              Script now runs at document start, this may create issues, if a feature isn't working as intended report it ASAP.</br>
+              I've also made changes to the script to make it take less size.
             </p>
             <h3>Misc</h3>
             <p>
-              [PoP++] (try at) Bugfix: Wait for element to exist before running, if it didn't appear before it might have fixed it.</br>
-              [MGE Tracker] Feature : added element filtering</br>
-              [PoP Bar] Made tooltip timer real time</br>
+              [PoP++] Fixed a race condition</br>
+              [MGE Tracker] Now wproperly states it includes a MGE pachinko summary</br>
             </p>
           </div>
         `);
