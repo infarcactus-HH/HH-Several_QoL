@@ -44,7 +44,7 @@ const userscriptHeader = `// ==UserScript==
 // @grant        GM_cookie
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-body
 // @connect      github.com
 // @connect      raw.githubusercontent.com
 // ==/UserScript==`;

@@ -47,7 +47,6 @@ export class TooltipHook {
         }
       }
     });
-    await runTimingHandler.afterDomContentLoaded_();
     observer.observe(document.body, {
       childList: true,
     });

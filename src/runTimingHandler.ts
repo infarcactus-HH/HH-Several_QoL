@@ -42,12 +42,14 @@ export default class runTimingHandler {
     });
     void runTimingHandler._GameScriptsRun.then(() => {
       queueMicrotask(() => {
-        // last fallback
-        if (unsafeWindow.HHPlusPlus != null) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
+        $(() => {
+          // last fallback
+          if (unsafeWindow.HHPlusPlus != null) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
       });
     });
   });
