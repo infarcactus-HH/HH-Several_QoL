@@ -3,6 +3,7 @@ import type { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../typ
 import { placesOfPowerCss } from "../css/modules";
 import html from "../utils/html";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -196,7 +197,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       shared.general.hc_confirm(n!, () => {
         shared.animations.loadingAnimation.start();
         t.prop("disabled", true);
-        shared.general.hh_ajax(
+        RequestQueueHandler.getInstance_().addAjaxRequest_(
           {
             action: "pop_claim_all",
           },
@@ -238,7 +239,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       let n = t.attr("price");
       shared.general.hc_confirm(n!, () => {
         (t.prop("disabled", !0),
-          shared.general.hh_ajax(
+          RequestQueueHandler.getInstance_().addAjaxRequest_(
             {
               action: "pop_auto_start_all",
             },
@@ -455,7 +456,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       id_place_of_power: currentPoPData.id_places_of_power,
     };
     delete this._currentPoPGirls[currentPoPData.id_places_of_power];
-    shared.general.hh_ajax(n, (response: any) => {
+    RequestQueueHandler.getInstance_().addAjaxRequest_(n, (response: any) => {
       if (this._hasPopupEnabled) {
         shared.reward_popup.Reward.handlePopup(response.rewards);
       }
@@ -577,7 +578,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     pop_data[popKeyInt].remaining_time = timeToFinishSeconds;
     pop_data[popKeyInt].end_ts = timeToFinishSeconds + Math.floor(Date.now() / 1e3);
 
-    shared.general.hh_ajax(n, (_response: any) => {
+    RequestQueueHandler.getInstance_().addAjaxRequest_(n, (_response: any) => {
       shared.timer.activateTimers("pop-record.selected .pop-active-timer", () => {});
       this._selectNextPoPFromFill($(".pop-record.selected"));
       this._updateOtherScriptsPoPTrackedTime();

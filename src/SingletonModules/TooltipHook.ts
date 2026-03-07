@@ -1,5 +1,3 @@
-import runTimingHandler from "../runTimingHandler";
-
 export class TooltipHook {
   private static _instance: TooltipHook | null = null;
   currentTarget: HTMLElement | null = null;

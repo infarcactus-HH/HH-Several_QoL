@@ -1,3 +1,4 @@
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import { HHModule } from "../base";
 import { LabyTeamPresetPentaDrillCss } from "../css/modules";
 import { penta_drill_all_teams, penta_drill_team_data, StoredPentaDrillTeam } from "../types";
@@ -199,9 +200,13 @@ export default class LabyTeamPresets extends HHModule {
     if (0 !== unsafeWindow.teamId) {
       params.id_team = unsafeWindow.teamId;
     }
-    shared.general.hh_ajax(params, (_data: any) => {
-      shared.general.navigate(unsafeWindow.redirectUrl);
-    });
+    RequestQueueHandler.getInstance_().addAjaxRequest_(
+      params,
+      (_data: any) => {
+        shared.general.navigate(unsafeWindow.redirectUrl);
+      },
+      RequestQueueHandler.PRIORITY_.HIGH,
+    );
   }
   private _WBTPreBattlePageRun() {
     const currentWBTId = unsafeWindow.event_data?.id_world_boss_event as number | undefined;
@@ -294,7 +299,7 @@ export default class LabyTeamPresets extends HHModule {
 
       console.log("AJAX settings: ", settings);
 
-      shared.general.hh_ajax(settings, (_data: any) => {
+      RequestQueueHandler.getInstance_().addAjaxRequest_(settings, (_data: any) => {
         shared.general.navigate(unsafeWindow.redirectUrl);
       });
     } catch (error) {

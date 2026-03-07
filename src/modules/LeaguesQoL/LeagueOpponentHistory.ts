@@ -4,6 +4,7 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { LeagueStorageHandler } from "../../utils/StorageHandler";
 import { leagueOpponentHistoryCss } from "../../css/modules";
 import html from "../../utils/html";
+import RequestQueueHandler from "../../SingletonModules/RequestQueueHandler";
 
 declare const opponents_list: Array<LeagueOpponentIncomplete>;
 declare const season_end_at: number;
@@ -81,19 +82,23 @@ export default class LeagueOpponentHistory implements SubModule {
       `<img src="https:\\/\\/.*?\\/pictures\\/design\\/leagues\\/${highestLeague}\\.png">\\n\\s*?<div class=\\"tier-stats\\">\\n\\s*?<div>Best place:\\s*<span>(\\d+)<sup>[^<]+<\\/sup><\\/span><\\/div>[\\s\\S]*?<div>Times reached: <span>(\\d+)<\\/span><\\/div>`,
       "g",
     );
-    shared.general.hh_ajax(payload, (response: { html: string; success: boolean }) => {
-      const match = D3Placement.exec(response.html);
-      const bestPlace = match ? parseInt(match[1]) : -1;
-      const timesReached = match ? parseInt(match[2]) : -1;
-      this.updatedPlayerRecordsThisSession.add(opponentId);
+    RequestQueueHandler.getInstance_().addAjaxRequest_<{ html: string; success: boolean }>(
+      payload,
+      (response) => {
+        const match = D3Placement.exec(response.html);
+        const bestPlace = match ? parseInt(match[1]) : -1;
+        const timesReached = match ? parseInt(match[2]) : -1;
+        this.updatedPlayerRecordsThisSession.add(opponentId);
 
-      const newRecord = this._updateOpponentRecord(opponentId, bestPlace, timesReached);
-      $opponentRow
-        .children("[column='nickname']")
-        .find(".several-qol-bestrank-timesreached")
-        .remove();
-      $opponentRow.children("[column='nickname']").append(this._generateRankHtml(newRecord));
-    });
+        const newRecord = this._updateOpponentRecord(opponentId, bestPlace, timesReached);
+        $opponentRow
+          .children("[column='nickname']")
+          .find(".several-qol-bestrank-timesreached")
+          .remove();
+        $opponentRow.children("[column='nickname']").append(this._generateRankHtml(newRecord));
+      },
+      RequestQueueHandler.PRIORITY_.LOW,
+    );
   }
   private _updateOpponentRecord(
     opponentId: number,

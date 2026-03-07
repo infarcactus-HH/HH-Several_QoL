@@ -1,4 +1,5 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
 declare let daily_goals_member_progression: {
@@ -43,13 +44,17 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
       return location.pathname.includes("/activities.html");
     }
     this._hasRun = true;
-    const $DailyGoals = $(".switch-tab[data-tab='daily_goals']");
-    $DailyGoals.on("click", () => {
-      console.log("Clicked daily goals");
-      HHPlusPlusReplacer.doWhenSelectorAvailable_(".progress-bar-claim-reward", () => {
-        this._applyNoReloadFix(subSettings.popupEnabled);
-      });
-    });
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
+      ".switch-tab[data-tab='daily_goals']",
+      ($DailyGoals) => {
+        $DailyGoals.on("click", () => {
+          console.log("Clicked daily goals");
+          HHPlusPlusReplacer.doWhenSelectorAvailable_(".progress-bar-claim-reward", () => {
+            this._applyNoReloadFix(subSettings.popupEnabled);
+          });
+        });
+      },
+    );
   }
   private _applyNoReloadFix(popupEnabled: boolean) {
     const self = this;
@@ -70,7 +75,7 @@ export default class NoReloadFromClaimingDailyChests extends HHModule {
         };
         daily_goals_member_progression.taken_rewards_array.push(tier);
         shared.animations.loadingAnimation.start();
-        shared.general.hh_ajax(t, (t: any) => {
+        RequestQueueHandler.getInstance_().addAjaxRequest_(t, (t: any) => {
           if (popupEnabled) {
             const n = t.rewards;
             shared.reward_popup.Reward.handlePopup(n);

@@ -11,6 +11,7 @@ import {
 import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 
 export default class MythicGirlEquipmentTracker extends HHModule {
   readonly configSchema = {
@@ -275,10 +276,7 @@ export default class MythicGirlEquipmentTracker extends HHModule {
 
   private async _fetchAllSlots() {
     const slots: GirlArmorItem["slot_index"][] = [1, 2, 3, 4, 5, 6];
-    for (const slot of slots) {
-      await this._fetchEquipmentWithPagination(slot);
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between slot fetches to avoid overwhelming the server
-    }
+    await Promise.all(slots.map((slot) => this._fetchEquipmentWithPagination(slot)));
   }
 
   private _fetchEquipmentWithPagination(
@@ -294,33 +292,34 @@ export default class MythicGirlEquipmentTracker extends HHModule {
         page: page,
         id_girl: 1,
       };
-
-      shared.general.hh_ajax(params, (response: GirlEquipmentListResponse) => {
-        const mythicItems = response.items.filter((item) => item.rarity === "mythic");
-        // Store the items from this page
-        mythicItems.forEach((item) => {
-          const figure = item.variation.figure;
-          const slotIndex = item.slot_index;
-          if (!this._equipmentData[figure]) {
-            this._equipmentData[figure] = {};
-          }
-          if (!this._equipmentData[figure][slotIndex]) {
-            this._equipmentData[figure][slotIndex] = [];
-          }
-          this._equipmentData[figure][slotIndex].push({
-            level: item.level,
-            element: item.variation.element,
+      RequestQueueHandler.getInstance_().addAjaxRequest_(
+        params,
+        (response: GirlEquipmentListResponse) => {
+          const mythicItems = response.items.filter((item) => item.rarity === "mythic");
+          // Store the items from this page
+          mythicItems.forEach((item) => {
+            const figure = item.variation.figure;
+            if (!this._equipmentData[figure]) {
+              this._equipmentData[figure] = {};
+            }
+            if (!this._equipmentData[figure][slotIndex]) {
+              this._equipmentData[figure][slotIndex] = [];
+            }
+            this._equipmentData[figure][slotIndex].push({
+              level: item.level,
+              element: item.variation.element,
+            });
           });
-        });
 
-        // Check if all items are mythic, if so fetch the next page
-        if (mythicItems.length === response.items.length && response.items.length > 0) {
-          // Fetch next page for this slot
-          this._fetchEquipmentWithPagination(slotIndex, page + 1).then(resolve);
-        } else {
-          resolve();
-        }
-      });
+          // Check if all items are mythic, if so fetch the next page
+          if (mythicItems.length === response.items.length && response.items.length > 0) {
+            // Fetch next page for this slot
+            this._fetchEquipmentWithPagination(slotIndex, page + 1).then(resolve);
+          } else {
+            resolve();
+          }
+        },
+      );
     });
   }
 

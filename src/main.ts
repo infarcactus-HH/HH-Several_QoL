@@ -1,4 +1,4 @@
-import type { HHModule, HHModule_ConfigSchema } from "./base";
+import type { HHModule_ConfigSchema } from "./base";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
 import LabyTeamPresets from "./modules/LabyTeamPresets";
@@ -27,7 +27,6 @@ import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
-import { TooltipHook } from "./SingletonModules/TooltipHook";
 import runTimingHandler from "./runTimingHandler";
 
 class Userscript {
@@ -39,9 +38,6 @@ class Userscript {
       this._applySessionFix();
       this._allModules.push(FixSessID);
     }
-    this._singletonModules.forEach((Module) => {
-      Module.getInstance_();
-    });
 
     this._runModules();
     this._run();
@@ -75,7 +71,6 @@ class Userscript {
     PlayerDrillTracking,
     PlayerClubTracking,
   ];
-  private _singletonModules = [TooltipHook];
 
   private async _runModules() {
     const instancesToRegister: InstanceType<(typeof this._allModules)[number]>[] = [];

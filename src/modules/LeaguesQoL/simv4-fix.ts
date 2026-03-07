@@ -1,11 +1,10 @@
 import { SubModule } from "../../base";
 import { simv4FixCss } from "../../css/modules";
+import RequestQueueHandler from "../../SingletonModules/RequestQueueHandler";
 import { LeagueOpponentIncomplete } from "../../types";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
 export default class simv4Fix implements SubModule {
-  private _requestQueue: Array<() => Promise<void>> = [];
-  private _isProcessingQueue = false;
   private _opponentsRequestSubmitted = new Set<number>();
   private _opponentsSimmed = new Set<number>();
   private _lastOpponentClickedId: number | null = null;
@@ -62,23 +61,11 @@ export default class simv4Fix implements SubModule {
       } else if (!this._opponentsRequestSubmitted.has(idMember)) {
         console.log("Queueing fetch for opponent id ", idMember);
         this._opponentsRequestSubmitted.add(idMember);
-        this._enqueueRequest(() => this._fetchOpponentData(idMember, opponent));
+        RequestQueueHandler.getInstance_().addRequest_(() =>
+          this._fetchOpponentData(idMember, opponent),
+        );
       }
     });
-  }
-  private _enqueueRequest(task: () => Promise<void>): void {
-    this._requestQueue.push(task);
-    if (!this._isProcessingQueue) {
-      this._processQueue();
-    }
-  }
-  private async _processQueue(): Promise<void> {
-    this._isProcessingQueue = true;
-    while (this._requestQueue.length > 0) {
-      const task = this._requestQueue.shift()!;
-      await task();
-    }
-    this._isProcessingQueue = false;
   }
   private _fetchOpponentData(idMember: number, opponent: LeagueOpponentIncomplete): Promise<void> {
     return new Promise((resolve) => {
