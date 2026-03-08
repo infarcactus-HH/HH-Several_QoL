@@ -10,15 +10,30 @@ export default class AjaxCompleteHook {
     xhr: JQuery.jqXHR;
     settings: JQuery.AjaxSettings;
   }> = [];
+  private pendingTrollsRequest: boolean = false;
 
   private constructor() {
-    this._HookAjaxComplete();
+    this._HookAjax();
   }
-  private async _HookAjaxComplete() {
+  private async _HookAjax() {
     await runTimingHandler.afterJQueryLoaded_();
     $(document).ajaxComplete((event, xhr, settings) => {
       this._ajaxHistory.push({ event, xhr, settings });
-      this._callbacks.forEach(async (callback) => callback(event, xhr, settings));
+      this._callbacks.forEach((callback) => callback(event, xhr, settings));
+      if (settings.data && settings.data.includes("action=do_battles_trolls")) {
+        this.pendingTrollsRequest = false;
+      }
+    });
+    $(document).on("ajaxSend", (event, xhr, settings) => {
+      if (settings.data && settings.data.includes("action=do_battles_trolls")) {
+        this.pendingTrollsRequest = true;
+      }
+    });
+    window.addEventListener("beforeunload", (e) => {
+      if (this.pendingTrollsRequest) {
+        e.preventDefault();
+        e.returnValue = true; // Triggers browser's default "leave site?" dialog
+      }
     });
   }
 
