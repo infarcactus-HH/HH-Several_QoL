@@ -7,13 +7,13 @@ export interface UnsafeWindow_seasonal_SEM extends BaseUnsafeWindow {
     id_member: number;
     potions: number;
     tier: number;
-    cards: string; // "1"
+    cards: string; // "", "1"
     last_card_collect_date: string;
     taken_rewards: string;
     has_pass: 0 | 1;
     triggered_reminders: string;
     taken_reward_list: string[];
-    available_reward_types: string[];
+    available_reward_types: ["free"] | ["free", "pass"];
     lively_scenes: Array<{
       lively_scene: {
         id_lively_scene: number;
