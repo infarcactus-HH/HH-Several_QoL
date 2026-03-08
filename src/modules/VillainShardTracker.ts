@@ -15,6 +15,7 @@ import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { villainShardTrackerCss } from "../css/modules";
 import html from "../utils/html";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -72,7 +73,7 @@ export default class ShardTracker extends HHModule {
   }
 
   private _hookTrollAjaxComplete() {
-    $(document).ajaxComplete((_event, xhr, settings) => {
+    AjaxCompleteHook.getInstance_().addCallback_((_event, xhr, settings) => {
       if (
         this._shouldTrackShards &&
         typeof settings?.data === "string" &&

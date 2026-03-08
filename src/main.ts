@@ -28,6 +28,7 @@ import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import runTimingHandler from "./runTimingHandler";
+import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
 
 class Userscript {
   constructor() {
@@ -38,9 +39,8 @@ class Userscript {
       this._applySessionFix();
       this._allModules.push(FixSessID);
     }
-
-    this._runModules();
     this._run();
+    this._runModules();
   }
 
   private _allModules = [
@@ -71,6 +71,7 @@ class Userscript {
     PlayerDrillTracking,
     PlayerClubTracking,
   ];
+  private _singletonInitModules = [AjaxCompleteHook];
 
   private async _runModules() {
     const instancesToRegister: InstanceType<(typeof this._allModules)[number]>[] = [];
@@ -161,6 +162,9 @@ class Userscript {
       if (module.shouldRun_()) {
         new module().run_();
       }
+    });
+    this._singletonInitModules.forEach(async (module) => {
+      module.init_();
     });
   }
 }
