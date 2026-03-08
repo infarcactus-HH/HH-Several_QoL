@@ -58,26 +58,30 @@ export default class ChampionFightsFromMap extends HHModule {
                       team,
                     },
                   };
-                  RequestQueueHandler.getInstance_().addAjaxRequest_(params, function (data) {
-                    console.log("response from champ fight", data);
-                    shared.animations.loadingAnimation.stop();
-                    delete data.end.rewards.redirectUrl;
-                    shared.reward_popup.Reward.handlePopup(data.end.rewards);
-                    shared.Hero.updates(data.end.rewards.heroChangesUpdate);
-                    if (data.objective_points) {
-                      shared.general.objectivePopup.show(data.objective_points);
-                    }
-                    cooldown = data.final.winner.type === "champion" ? 900 : 86400; // 15 minutes or 24hours
-                    const timerElement = shared.timer.buildTimer(
-                      cooldown,
-                      "",
-                      `rest-timer id-${champId}`,
-                      false,
-                    );
-                    $this.find(".rest-timer").replaceWith(timerElement);
-                    shared.timer.activateTimers(`rest-timer.id-${champId}`, () => {});
-                    resolve();
-                  });
+                  RequestQueueHandler.getInstance_().addAjaxRequest_(
+                    params,
+                    function (data) {
+                      console.log("response from champ fight", data);
+                      shared.animations.loadingAnimation.stop();
+                      delete data.end.rewards.redirectUrl;
+                      shared.reward_popup.Reward.handlePopup(data.end.rewards);
+                      shared.Hero.updates(data.end.rewards.heroChangesUpdate);
+                      if (data.objective_points) {
+                        shared.general.objectivePopup.show(data.objective_points);
+                      }
+                      cooldown = data.final.winner.type === "champion" ? 900 : 86400; // 15 minutes or 24hours
+                      const timerElement = shared.timer.buildTimer(
+                        cooldown,
+                        "",
+                        `rest-timer id-${champId}`,
+                        false,
+                      );
+                      $this.find(".rest-timer").replaceWith(timerElement);
+                      shared.timer.activateTimers(`rest-timer.id-${champId}`, () => {});
+                    },
+                    RequestQueueHandler.PRIORITY_.CRITICAL,
+                  );
+                  resolve();
                 },
               });
             });
