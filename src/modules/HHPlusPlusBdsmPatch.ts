@@ -75,7 +75,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       <a
         href="${shared.general.getDocumentHref("/activities.html?tab=pop")}"
         class="${containerClass}"
-        tooltip="50m 50s"
+        tooltip="Finishes in : <br/>50m 50s"
         tooltip_extra_classes="QoL-custom-tooltip PoP-tooltip"
         timeToFinish="${remainingTimeSec}"
       >
@@ -130,6 +130,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
           if (remainingTimeSecUpdated <= 0) {
             clearInterval(tooltipInterval);
             $popBar.addClass("sqol-pop-bar-finished");
+            $popBar.attr("tooltip", "PoP is ready !");
           }
         };
 
@@ -141,9 +142,16 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       ".PoP-tooltip",
       (currentTarget, tooltipElement) => {
         const timeToFinish = Number($(currentTarget).attr("timeToFinish") || "0");
-        const timer = shared.timer.buildTimer(timeToFinish, "", "PoP-tooltip-timer");
-        $(tooltipElement).empty().append(`<div class="PoP-tooltip-content">${timer}</div>`);
-        shared.timer.activateTimers("PoP-tooltip-timer", () => {});
+        console.log("Updating tooltip, timeToFinish:", timeToFinish);
+        if (timeToFinish > 0) {
+          const timer = shared.timer.buildTimer(timeToFinish, "", "PoP-tooltip-timer");
+          $(tooltipElement)
+            .empty()
+            .append(`<div class="PoP-tooltip-content">Finishes in : <br/>${timer}</div>`);
+          shared.timer.activateTimers("PoP-tooltip-timer", () => {});
+        } else {
+          $(tooltipElement).empty().append(`PoP is ready !`);
+        }
       },
     );
   }
