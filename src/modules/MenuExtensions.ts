@@ -1,6 +1,7 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import NutakuLogout from "./MenuExtensions/NutakuLogout";
 import Calendar from "./MenuExtensions/Calendar";
+import runTimingHandler from "../runTimingHandler";
 
 type MenuExtensions_configSchema = {
   baseKey: "menuExtensions";
@@ -46,11 +47,12 @@ export default class MenuExtensions extends HHModule {
   static shouldRun_() {
     return true;
   }
-  run(subSettings: SubSettingsType<MenuExtensions_configSchema>) {
+  async run(subSettings: SubSettingsType<MenuExtensions_configSchema>) {
     if (this._hasRun || !MenuExtensions.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("MenuExtensions module running");
     if (subSettings.calendar) {
       new Calendar().run_();

@@ -2,6 +2,8 @@ import { HHModule } from "../base";
 import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { meRankingInfoCss } from "../css/modules";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
+import runTimingHandler from "../runTimingHandler";
 
 export default class MERankingInfo extends HHModule {
   readonly configSchema = {
@@ -26,7 +28,7 @@ export default class MERankingInfo extends HHModule {
     GM_addStyle(meRankingInfoCss);
   }
   private _hookAjaxRequest() {
-    $(document).ajaxComplete((_event, xhr, settings) => {
+    AjaxCompleteHook.getInstance_().addCallback_((_event, xhr, settings) => {
       if (settings?.data === "action=leaderboard&feature=seasonal_event_top") {
         this.heroData = xhr.responseJSON?.hero_data;
         this.leaderboardData = xhr.responseJSON?.leaderboard;

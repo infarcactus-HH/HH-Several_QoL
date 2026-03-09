@@ -1,4 +1,5 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 

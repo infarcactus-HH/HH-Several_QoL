@@ -3,6 +3,7 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 import { LustArenaStyleTweakCss } from "../../css/modules";
 import html from "../../utils/html";
 import { PlayerStorageHandler } from "../../utils/StorageHandler";
+import runTimingHandler from "../../runTimingHandler";
 
 export default class LustArenaStyleTweak implements SubModule {
   private readonly _blinkTimeThreshold = 60 * 60 * 24 - 60 * 30; // 23hours 30min
@@ -17,7 +18,8 @@ export default class LustArenaStyleTweak implements SubModule {
     return isRgbMode ? "several-qol-rgb-mode" : "several-qol-blink";
   }
 
-  run_() {
+  async run_() {
+    await runTimingHandler.afterGameScriptsRun_();
     if (this._isInTutoLustArena()) {
       return;
     }

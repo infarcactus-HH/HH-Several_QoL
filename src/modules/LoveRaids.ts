@@ -6,6 +6,7 @@ import { loveRaidsCss } from "../css/modules";
 import GameHelpers from "../utils/GameHelpers";
 import html from "../utils/html";
 import { ReducedLoveRaid } from "../types/storage/love_raids";
+import runTimingHandler from "../runTimingHandler";
 
 declare const love_raids: Array<love_raids> | undefined;
 
@@ -39,11 +40,12 @@ export default class LoveRaids extends HHModule {
   static shouldRun_() {
     return true;
   }
-  run(subSettings: SubSettingsType<configSchema>) {
+  async run(subSettings: SubSettingsType<configSchema>) {
     if (this._hasRun || !LoveRaids.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (
       !location.pathname.includes("/home.html") &&
       (unsafeWindow.love_raids === undefined || !love_raids?.length)

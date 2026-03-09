@@ -105,7 +105,6 @@ class Userscript {
       key: "severalQoL",
       name: "<span tooltip='By infarctus'>Several QoL</span>",
     });
-    await runTimingHandler.afterGameScriptsRun_();
     instancesToRegister.forEach(async (instance) => {
       unsafeWindow.hhPlusPlusConfig.registerModule(instance);
     });

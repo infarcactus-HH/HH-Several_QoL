@@ -64,7 +64,7 @@ export default class StyleTweak extends HHModule {
   static shouldRun_() {
     return true;
   }
-  run(subSettings: SubSettingsType<StyleTweak_configSchema>) {
+  async run(subSettings: SubSettingsType<StyleTweak_configSchema>) {
     if (this._hasRun || !StyleTweak.shouldRun_()) {
       return;
     }

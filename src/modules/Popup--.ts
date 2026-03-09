@@ -1,4 +1,5 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import type { popupForQueue } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 
@@ -90,11 +91,12 @@ export default class PopupMinusMinus extends HHModule {
     fn: (t: any) => boolean;
     permanent: boolean;
   }> = []; // carefull with this one
-  run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
+  async run(subSettings: SubSettingsType<Popupminusminus_ConfigSchema>) {
     if (this._hasRun || !PopupMinusMinus.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     this._overridePopups();
 
     if (subSettings.noLevelUpPopup) {

@@ -23,11 +23,19 @@ export default class runTimingHandler {
   });
 
   private static _GameScriptsRun = new Promise<void>((resolve) => {
-    void runTimingHandler._DomContentLoaded.then(() => {
+    void runTimingHandler._JQueryLoaded.then(() => {
       queueMicrotask(() => {
         unsafeWindow.$(() => {
           resolve();
         });
+      });
+    });
+  });
+
+  private static _afterThirdPartyScriptsRun = new Promise<void>((resolve) => {
+    void runTimingHandler._GameScriptsRun.then(() => {
+      queueMicrotask(() => {
+        resolve();
       });
     });
   });
@@ -68,5 +76,8 @@ export default class runTimingHandler {
 
   static afterHHPlusPlusRun_(): Promise<boolean> {
     return runTimingHandler._HHPlusPlusRun;
+  }
+  static afterThirdPartyScriptsRun_(): Promise<void> {
+    return runTimingHandler._afterThirdPartyScriptsRun;
   }
 }

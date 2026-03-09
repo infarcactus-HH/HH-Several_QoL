@@ -3,9 +3,12 @@ import html from "../../utils/html";
 import { VillainReplaceBulbsByMulticolorBulbStyleTweakCss } from "../../css/modules";
 import { SubModule } from "../../base";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
+import runTimingHandler from "../../runTimingHandler";
 
 export default class VillainReplaceBulbsByMulticolorBulbStyleTweak implements SubModule {
-  run_() {
+  async run_() {
+    this._injectCSS();
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("VillainReplaceBulbsByMulticolorBulb module running");
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle | undefined;
     if (!opponentFighter) {
@@ -27,7 +30,6 @@ export default class VillainReplaceBulbsByMulticolorBulbStyleTweak implements Su
         },
       );
     }
-    this._injectCSS();
   }
   private async _injectCSS() {
     GM_addStyle(VillainReplaceBulbsByMulticolorBulbStyleTweakCss);

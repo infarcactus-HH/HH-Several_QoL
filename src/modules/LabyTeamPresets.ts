@@ -1,6 +1,7 @@
 import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import { HHModule } from "../base";
 import { LabyTeamPresetPentaDrillCss } from "../css/modules";
+import runTimingHandler from "../runTimingHandler";
 import { penta_drill_all_teams, penta_drill_team_data, StoredPentaDrillTeam } from "../types";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
@@ -31,11 +32,12 @@ export default class LabyTeamPresets extends HHModule {
       location.pathname === "/edit-penta-drill-team"
     );
   }
-  run() {
+  async run() {
     if (this._hasRun || !LabyTeamPresets.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     this._migrateLocalStorageIfNeeded();
     if (location.pathname === "/world-boss-pre-battle.html") {
       this._WBTPreBattlePageRun();

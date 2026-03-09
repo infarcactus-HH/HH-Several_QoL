@@ -1,5 +1,6 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import { temporaryPoPBarCss } from "../css/modules";
+import runTimingHandler from "../runTimingHandler";
 import { TooltipHook } from "../SingletonModules/TooltipHook";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import html from "../utils/html";
@@ -34,11 +35,12 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
   static shouldRun_() {
     return true;
   }
-  run(subSettings: SubSettingsType<HHPlusPlusBdsmPatch_configSchema>) {
+  async run(subSettings: SubSettingsType<HHPlusPlusBdsmPatch_configSchema>) {
     if (this._hasRun || !HHPlusPlusBdsmPatch.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (subSettings.temporaryPoPBar) {
       this._addPoPBar();
     }

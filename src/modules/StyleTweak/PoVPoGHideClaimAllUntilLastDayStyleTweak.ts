@@ -1,8 +1,10 @@
 import { SubModule } from "../../base";
 import { povPoGHideClaimAllUntilLastDayStyleTweakCss } from "../../css/modules";
+import runTimingHandler from "../../runTimingHandler";
 
 export default class PoVPoGHideClaimAllUntilLastDayStyleTweak implements SubModule {
-  run_() {
+  async run_() {
+    await runTimingHandler.afterGameScriptsRun_();
     const timeRemaining: number | undefined = unsafeWindow.time_remaining;
     if (timeRemaining === undefined) {
       return;

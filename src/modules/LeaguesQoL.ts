@@ -1,4 +1,5 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import LeagueNoPlayerProfileOnNameClick from "./LeaguesQoL/LeagueNoPlayerProfileOnNameClick";
 import LeagueOpponentHistory from "./LeaguesQoL/LeagueOpponentHistory";
 import NoRefillEnergyConfirm from "./LeaguesQoL/NoRefillEnergyConfirm_LeagueQoL";
@@ -65,11 +66,12 @@ export default class LeaguesQoL extends HHModule {
   static shouldRun_() {
     return location.pathname.includes("/leagues.html");
   }
-  run(subSettings: SubSettingsType<LeaguesQoL_configSchema>) {
+  async run(subSettings: SubSettingsType<LeaguesQoL_configSchema>) {
     if (this._hasRun || !LeaguesQoL.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterThirdPartyScriptsRun_();
     console.log("LeaguesQoL module running");
     if (subSettings.leagueOpponentHistory) {
       new LeagueOpponentHistory().run_();

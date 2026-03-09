@@ -16,6 +16,7 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { villainShardTrackerCss } from "../css/modules";
 import html from "../utils/html";
 import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
+import runTimingHandler from "../runTimingHandler";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -49,15 +50,16 @@ export default class ShardTracker extends HHModule {
   // XXX: could be made configurable
   private readonly _trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
 
-  run() {
+  async run() {
     if (this._hasRun || !ShardTracker.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (location.pathname === "/troll-pre-battle.html") {
-      this._handlePreBattlePage();
       this._injectCSS();
       this._makeLogPopup();
+      this._handlePreBattlePage();
     } else {
       this._handleBattlePage();
     }

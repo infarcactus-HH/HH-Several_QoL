@@ -12,6 +12,7 @@ import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
+import runTimingHandler from "../runTimingHandler";
 
 export default class MythicGirlEquipmentTracker extends HHModule {
   readonly configSchema = {
@@ -41,13 +42,13 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     return location.pathname === "/waifu.html" || location.pathname === "/pachinko.html";
   }
 
-  run() {
+  async run() {
     if (this._hasRun || !MythicGirlEquipmentTracker.shouldRun_()) {
       return;
     }
     this._hasRun = true;
     this._injectCSS();
-
+    await runTimingHandler.afterGameScriptsRun_();
     if (location.pathname === "/pachinko.html") {
       console.log("MythicGirlEquipmentTracker module running (pachinko)");
       this._hookAjaxComplete();

@@ -10,7 +10,7 @@ export default class WhaleBossTournament extends HHModule {
   static shouldRun_() {
     return location.pathname.includes("/home.html");
   }
-  run() {
+  async run() {
     if (this._hasRun || !WhaleBossTournament.shouldRun_()) {
       return;
     }

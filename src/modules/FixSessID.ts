@@ -1,4 +1,5 @@
 import { HHModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { sessionStorageHandler } from "../utils/StorageHandler";
 
@@ -11,11 +12,12 @@ export default class FixSessID extends HHModule {
   static shouldRun_() {
     return location.hostname.startsWith("nutaku");
   }
-  run() {
+  async run() {
     if (this._hasRun || !FixSessID.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (location.pathname === "/home.html") {
       $(document).on(
         "click.severalQoL_toggleFixSessID",

@@ -4,6 +4,7 @@ import { placesOfPowerCss } from "../css/modules";
 import html from "../utils/html";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
+import runTimingHandler from "../runTimingHandler";
 
 declare const pop_data: Record<number, PlacesOfPowerData>;
 declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
@@ -70,12 +71,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       location.pathname.includes("/activities.html") && !location.search.includes("?tab=pop&index=")
     );
   }
-  run(subSettings: SubSettingsType<configSchema>) {
+  async run(subSettings: SubSettingsType<configSchema>) {
     if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
       return;
     }
     this._hasPopupEnabled = subSettings?.rewardPopup ?? true;
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (unsafeWindow.pop_data === undefined) {
       return;
     }

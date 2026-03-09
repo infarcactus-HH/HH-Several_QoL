@@ -1,4 +1,5 @@
 import { HHModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { Objective } from "../types";
 
 export default class PopupPlusPlus extends HHModule {
@@ -11,11 +12,12 @@ export default class PopupPlusPlus extends HHModule {
   static shouldRun_() {
     return true;
   }
-  run() {
+  async run() {
     if (this._hasRun || !PopupPlusPlus.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     GM_addStyle("#toast-popups {display:inherit!important;}");
     let lastPoints: Record<string, Record<string, number>> = {};
     let timeOut: ReturnType<typeof setTimeout> | null = null;

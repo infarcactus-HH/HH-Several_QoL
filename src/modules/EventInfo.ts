@@ -1,4 +1,5 @@
 import { HHModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import EventInfo_Event from "./EventInfo/EventInfo_Event";
 import EventInfo_Home from "./EventInfo/EventInfo_Home";
@@ -24,11 +25,12 @@ export default class EventInfo extends HHModule {
       location.pathname === "/love-raids.html"
     );
   }
-  run() {
+  async run() {
     if (this._hasRun || !EventInfo.shouldRun_()) {
       return;
     }
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
 
     const path = location.pathname;
 
