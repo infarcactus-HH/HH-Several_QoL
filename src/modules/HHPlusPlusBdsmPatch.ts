@@ -120,11 +120,11 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
       ? "sqol-activity-bar-container sqol-activity-bar-finished"
       : "sqol-activity-bar-container";
 
-    const activityIconSrc = "https://nutaku.haremheroes.com/images/design/menu/missions.svg";
+    const missionIconSrc = "https://nutaku.haremheroes.com/images/design/menu/missions.svg";
     const popIconSrc =
       "https://hh.hh-content.com/pictures/gallery/18/200x/379e7b87f856f75d6016f0242415d028.webp";
-    const iconSrc = displayType === "pop" ? popIconSrc : activityIconSrc;
-    const altText = displayType === "pop" ? "PoP" : "Activity";
+    const iconSrc = displayType === "pop" ? popIconSrc : missionIconSrc;
+    const altText = displayType === "pop" ? "PoP" : "Mission";
 
     const $activityBar = $(html`
       <a
@@ -213,7 +213,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
             if (currentDisplayType === "pop") {
               $activityBar.find("img").attr("src", popIconSrc).attr("alt", "PoP");
             } else {
-              $activityBar.find("img").attr("src", activityIconSrc).attr("alt", "Activity");
+              $activityBar.find("img").attr("src", missionIconSrc).attr("alt", "Mission");
             }
             $activityBar.attr("displayType", currentDisplayType);
           }
@@ -279,8 +279,8 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         }
 
         if (activityTime > 0) {
-          const timer = shared.timer.buildTimer(activityTime, "", "activity-timer");
-          content.push(`<div class="activity-tooltip-item">Activity: ${timer}</div>`);
+          const timer = shared.timer.buildTimer(activityTime, "", "mission-timer");
+          content.push(`<div class="activity-tooltip-item">Mission: ${timer}</div>`);
         }
 
         if (content.length === 0) {
@@ -290,7 +290,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
             .empty()
             .append(`<div class="activity-tooltip-content">${content.join("")}</div>`);
           shared.timer.activateTimers("pop-timer", () => {});
-          shared.timer.activateTimers("activity-timer", () => {});
+          shared.timer.activateTimers("mission-timer", () => {});
         }
       },
     );
