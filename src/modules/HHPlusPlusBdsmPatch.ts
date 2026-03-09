@@ -2,6 +2,7 @@ import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
 import { temporaryPoPBarCss } from "../css/modules";
 import runTimingHandler from "../runTimingHandler";
 import { TooltipHook } from "../SingletonModules/TooltipHook";
+import { UnsafeWindow_Activities } from "../types/unsafeWindows/activities";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import html from "../utils/html";
 
@@ -46,12 +47,31 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
     }
   }
   private _addPoPBar() {
-    const hhTrackedTimes = JSON.parse(localStorage.getItem("HHPlusPlusTrackedTimes") || "{}");
-    if (hhTrackedTimes.pop === undefined || hhTrackedTimes.popDuration === undefined) {
-      return;
+    let remainingTimeSec, durationTimeSec;
+    if (location.pathname !== "/activities.html") {
+      const hhTrackedTimes = JSON.parse(localStorage.getItem("HHPlusPlusTrackedTimes") || "{}");
+      if (hhTrackedTimes.pop === undefined || hhTrackedTimes.popDuration === undefined) {
+        return;
+      }
+      remainingTimeSec = hhTrackedTimes.pop - server_now_ts;
+      durationTimeSec = hhTrackedTimes.popDuration || 1; // Avoid division by zero
+    } else {
+      let currWindow = unsafeWindow as UnsafeWindow_Activities;
+      if (!currWindow.pop_data) {
+        return;
+      }
+      let popDatas = Object.values(currWindow.pop_data).filter((data) => data.remaining_time);
+      if (popDatas.length === 0) {
+        remainingTimeSec = 0;
+        durationTimeSec = 1;
+      } else {
+        const soonestPop = popDatas.reduce((soonest, data) => {
+          return data.remaining_time! < soonest.remaining_time! ? data : soonest;
+        });
+        remainingTimeSec = soonestPop.remaining_time;
+        durationTimeSec = soonestPop.duration || 1; // Avoid division by zero
+      }
     }
-    const remainingTimeSec = hhTrackedTimes.pop - server_now_ts;
-    const durationTimeSec = Math.max(hhTrackedTimes.popDuration, 1); // Avoid division by zero
 
     const DateNowInit = Date.now();
 
