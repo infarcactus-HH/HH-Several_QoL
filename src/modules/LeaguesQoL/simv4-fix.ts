@@ -99,9 +99,6 @@ export default class simv4Fix implements SubModule {
                 configurable: false,
               });
               if (opponent.sim) {
-                selfData.id_team = opponent.sim.forSim.playerTeam.id_team;
-                opponent.sim.forSim.opponentTeam = opponentData;
-                opponent.sim.forSim.playerTeam = selfData;
                 opponent.sim.forSim.result = simResultFullRequest;
                 opponent.sim.forSim.battleTable = "Not supported yet";
                 opponent.sim.forSim.hasAssumptions = false;
