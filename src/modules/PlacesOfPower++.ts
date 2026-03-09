@@ -574,7 +574,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       selected_girls: selectedGirls,
     };
 
-    const $timer = $('<div class="pop-timer"></div>');
+    const $timer = $('<div class="pop-plus-plus-timer"></div>');
 
     const timerElement = shared.timer.buildTimer(
       timeToFinishSeconds,
@@ -749,7 +749,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
         if (popRecord.status === "in_progress") {
           // Create timer
-          const $timer = $('<div class="pop-timer"></div>');
+          const $timer = $('<div class="pop-plus-plus-timer"></div>');
 
           const timerElement = shared.timer.buildTimer(
             popRecord.remaining_time,

@@ -29,6 +29,7 @@ import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import runTimingHandler from "./runTimingHandler";
 import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
+import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
 
 class Userscript {
   constructor() {
@@ -70,6 +71,7 @@ class Userscript {
     PlayerPrestigeTracking,
     PlayerDrillTracking,
     PlayerClubTracking,
+    PlayerActivitiesTracking,
   ];
   private _singletonInitModules = [AjaxCompleteHook];
 

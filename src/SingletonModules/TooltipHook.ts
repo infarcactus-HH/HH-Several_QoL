@@ -17,7 +17,7 @@ export class TooltipHook {
     return TooltipHook._instance;
   }
 
-  public addTooltipOverride(
+  public addTooltipOverride_(
     elementSelector: string,
     tooltipSelector: string,
     override: (currentTarget: HTMLElement, tooltipElement: HTMLElement) => void,

@@ -1,4 +1,5 @@
-.sqol-pop-bar-container {
+.sqol-pop-bar-container,
+.sqol-activity-bar-container {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -11,7 +12,8 @@
   margin-left: 5px;
 }
 
-.sqol-pop-bar-ring {
+.sqol-pop-bar-ring,
+.sqol-activity-bar-ring {
   position: absolute;
   top: 0;
   left: 0;
@@ -20,19 +22,22 @@
   transform: rotate(-90deg);
 }
 
-.sqol-pop-bar-ring-bg {
+.sqol-pop-bar-ring-bg,
+.sqol-activity-bar-ring-bg {
   fill: none;
   stroke: rgba(255, 255, 255, 0.2);
 }
 
-.sqol-pop-bar-ring-progress {
+.sqol-pop-bar-ring-progress,
+.sqol-activity-bar-ring-progress {
   fill: none;
   stroke: #0f8f14;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease;
 }
 
-.sqol-pop-bar-finished .sqol-pop-bar-ring-progress {
+.sqol-pop-bar-finished .sqol-pop-bar-ring-progress,
+.sqol-activity-bar-finished .sqol-activity-bar-ring-progress {
   animation: sqol-pop-bar-flash 0.5s infinite;
 }
 
@@ -47,7 +52,8 @@
   }
 }
 
-.sqol-pop-bar-icon {
+.sqol-pop-bar-icon,
+.sqol-activity-bar-icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -86,7 +92,8 @@ body > div#contains_all > header .script-booster-status[href*="shop"] {
   body > div#contains_all > nav > .square_blue_btn[rel="open"] {
     right: 0px;
   }
-  .sqol-pop-bar-container {
+  .sqol-pop-bar-container,
+  .sqol-activity-bar-container {
     margin-left: 0px;
     margin-top: 15px;
   }

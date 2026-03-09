@@ -69,6 +69,18 @@ export class PlayerStorageHandler {
   static getPlayerClubmatesIds_(): number[] {
     return GM_getValue(HH_UNIVERSE + "PlayerClubmatesIds", []);
   }
+  static setPlayerMissionState_(time_remaining: number | null) {
+    GM_setValue(HH_UNIVERSE + "PlayerMissionState", time_remaining);
+  }
+  static getPlayerMissionState_(): number | null {
+    return GM_getValue(HH_UNIVERSE + "PlayerMissionState", null);
+  }
+  static setPlayerMissionDuration_(duration: number | null) {
+    GM_setValue(HH_UNIVERSE + "PlayerMissionDuration", duration);
+  }
+  static getPlayerMissionDuration_(): number | null {
+    return GM_getValue(HH_UNIVERSE + "PlayerMissionDuration", null);
+  }
 }
 
 export class LeagueStorageHandler {

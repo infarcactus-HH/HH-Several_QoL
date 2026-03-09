@@ -147,7 +147,7 @@
 }
 
 /* Timer display (bottom of thumbnail) */
-.pop-timer {
+.pop-plus-plus-timer {
   position: absolute;
   bottom: 5px;
   background: rgba(0, 0, 0, 0.8);
