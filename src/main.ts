@@ -27,8 +27,9 @@ import PlayerBadges from "./AlwaysRunningModules/PlayerBadges";
 import { Several_QoL_Badges } from "./utils/Several_QoL_Badges";
 import HHPlusPlusBdsmPatch from "./modules/HHPlusPlusBdsmPatch";
 import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
-import { TooltipHook } from "./SingletonModules/TooltipHook";
-import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
+import runTimingHandler from "./runTimingHandler";
+import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
+import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
 
 class Userscript {
   constructor() {
@@ -36,33 +37,14 @@ class Userscript {
       return;
     } // do not run on integrations page otherwise it breaks on phone
     if (location.hostname.startsWith("nutaku")) {
-      this.applySessionFix();
-      this.allModules.push(FixSessID);
+      this._applySessionFix();
+      this._allModules.push(FixSessID);
     }
-    this.singletonModules.forEach((Module) => {
-      Module.getInstance();
-    });
-
-    if (unsafeWindow["hhPlusPlusConfig"] === undefined) {
-      Promise.race([
-        new Promise((resolve) => {
-          $(document).one("hh++-bdsm:loaded", () => resolve("hh++-bdsm:loaded"));
-        }),
-        new Promise((resolve) => setTimeout(() => resolve("timeout"), 50)),
-      ]).then((result) => {
-        if (result === "hh++-bdsm:loaded") {
-          this.runWithBDSM();
-        } else {
-          this.runWithoutBdsm();
-        }
-      });
-    } else {
-      this.runWithBDSM();
-    }
-    this.run();
+    this._run();
+    this._runModules();
   }
 
-  allModules = [
+  private _allModules = [
     PopupMinusMinus,
     StyleTweak,
     PlacesOfPowerPlusPlus,
@@ -81,7 +63,7 @@ class Userscript {
     HHPlusPlusBdsmPatch,
     MythicGirlEquipmentTracker,
   ];
-  alwaysRunningModules = [
+  private _alwaysRunningModules = [
     PlayerBadges,
     PlayerLeagueTracking,
     CustomCSS,
@@ -89,35 +71,55 @@ class Userscript {
     PlayerPrestigeTracking,
     PlayerDrillTracking,
     PlayerClubTracking,
-    GirlMonitoring,
+    PlayerActivitiesTracking,
   ];
-  singletonModules = [TooltipHook];
-  runWithBDSM() {
+  private _singletonInitModules = [AjaxCompleteHook];
+
+  private async _runModules() {
+    const instancesToRegister: InstanceType<(typeof this._allModules)[number]>[] = [];
+    if (location.pathname.includes("/home.html")) {
+      this._allModules.forEach((module) => {
+        const instance = new module();
+        instancesToRegister.push(instance);
+      });
+    } else {
+      this._allModules.forEach((module) => {
+        if (module.shouldRun_()) {
+          const instance = new module();
+          instancesToRegister.push(instance);
+        }
+      });
+    }
+    const hhPlusPlusLoaded = await runTimingHandler.afterHHPlusPlusRun_();
+    if (hhPlusPlusLoaded) {
+      console.log("HH++ detected, registering modules through its config");
+      this._runWithBDSM(instancesToRegister);
+    } else {
+      console.log("HH++ not detected, running modules without BDSM");
+      this._runWithoutBdsm(instancesToRegister);
+    }
+  }
+
+  private async _runWithBDSM(
+    instancesToRegister: InstanceType<(typeof this._allModules)[number]>[],
+  ) {
     unsafeWindow.hhPlusPlusConfig.registerGroup({
       key: "severalQoL",
       name: "<span tooltip='By infarctus'>Several QoL</span>",
     });
-    if (location.pathname.includes("/home.html")) {
-      this.allModules.forEach((module) => {
-        unsafeWindow.hhPlusPlusConfig.registerModule(new module());
-      });
-    } else {
-      this.allModules.forEach((module) => {
-        if (module.shouldRun()) {
-          unsafeWindow.hhPlusPlusConfig.registerModule(new module());
-        }
-      });
-    }
+    instancesToRegister.forEach(async (instance) => {
+      unsafeWindow.hhPlusPlusConfig.registerModule(instance);
+    });
     unsafeWindow.hhPlusPlusConfig.loadConfig();
     unsafeWindow.hhPlusPlusConfig.runModules();
   }
-  runWithoutBdsm() {
-    this.allModules.forEach((module) => {
-      if (module === null) return;
-      const moduleInstance = new module();
+  private async _runWithoutBdsm(
+    instancesToRegister: InstanceType<(typeof this._allModules)[number]>[],
+  ) {
+    instancesToRegister.forEach(async (module) => {
       try {
-        const schema = moduleInstance.configSchema as HHModule_ConfigSchema;
-        if (module.shouldRun() && schema.default) {
+        const schema = module.configSchema as HHModule_ConfigSchema;
+        if (schema.default) {
           try {
             if (schema.subSettings) {
               const subSettings = schema.subSettings.reduce(
@@ -127,9 +129,11 @@ class Userscript {
                 },
                 {} as Record<string, any>,
               );
-              moduleInstance.run(subSettings as any);
+              await runTimingHandler.afterGameScriptsRun_();
+              module.run(subSettings as any);
             } else {
-              moduleInstance.run(undefined as any);
+              await runTimingHandler.afterGameScriptsRun_();
+              module.run(undefined as any);
             }
           } catch (e) {
             console.error("Error running module with subsettings", module, e);
@@ -140,9 +144,9 @@ class Userscript {
       }
     });
   }
-  applySessionFix() {
-    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID() != "") {
-      const storedSessID = sessionStorageHandler.getSessID();
+  private _applySessionFix() {
+    if (!location.search.includes("sess=") && sessionStorageHandler.getSessID_() != "") {
+      const storedSessID = sessionStorageHandler.getSessID_();
       if (!storedSessID) {
         return;
       }
@@ -152,13 +156,16 @@ class Userscript {
       window.location.replace(newURL);
     }
   }
-  run() {
-    UpdateHandler.run();
+  private _run() {
+    UpdateHandler.run_();
     Several_QoL_Badges.ensureCacheIsValid();
-    this.alwaysRunningModules.forEach(async (module) => {
-      if (module.shouldRun()) {
-        new module().run();
+    this._alwaysRunningModules.forEach(async (module) => {
+      if (module.shouldRun_()) {
+        new module().run_();
       }
+    });
+    this._singletonInitModules.forEach(async (module) => {
+      module.init_();
     });
   }
 }

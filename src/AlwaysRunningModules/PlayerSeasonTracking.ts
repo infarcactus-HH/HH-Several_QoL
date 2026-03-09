@@ -1,20 +1,22 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { SeasonTiers } from "../types/game/season";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 export default class PlayerSeasonTracking extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/season.html" || location.pathname === "/season-arena.html";
   }
-  run() {
-    if (this.hasRun || !PlayerSeasonTracking.shouldRun()) {
+  async run_() {
+    if (this._hasRun || !PlayerSeasonTracking.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerSeasonTracking module running");
-    this.syncPlayerSeasonInfo();
+    this._syncPlayerSeasonInfo();
   }
-  syncPlayerSeasonInfo() {
+  private _syncPlayerSeasonInfo() {
     const seasonMojo = unsafeWindow.season_mojo_s as number | undefined;
     if (seasonMojo === undefined) {
       return;
@@ -35,8 +37,8 @@ export default class PlayerSeasonTracking extends AlwaysRunningModule {
     })!;
     const previousTierThreshold = Number(currentTierInfo.mojo_required);
     const nextTierThreshold = nextTier ? Number(nextTier.mojo_required) : undefined;
-    const storedSeasonName = PlayerStorageHandler.getPlayerSeasonInfo()?.name;
-    PlayerStorageHandler.setPlayerSeasonInfo({
+    const storedSeasonName = PlayerStorageHandler.getPlayerSeasonInfo_()?.name;
+    PlayerStorageHandler.setPlayerSeasonInfo_({
       previousTierThreshold,
       nextTierThreshold,
       mojo: seasonMojo,

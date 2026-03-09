@@ -2,6 +2,8 @@ import { HHModule } from "../base";
 import type { MERankingHeroData, MERankingLeaderboardEntryIncomplete } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { meRankingInfoCss } from "../css/modules";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
+import runTimingHandler from "../runTimingHandler";
 
 export default class MERankingInfo extends HHModule {
   readonly configSchema = {
@@ -11,34 +13,34 @@ export default class MERankingInfo extends HHModule {
   };
   heroData: MERankingHeroData | null = null;
   leaderboardData: Array<MERankingLeaderboardEntryIncomplete> | null = null;
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname.includes("seasonal.html");
   }
   run() {
-    if (this.hasRun || !MERankingInfo.shouldRun()) {
+    if (this._hasRun || !MERankingInfo.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
-    this.injectCSS();
-    this.hookAjaxRequest();
+    this._hasRun = true;
+    this._injectCSS();
+    this._hookAjaxRequest();
   }
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(meRankingInfoCss);
   }
-  hookAjaxRequest() {
-    $(document).ajaxComplete((_event, xhr, settings) => {
+  private _hookAjaxRequest() {
+    AjaxCompleteHook.getInstance_().addCallback_((_event, xhr, settings) => {
       if (settings?.data === "action=leaderboard&feature=seasonal_event_top") {
         this.heroData = xhr.responseJSON?.hero_data;
         this.leaderboardData = xhr.responseJSON?.leaderboard;
-        this.hookSpecialHeroRow();
+        this._hookSpecialHeroRow();
       }
     });
   }
 
-  hookSpecialHeroRow() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable("#leaderboard_holder > #outer-hero-row", () => {
+  private _hookSpecialHeroRow() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("#leaderboard_holder > #outer-hero-row", () => {
       console.log("found special hero row");
-      const rankingInfoTooltip = this.createTooltipTableRankingContent();
+      const rankingInfoTooltip = this._createTooltipTableRankingContent();
       const $rankingInfo = $(
         `<img class="me-leaderboard-info" src="https://hh.hh-content.com/leagues/ic_rankup.png" tooltip></img>`,
       );
@@ -47,7 +49,7 @@ export default class MERankingInfo extends HHModule {
     });
   }
 
-  createTooltipTableRankingContent(): string {
+  private _createTooltipTableRankingContent(): string {
     if (!this.heroData || !this.leaderboardData) {
       return "";
     }

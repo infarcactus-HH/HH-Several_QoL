@@ -37,7 +37,7 @@ export default class People extends HHModule {
       },
     ],
   };
-  static shouldRun() {
+  static shouldRun_() {
     return (
       location.host.includes("heroes") ||
       location.host.includes("gayharem") ||
@@ -45,10 +45,10 @@ export default class People extends HHModule {
     );
   }
   run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !People.shouldRun()) {
+    if (this._hasRun || !People.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
 
     if (subSettings.infoBubbleNameToWiki) {
       GM_addStyle(`.new_girl_info .girl_name_wrap > h5 { cursor: pointer; }`);

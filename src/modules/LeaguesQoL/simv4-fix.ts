@@ -1,28 +1,27 @@
 import { SubModule } from "../../base";
 import { simv4FixCss } from "../../css/modules";
+import RequestQueueHandler from "../../SingletonModules/RequestQueueHandler";
 import { LeagueOpponentIncomplete } from "../../types";
 import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 
 export default class simv4Fix implements SubModule {
-  private requestQueue: Array<() => Promise<void>> = [];
-  private isProcessingQueue = false;
-  private opponentsRequestSubmitted = new Set<number>();
-  private opponentsSimmed = new Set<number>();
-  private lastOpponentClickedId: number | null = null;
-  run() {
+  private _opponentsRequestSubmitted = new Set<number>();
+  private _opponentsSimmed = new Set<number>();
+  private _lastOpponentClickedId: number | null = null;
+  run_() {
     console.log("Running simv4Fix");
-    this.injectCSS();
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table > .data-list", ($el) => {
-      this.hookTableClick();
+    this._injectCSS();
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".league_table > .data-list", ($el) => {
+      this._hookTableClick();
       new MutationObserver(() => {
-        this.hookTableClick();
+        this._hookTableClick();
       }).observe($el[0], { childList: true });
     });
   }
-  async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(simv4FixCss);
   }
-  private hookTableClick() {
+  private _hookTableClick() {
     $(".league_table > .data-list > .body-row").on("click.SeveralQoL", (clickEvent) => {
       const idMember = Number(
         clickEvent.delegateTarget.querySelector("[id-member].nickname")?.getAttribute("id-member"),
@@ -37,19 +36,19 @@ export default class simv4Fix implements SubModule {
       if (!opponent) {
         console.warn("Could not find opponent for idMember ", idMember);
         return;
-      } else if (this.opponentsSimmed.has(idMember)) {
+      } else if (this._opponentsSimmed.has(idMember)) {
         console.log("Already computed opponent data for id ", idMember);
-        if (this.lastOpponentClickedId === idMember) {
+        if (this._lastOpponentClickedId === idMember) {
           console.log("Same opponent clicked twice, applying QoL changes");
-          HHPlusPlusReplacer.doWhenSelectorAvailable(
+          HHPlusPlusReplacer.doWhenSelectorAvailable_(
             `.player_team_block:not(.result-QoLed)`,
             (el) => {
               el.addClass("result-QoLed");
             },
           );
         } else {
-          this.lastOpponentClickedId = idMember;
-          HHPlusPlusReplacer.doWhenSelectorAvailable(
+          this._lastOpponentClickedId = idMember;
+          HHPlusPlusReplacer.doWhenSelectorAvailable_(
             `.player_team_block .player-name[title='${opponent.nickname}']`,
             () => {
               const LeaguePlusPlusTeamBlock = document.querySelector(".player_team_block");
@@ -59,28 +58,16 @@ export default class simv4Fix implements SubModule {
             },
           );
         }
-      } else if (!this.opponentsRequestSubmitted.has(idMember)) {
+      } else if (!this._opponentsRequestSubmitted.has(idMember)) {
         console.log("Queueing fetch for opponent id ", idMember);
-        this.opponentsRequestSubmitted.add(idMember);
-        this.enqueueRequest(() => this.fetchOpponentData(idMember, opponent));
+        this._opponentsRequestSubmitted.add(idMember);
+        RequestQueueHandler.getInstance_().addRequest_(() =>
+          this._fetchOpponentData(idMember, opponent),
+        );
       }
     });
   }
-  private enqueueRequest(task: () => Promise<void>): void {
-    this.requestQueue.push(task);
-    if (!this.isProcessingQueue) {
-      this.processQueue();
-    }
-  }
-  private async processQueue(): Promise<void> {
-    this.isProcessingQueue = true;
-    while (this.requestQueue.length > 0) {
-      const task = this.requestQueue.shift()!;
-      await task();
-    }
-    this.isProcessingQueue = false;
-  }
-  private fetchOpponentData(idMember: number, opponent: LeagueOpponentIncomplete): Promise<void> {
+  private _fetchOpponentData(idMember: number, opponent: LeagueOpponentIncomplete): Promise<void> {
     return new Promise((resolve) => {
       const urlToFetch = shared.general.getDocumentHref(
         `/leagues-pre-battle.html?id_opponent=${idMember}`,
@@ -101,7 +88,7 @@ export default class simv4Fix implements SubModule {
                 opponentData,
               );
               const simResultFull = await simResultFullRequest;
-              const pointsTable = this.createPointsTable(simResultFull);
+              const pointsTable = this._createPointsTable(simResultFull);
               Object.defineProperty(opponent, "power", {
                 get() {
                   return simResultFull.avgPoints;
@@ -112,9 +99,6 @@ export default class simv4Fix implements SubModule {
                 configurable: false,
               });
               if (opponent.sim) {
-                selfData.id_team = opponent.sim.forSim.playerTeam.id_team;
-                opponent.sim.forSim.opponentTeam = opponentData;
-                opponent.sim.forSim.playerTeam = selfData;
                 opponent.sim.forSim.result = simResultFullRequest;
                 opponent.sim.forSim.battleTable = "Not supported yet";
                 opponent.sim.forSim.hasAssumptions = false;
@@ -139,9 +123,9 @@ export default class simv4Fix implements SubModule {
               ) {
                 simResultPointElement.setAttribute("tooltip", pointsTable);
                 simResultPointElement.querySelector(".sim-points")!.textContent =
-                  this.toLeaguePointsPerFight(simResultFull.avgPoints);
+                  this._toLeaguePointsPerFight(simResultFull.avgPoints);
                 simResultPercentageElement.querySelector(".sim-chance")!.textContent =
-                  this.toPercentage(simResultFull.chance);
+                  this._toPercentage(simResultFull.chance);
                 simResultPercentageElement.setAttribute("tooltip", `Not supported yet`);
                 LeaguePlusPlusTeamBlock.className += " result-QoLed";
               }
@@ -157,13 +141,13 @@ export default class simv4Fix implements SubModule {
           console.error("Error fetching opponent data: ", error);
         })
         .finally(() => {
-          this.opponentsSimmed.add(idMember);
+          this._opponentsSimmed.add(idMember);
           resolve();
         });
     });
   }
   // From simv4
-  private createPointsTable(result: any): string {
+  private _createPointsTable(result: any): string {
     function clamp(value: number, min: number, max: number): number {
       return value <= min ? min : value >= max ? max : value;
     }
@@ -182,8 +166,8 @@ export default class simv4Fix implements SubModule {
     const toPrecisePercentage = (value: number): string => {
       const percentage = value * 100;
       if (percentage >= 100) return "100%";
-      if (percentage >= 0.01) return `${this.truncateSoftly(percentage, 2)}%`; // 0.01%-99.99%
-      if (percentage >= 0) return `${this.truncateSoftly(percentage, 3)}%`; // 0% or 0.001%-0.009%
+      if (percentage >= 0.01) return `${this._truncateSoftly(percentage, 2)}%`; // 0.01%-99.99%
+      if (percentage >= 0) return `${this._truncateSoftly(percentage, 3)}%`; // 0% or 0.001%-0.009%
       return "0%";
     };
 
@@ -219,7 +203,7 @@ export default class simv4Fix implements SubModule {
       const toPreciseLeaguePointsPerFight = (value: number): string => {
         if (value >= 25) return "25";
         if (value > 24.9) return (25 - parseFloat((25 - value).toPrecision(2))).toLocaleString();
-        return this.truncateSoftly(value, 2);
+        return this._truncateSoftly(value, 2);
       };
       return $('<table class="sim-table"></table>')
         .append(row(column(2, "Points")))
@@ -229,20 +213,20 @@ export default class simv4Fix implements SubModule {
         .prop("outerHTML");
     }
   }
-  private truncateSoftly(value: number, digit: number = 0): string {
+  private _truncateSoftly(value: number, digit: number = 0): string {
     return (Math.floor(Math.round(value * 10 ** (digit + 1)) / 10) / 10 ** digit).toLocaleString();
   }
-  private toLeaguePointsPerFight(value: number): string {
+  private _toLeaguePointsPerFight(value: number): string {
     if (value >= 25) return "25";
-    if (value > 24.9) return this.truncateSoftly(value, 3);
-    return this.truncateSoftly(value, 2);
+    if (value > 24.9) return this._truncateSoftly(value, 3);
+    return this._truncateSoftly(value, 2);
   }
-  private toPercentage(value: number): string {
+  private _toPercentage(value: number): string {
     const percentage = value * 100;
     if (percentage >= 100) return "100%";
-    if (percentage >= 10) return `${this.truncateSoftly(percentage, 1)}%`; // 10%-99.9%
-    if (percentage >= 0.01) return `${this.truncateSoftly(percentage, 2)}%`; // 0.01%-9.99%
-    if (percentage >= 0) return `${this.truncateSoftly(percentage, 3)}%`; // 0% or 0.001%-0.009%
+    if (percentage >= 10) return `${this._truncateSoftly(percentage, 1)}%`; // 10%-99.9%
+    if (percentage >= 0.01) return `${this._truncateSoftly(percentage, 2)}%`; // 0.01%-9.99%
+    if (percentage >= 0) return `${this._truncateSoftly(percentage, 3)}%`; // 0% or 0.001%-0.009%
     return "0%";
   }
 }

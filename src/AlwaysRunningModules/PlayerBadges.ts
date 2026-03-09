@@ -1,11 +1,12 @@
 import { AlwaysRunningModule } from "../base";
 import { PlayerBadgesCss, PlayerBadges_TighterLeaderboards } from "../css/AlwaysRunningModules";
+import runTimingHandler from "../runTimingHandler";
 import { labyLeaderboardXHRResponse } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { Several_QoL_Badges } from "../utils/Several_QoL_Badges";
+import { BadgeConfig, Several_QoL_Badges } from "../utils/Several_QoL_Badges";
 
 export default class PlayerBadges extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return [
       "/penta-drill.html",
       "/pantheon.html",
@@ -17,65 +18,67 @@ export default class PlayerBadges extends AlwaysRunningModule {
       "/leagues.html",
     ].some((path) => location.pathname === path);
   }
-  readonly badgeConfigs = Several_QoL_Badges.getBadgeConfigurations();
-  run() {
-    if (this.hasRun || !PlayerBadges.shouldRun()) {
+  private _badgeConfigs: Array<BadgeConfig> = [];
+  async run_() {
+    if (this._hasRun || !PlayerBadges.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
-    this.injectCSS();
+    this._hasRun = true;
+    this._injectCSS();
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerBadges module running");
-    if (this.badgeConfigs.length === 0) {
+    this._badgeConfigs = Several_QoL_Badges.getBadgeConfigurations_();
+    if (this._badgeConfigs.length === 0) {
       return;
     }
 
     switch (location.pathname) {
       case "/activities.html":
-        HHPlusPlusReplacer.doWhenSelectorAvailable(".lead_table_view .leadTable > tr", ($el) => {
-          this.addContestLeaderboardBadges($el);
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(".lead_table_view .leadTable > tr", ($el) => {
+          this._addContestLeaderboardBadges($el);
         });
         break;
       case "/leagues.html":
-        this.addLeagueBadges();
+        this._addLeagueBadges();
         break;
       default:
-        this.hookAjaxComplete();
+        this._hookAjaxComplete();
         break;
     }
   }
-  private addLeagueBadges() {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".league_table > .data-list", ($el) => {
-      this.applyBadgesToLeagueRows($el);
-      new MutationObserver(() => this.applyBadgesToLeagueRows($el)).observe($el[0], {
+  private _addLeagueBadges() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".league_table > .data-list", ($el) => {
+      this._applyBadgesToLeagueRows($el);
+      new MutationObserver(() => this._applyBadgesToLeagueRows($el)).observe($el[0], {
         childList: true,
       });
     });
   }
 
-  private applyBadgesToLeagueRows($el: JQuery<HTMLElement>) {
+  private _applyBadgesToLeagueRows($el: JQuery<HTMLElement>) {
     $el.children(".body-row").each((_, el) => {
       const rowNickname = el.querySelector(".nickname");
       const playerId = rowNickname?.getAttribute("id-member");
       if (!playerId) return;
 
-      this.badgeConfigs.forEach((config) => {
+      this._badgeConfigs.forEach((config) => {
         if (config.userIds.includes(playerId)) {
-          rowNickname?.after(this.generateBadgeElement(config.tooltip, config.cssClass));
+          rowNickname?.after(this._generateBadgeElement(config.tooltip, config.cssClass));
         }
       });
     });
   }
-  private hookAjaxComplete() {
+  private _hookAjaxComplete() {
     $(document).ajaxComplete((_event, xhr, settings) => {
       if (!(typeof settings?.data === "string")) {
         return;
       }
       console.log("LeaderboardTweaks detected AJAX:", settings.data);
       if (settings.data.startsWith("action=labyrinth_leaderboard")) {
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(
           "#leaderboard_holder:has(#outer-hero-row) #leaderboard_list > .leaderboard_row",
           ($el) => {
-            this.addLabyrinthLeaderboardBadges(
+            this._addLabyrinthLeaderboardBadges(
               $el,
               xhr.responseJSON! as labyLeaderboardXHRResponse,
             );
@@ -83,10 +86,10 @@ export default class PlayerBadges extends AlwaysRunningModule {
         );
       } else if (settings.data === "action=leaderboard&feature=path_of_valor") {
         console.log("Detected Path of Valor leaderboard AJAX");
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(
           "#pov_leaderboard_tab_container #leaderboard_list > .leaderboard_row",
           ($el) => {
-            this.addStandardLeaderboardBadges(
+            this._addStandardLeaderboardBadges(
               $el,
               "#pov_leaderboard_tab_container #outer-hero-row .leaderboard-nickname-align",
             );
@@ -94,10 +97,10 @@ export default class PlayerBadges extends AlwaysRunningModule {
         );
       } else if (settings.data === "action=leaderboard&feature=path_of_glory") {
         console.log("Detected Path of Glory leaderboard AJAX");
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(
           "#pog_leaderboard_tab_container #leaderboard_list > .leaderboard_row",
           ($el) => {
-            this.addStandardLeaderboardBadges(
+            this._addStandardLeaderboardBadges(
               $el,
               "#pog_leaderboard_tab_container #outer-hero-row .leaderboard-nickname-align",
             );
@@ -105,16 +108,16 @@ export default class PlayerBadges extends AlwaysRunningModule {
         );
       } else if (settings.data.startsWith("action=leaderboard")) {
         console.log("Detected Standard leaderboard AJAX");
-        HHPlusPlusReplacer.doWhenSelectorAvailable(
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(
           "#leaderboard_holder:has(.build-at-bottom) > #leaderboard_list > .leaderboard_row",
           ($el) => {
-            this.addStandardLeaderboardBadges($el);
+            this._addStandardLeaderboardBadges($el);
           },
         );
       }
     });
   }
-  private addLabyrinthLeaderboardBadges(
+  private _addLabyrinthLeaderboardBadges(
     $leaderboard_rowsListElement: JQuery<HTMLElement>,
     response: labyLeaderboardXHRResponse,
   ) {
@@ -122,12 +125,12 @@ export default class PlayerBadges extends AlwaysRunningModule {
 
     // Add badges to current player's row
     currentPlayerId &&
-      this.badgeConfigs.forEach((config) => {
+      this._badgeConfigs.forEach((config) => {
         if (config.userIds.includes(currentPlayerId)) {
-          HHPlusPlusReplacer.doWhenSelectorAvailable(
+          HHPlusPlusReplacer.doWhenSelectorAvailable_(
             "#outer-hero-row .leaderboard-nickname-align",
             ($el) => {
-              $el.append(this.generateBadgeElement(config.tooltip, config.cssClass));
+              $el.append(this._generateBadgeElement(config.tooltip, config.cssClass));
               console.log("Added badge to current player in labyrinth leaderboard");
             },
           );
@@ -140,28 +143,28 @@ export default class PlayerBadges extends AlwaysRunningModule {
       const playerData = response.leaderboard[index];
       if (!playerData) return;
       const sortingId = playerData.id_member.toString();
-      this.badgeConfigs.forEach((config) => {
+      this._badgeConfigs.forEach((config) => {
         if (config.userIds.includes(sortingId)) {
           el.querySelector(".leaderboard-nickname-align")?.appendChild(
-            this.generateBadgeElement(config.tooltip, config.cssClass),
+            this._generateBadgeElement(config.tooltip, config.cssClass),
           );
           console.log(`Added badge to player ${playerData.nickname} in labyrinth leaderboard`, el);
         }
       });
     });
   }
-  private addStandardLeaderboardBadges(
+  private _addStandardLeaderboardBadges(
     $leaderboard_rowsListElement: JQuery<HTMLElement>,
     customHeroSelector?: string,
   ) {
     const currentPlayerId = shared.Hero.infos.id.toString();
 
     // Add badges to current player's row
-    this.badgeConfigs.forEach((config) => {
+    this._badgeConfigs.forEach((config) => {
       if (config.userIds.includes(currentPlayerId)) {
         document
           .querySelector(customHeroSelector ?? "#outer-hero-row .leaderboard-nickname-align")
-          ?.appendChild(this.generateBadgeElement(config.tooltip, config.cssClass));
+          ?.appendChild(this._generateBadgeElement(config.tooltip, config.cssClass));
       }
     });
 
@@ -170,30 +173,30 @@ export default class PlayerBadges extends AlwaysRunningModule {
       const sortingId = el.getAttribute("sorting_id");
       if (!sortingId) return;
 
-      this.badgeConfigs.forEach((config) => {
+      this._badgeConfigs.forEach((config) => {
         if (config.userIds.includes(sortingId)) {
           el.querySelector(".leaderboard-nickname-align")?.appendChild(
-            this.generateBadgeElement(config.tooltip, config.cssClass),
+            this._generateBadgeElement(config.tooltip, config.cssClass),
           );
         }
       });
     });
   }
-  private addContestLeaderboardBadges($contestTablesEntries: JQuery<HTMLElement>) {
+  private _addContestLeaderboardBadges($contestTablesEntries: JQuery<HTMLElement>) {
     $contestTablesEntries.each((_, entries) => {
       const userId = entries.getAttribute("sorting_id");
       if (!userId) return;
 
-      this.badgeConfigs.forEach((config) => {
+      this._badgeConfigs.forEach((config) => {
         if (config.userIds.includes(userId)) {
           entries.children[1].appendChild(
-            this.generateBadgeElement(config.tooltip, config.cssClass),
+            this._generateBadgeElement(config.tooltip, config.cssClass),
           );
         }
       });
     });
   }
-  private generateBadgeElement(tooltipText: string, additionalClasses?: string): HTMLSpanElement {
+  private _generateBadgeElement(tooltipText: string, additionalClasses?: string): HTMLSpanElement {
     const badge = document.createElement("span");
     badge.className = `S_QoL-leaderboard-badge ${additionalClasses ?? ""}`;
     badge.setAttribute("tooltip", tooltipText);
@@ -205,7 +208,7 @@ export default class PlayerBadges extends AlwaysRunningModule {
     });
     return badge;
   }
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(PlayerBadgesCss);
     GM_addStyle(PlayerBadges_TighterLeaderboards);
   }

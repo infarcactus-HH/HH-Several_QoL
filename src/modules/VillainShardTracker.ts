@@ -15,6 +15,8 @@ import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { villainShardTrackerCss } from "../css/modules";
 import html from "../utils/html";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
+import runTimingHandler from "../runTimingHandler";
 
 export default class ShardTracker extends HHModule {
   readonly configSchema = {
@@ -24,7 +26,7 @@ export default class ShardTracker extends HHModule {
     default: true,
   };
 
-  static readonly EVENT_OPTIONS = [
+  private static readonly EVENT_OPTIONS = [
     "Mythic Days (Revival)",
     "Legendary Days",
     "Classic Event",
@@ -33,48 +35,49 @@ export default class ShardTracker extends HHModule {
     "Villain Girl",
   ];
 
-  static shouldRun() {
+  static shouldRun_() {
     return (
       location.pathname.includes("/troll-pre-battle.html") ||
       location.pathname.includes("/troll-battle.html")
     );
   }
 
-  private async injectCSS() {
+  private async _injectCSS() {
     GM_addStyle(villainShardTrackerCss);
   }
 
-  shouldTrackShards = false;
+  private _shouldTrackShards = false;
   // XXX: could be made configurable
-  readonly trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
+  private readonly _trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
 
-  run() {
-    if (this.hasRun || !ShardTracker.shouldRun()) {
+  async run() {
+    if (this._hasRun || !ShardTracker.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     if (location.pathname === "/troll-pre-battle.html") {
-      this.handlePreBattlePage();
-      this.injectCSS();
-      this.makeLogPopup();
+      this._injectCSS();
+      this._makeLogPopup();
+      this._handlePreBattlePage();
     } else {
-      this.handleBattlePage();
+      this._handleBattlePage();
     }
-    if (!this.shouldTrackShards) {
+    if (!this._shouldTrackShards) {
       return;
     }
-    const currentTrackedGirlIds = ShardTrackerStorageHandler.getCurrentTrackingState().girlIds;
+    const currentTrackedGirlIds = ShardTrackerStorageHandler.getCurrentTrackingState_().girlIds;
     if (!currentTrackedGirlIds.length) {
       return;
     }
     console.log("ShardTracker module is running.");
-    this.hookTrollAjaxComplete();
+    this._hookTrollAjaxComplete();
   }
 
-  private hookTrollAjaxComplete() {
-    $(document).ajaxComplete((_event, xhr, settings) => {
+  private _hookTrollAjaxComplete() {
+    AjaxCompleteHook.getInstance_().addCallback_((_event, xhr, settings) => {
       if (
-        this.shouldTrackShards &&
+        this._shouldTrackShards &&
         typeof settings?.data === "string" &&
         settings.data.includes("action=do_battles_trolls")
       ) {
@@ -91,26 +94,26 @@ export default class ShardTracker extends HHModule {
         const number_of_battles = battlesMatch ? parseInt(battlesMatch[1], 10) : 1;
 
         const responseShards = (response.rewards.data.shards ?? []).filter((shard) =>
-          this.trackedRarities.includes(shard.rarity),
+          this._trackedRarities.includes(shard.rarity),
         );
         const dropsByGirlId = new Map<GirlID, PostFightShard>(
           responseShards.map((shard) => [shard.id_girl, shard]),
         );
         console.log(
           "number of fights that dropped shards",
-          this.calculateNumberOfFightsThatDroppedShards(response, number_of_battles),
+          this._calculateNumberOfFightsThatDroppedShards(response, number_of_battles),
         );
 
-        const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+        const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState_();
         if (!currentTrackingState.girlIds.length) {
-          this.shouldTrackShards = false;
+          this._shouldTrackShards = false;
           return;
         }
 
         const completedGirlIds: GirlID[] = [];
         // Process each and always increment number of fights even if no shards dropped
         currentTrackingState.girlIds.forEach((girlID) => {
-          const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girlID);
+          const trackedGirl = ShardTrackerStorageHandler.getTrackedGirl_(girlID);
           if (!trackedGirl) {
             return;
           }
@@ -187,15 +190,15 @@ export default class ShardTracker extends HHModule {
           }
         });
         if (completedGirlIds.length) {
-          const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+          const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState_();
           const newTrackedGirlIds = currentTrackingState.girlIds.filter(
             (id) => !completedGirlIds.includes(id),
           );
           if (newTrackedGirlIds.length === 0) {
-            this.shouldTrackShards = false;
-            ShardTrackerStorageHandler.setCurrentTrackingState(-1);
+            this._shouldTrackShards = false;
+            ShardTrackerStorageHandler.setCurrentTrackingState_(-1);
           } else {
-            ShardTrackerStorageHandler.setCurrentTrackingState(
+            ShardTrackerStorageHandler.setCurrentTrackingState_(
               currentTrackingState.trollID,
               newTrackedGirlIds,
             );
@@ -212,7 +215,7 @@ export default class ShardTracker extends HHModule {
       } else {
         trackedGirl.number_fight += nbFights;
       }
-      ShardTrackerStorageHandler.upsertTrackedGirl(girlID, trackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(girlID, trackedGirl);
       return trackedGirl;
     }
     function noSkinUpdateTrackedGirl(
@@ -225,7 +228,7 @@ export default class ShardTracker extends HHModule {
       trackedGirl.number_fight += number_of_battles;
       const gainedShards = dropInfo.value - dropInfo.previous_value;
       trackedGirl.dropped_shards += gainedShards;
-      ShardTrackerStorageHandler.upsertTrackedGirl(dropInfo.id_girl, trackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
     }
     function simpleSkinUpdateTrackedGirl(
@@ -239,7 +242,7 @@ export default class ShardTracker extends HHModule {
       }
       currentTrackedSkin.number_fight += number_of_battles;
       currentTrackedSkin.dropped_shards += dropInfo.value - dropInfo.previous_value;
-      ShardTrackerStorageHandler.upsertTrackedGirl(dropInfo.id_girl, trackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
     }
     function girlAndMaybeSkinUpdateTrackedGirl(
@@ -277,7 +280,7 @@ export default class ShardTracker extends HHModule {
           fightsAccounted += fightsSkin;
         }
       }
-      ShardTrackerStorageHandler.upsertTrackedGirl(dropInfo.id_girl, trackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
     }
     function getGirlLastShardCount(trackedGirl: TrackedGirl, dropInfo: PostFightShard): number {
@@ -344,29 +347,29 @@ export default class ShardTracker extends HHModule {
         currentTrackedSkin.number_fight += fightsToAdd;
         skinShardsPool -= shardsToAdd;
       }
-      ShardTrackerStorageHandler.upsertTrackedGirl(dropInfo.id_girl, trackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
     }
   }
 
-  private handlePreBattlePage() {
+  private _handlePreBattlePage() {
     const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
     if (!opponentFighter || !opponentFighter.rewards.girls_plain) {
       return;
     }
     const trackedGirlsPlain = opponentFighter.rewards.girls_plain.filter((girl) => {
       return (
-        this.trackedRarities.includes(girl.rarity) && // check rarity
+        this._trackedRarities.includes(girl.rarity) && // check rarity
         (!girl.is_girl_owned || // check if girl is not owned or has unowned skins
           girl.grade_skins?.some((skin) => !skin.is_owned))
       );
     });
     if (!trackedGirlsPlain || trackedGirlsPlain.length === 0) {
-      ShardTrackerStorageHandler.setCurrentTrackingState(-1);
-      this.shouldTrackShards = false;
+      ShardTrackerStorageHandler.setCurrentTrackingState_(-1);
+      this._shouldTrackShards = false;
       return;
     }
-    this.shouldTrackShards = true;
+    this._shouldTrackShards = true;
     const trackedGirlIds: GirlID[] = [];
     trackedGirlsPlain.forEach((girl_plain) => {
       trackedGirlIds.push(girl_plain.id_girl);
@@ -377,21 +380,21 @@ export default class ShardTracker extends HHModule {
       if (!girlShards) {
         return;
       }
-      const existingTrackedGirl = ShardTrackerStorageHandler.getTrackedGirl(girl_plain.id_girl);
+      const existingTrackedGirl = ShardTrackerStorageHandler.getTrackedGirl_(girl_plain.id_girl);
       if (existingTrackedGirl) {
-        this.updateExistingTrackedGirl(existingTrackedGirl, girl_plain);
+        this._updateExistingTrackedGirl(existingTrackedGirl, girl_plain);
         return;
       }
-      const trackedGirlRecord = this.createTrackedGirlRecord(girlShards, girl_plain);
-      ShardTrackerStorageHandler.upsertTrackedGirl(girl_plain.id_girl, trackedGirlRecord);
+      const trackedGirlRecord = this._createTrackedGirlRecord(girlShards, girl_plain);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(girl_plain.id_girl, trackedGirlRecord);
     });
-    ShardTrackerStorageHandler.setCurrentTrackingState(
+    ShardTrackerStorageHandler.setCurrentTrackingState_(
       opponentFighter.player.id_fighter,
       trackedGirlIds,
     );
   }
 
-  private createTrackedGirlRecord(
+  private _createTrackedGirlRecord(
     girlShards: NonNullable<VillainPreBattle["rewards"]["data"]["shards"]>[number],
     girl_plain: VillainPreBattle["rewards"]["girls_plain"][number],
   ): TrackedGirl {
@@ -421,7 +424,7 @@ export default class ShardTracker extends HHModule {
     return trackedGirlRecord;
   }
 
-  private updateExistingTrackedGirl(
+  private _updateExistingTrackedGirl(
     existingTrackedGirl: TrackedGirl,
     girl_plain: VillainPreBattle["rewards"]["girls_plain"][number],
   ) {
@@ -462,21 +465,21 @@ export default class ShardTracker extends HHModule {
       }
     }
     if (hasChanges) {
-      ShardTrackerStorageHandler.upsertTrackedGirl(girl_plain.id_girl, existingTrackedGirl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(girl_plain.id_girl, existingTrackedGirl);
     }
   }
 
-  private handleBattlePage() {
-    const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState();
+  private _handleBattlePage() {
+    const currentTrackingState = ShardTrackerStorageHandler.getCurrentTrackingState_();
     if (
       location.search.includes(`id_opponent=${currentTrackingState.trollID}`) &&
       currentTrackingState.girlIds.length !== 0
     ) {
-      this.shouldTrackShards = true;
+      this._shouldTrackShards = true;
     }
   }
 
-  private createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
+  private _createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
     const shards =
       girl.dropped_shards +
       (girl.skins ?? []).reduce((sum, skin) => {
@@ -498,17 +501,17 @@ export default class ShardTracker extends HHModule {
             <div class="g_infos">
               <div class="graded">${"<g></g>".repeat(girl.grade)}</div>
             </div>
-            ${this.generateDropDisplay(shards, fights)}
+            ${this._generateDropDisplay(shards, fights)}
           </div>
         </div>
       </div>
     `);
     girlDiv.on("click", () => {
-      this.generateGirlDetail(id_girl, girl);
+      this._generateGirlDetail(id_girl, girl);
     });
     return girlDiv;
   }
-  private generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
+  private _generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
     const $girlDetail = $(
       "#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-detail",
     ).empty();
@@ -527,7 +530,7 @@ export default class ShardTracker extends HHModule {
             .map((skin, index) => {
               return `<div class="skin-entry">
               <div class="skin-ico"><img src="${skin.ico_path}" alt="Skin ${index + 1}" /></div>
-              ${this.generateDropDisplay(skin.dropped_shards ?? 0, skin.number_fight)}
+              ${this._generateDropDisplay(skin.dropped_shards ?? 0, skin.number_fight)}
             </div>`;
             })
             .join("")}
@@ -547,12 +550,12 @@ export default class ShardTracker extends HHModule {
           <div class="graded-detail">${"<g></g>".repeat(girl.grade)}</div>
           <div class="detail-stats">
             <h3>Girl Stats</h3>
-            ${this.generateDropDisplay(girlShards, girlFights)}
+            ${this._generateDropDisplay(girlShards, girlFights)}
           </div>
           ${skinsHtml}
           <div class="event-source-section" tooltip="This Will be useful for data crunching later">
             <h3>Assign Event</h3>
-            ${this.generateEventPicker(girl.event_source)}
+            ${this._generateEventPicker(girl.event_source)}
           </div>
           <div class="detail-actions">
             <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
@@ -566,7 +569,7 @@ export default class ShardTracker extends HHModule {
     $girlDetail.find(".event-picker").on("change", (e) => {
       const selectedEvent = $(e.target).val() as string;
       girl.event_source = selectedEvent || undefined;
-      ShardTrackerStorageHandler.upsertTrackedGirl(id_girl, girl);
+      ShardTrackerStorageHandler.upsertTrackedGirl_(id_girl, girl);
     });
 
     // Highlight the selected girl in the list
@@ -580,7 +583,7 @@ export default class ShardTracker extends HHModule {
           `Are you sure you want to delete all tracked data for ${girl.name}? This action cannot be undone.`,
         )
       ) {
-        ShardTrackerStorageHandler.removeTrackedGirl(id_girl);
+        ShardTrackerStorageHandler.removeTrackedGirl_(id_girl);
         $girlDetail.empty();
         // Remove from the girl list
         $(`#container-drop-log-several-qol div[id_girl="${id_girl}"]`).remove();
@@ -588,7 +591,7 @@ export default class ShardTracker extends HHModule {
     });
   }
 
-  private generateDropDisplay(shards: number, fights: number): string {
+  private _generateDropDisplay(shards: number, fights: number): string {
     const percent = (fights == 0 ? 0 : (100 * shards) / fights).toFixed(2) + "%";
     return html`
       <div class="drop-display">
@@ -607,7 +610,7 @@ export default class ShardTracker extends HHModule {
     `;
   }
 
-  private generateEventPicker(currentEvent?: string): string {
+  private _generateEventPicker(currentEvent?: string): string {
     const options = ShardTracker.EVENT_OPTIONS.map(
       (event) =>
         `<option value="${event}" ${currentEvent === event ? "selected" : ""}>${event}</option>`,
@@ -620,9 +623,9 @@ export default class ShardTracker extends HHModule {
     `;
   }
 
-  private createGirlList(): JQuery<HTMLElement> {
+  private _createGirlList(): JQuery<HTMLElement> {
     const $girlList = $('<div class="girl-grid hh-scroll"></div>');
-    Object.entries(ShardTrackerStorageHandler.getTrackedGirls())
+    Object.entries(ShardTrackerStorageHandler.getTrackedGirls_())
       .filter(
         ([_, girl]) =>
           girl.number_fight +
@@ -632,19 +635,19 @@ export default class ShardTracker extends HHModule {
           0,
       )
       .sort(([_, a], [__, b]) => b.last_fight_time - a.last_fight_time)
-      .map(([id, girl]) => this.createGirlEntry(+id, girl))
+      .map(([id, girl]) => this._createGirlEntry(+id, girl))
       .forEach(($girlEntry) => {
         $girlList.append($girlEntry);
       });
     return $girlList;
   }
 
-  private makeLogPopup() {
+  private _makeLogPopup() {
     const title = `Shard Drop Log`;
     const $dropLog = $('<div class="drop-log"></div>');
-    $dropLog.append(this.createGirlList());
+    $dropLog.append(this._createGirlList());
     $dropLog.append(html`<div class="girl-detail hh-scroll"></div>`);
-    HHPlusPlusReplacer.doWhenSelectorAvailable("#pre-battle .opponent .personal_info", ($opp) => {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("#pre-battle .opponent .personal_info", ($opp) => {
       const $showLogButton = $(html`
         <span id="show-drop-log-several-qol">
           <img
@@ -657,7 +660,7 @@ export default class ShardTracker extends HHModule {
       `);
       $opp.append($showLogButton);
       $showLogButton.on("click", function () {
-        GameHelpers.createPopup("common", "drop-log-several-qol", $dropLog, title);
+        GameHelpers.createPopup_("common", "drop-log-several-qol", $dropLog, title);
         $("#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-grid")
           .children()
           .first()
@@ -665,7 +668,7 @@ export default class ShardTracker extends HHModule {
       });
     });
   }
-  private calculateNumberOfFightsThatDroppedShards(
+  private _calculateNumberOfFightsThatDroppedShards(
     response: DoBattlesTrollsResponse,
     nbFights: number,
   ): number {
@@ -688,7 +691,7 @@ export default class ShardTracker extends HHModule {
         const gemVilain = opponentFighter!.rewards.data.rewards.find(
           (r) => "gem_type" in r && r.gem_type === reward.gem_type,
         )! as gemsItem;
-        const gemPrestigeBoost = PlayerStorageHandler.getPlayerGemsPrestigeBonus();
+        const gemPrestigeBoost = PlayerStorageHandler.getPlayerGemsPrestigeBonus_();
         accountedFights += Math.round(gainedGems / (1 + gemPrestigeBoost) / gemVilain.value);
       } else if (reward.type === "soft_currency") {
         const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)

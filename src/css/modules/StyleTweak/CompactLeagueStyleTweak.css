@@ -1,3 +1,7 @@
+.leagues-container #leagues .league_content {
+  transition: all 0s;
+}
+
 #leagues > .league_content > .league_tiers .league_tier_progress,
 #leagues > .league_content > .league_tiers #toggle_columns {
   display: none;

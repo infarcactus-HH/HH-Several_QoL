@@ -1,4 +1,5 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { PlayerStorageHandler } from "../utils/StorageHandler";
 
 type prestigeTier = {
@@ -14,24 +15,25 @@ type prestigeTier = {
 };
 
 export default class PlayerPrestigeTracking extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return location.pathname === "/home.html";
   }
-  run() {
-    if (this.hasRun || !PlayerPrestigeTracking.shouldRun()) {
+  async run_() {
+    if (this._hasRun || !PlayerPrestigeTracking.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
     console.log("PlayerPrestigeTracking module running");
-    this.hookOrHandlePrestige();
+    this._hookOrHandlePrestige();
   }
-  hookOrHandlePrestige() {
+  private _hookOrHandlePrestige() {
     if (shared.popup_payment?.payment_products_data?.prestige) {
       const tier = (
         shared.popup_payment?.payment_products_data?.prestige.tiers as Array<prestigeTier>
       ).find((tier) => tier.is_current)!.id_prestige_tier;
-      const gemsGainedBonus = this.handleGemsGainedFromPrestige(tier);
-      PlayerStorageHandler.setPlayerGemsPrestigeBonus(gemsGainedBonus);
+      const gemsGainedBonus = this._handleGemsGainedFromPrestige(tier);
+      PlayerStorageHandler.setPlayerGemsPrestigeBonus_(gemsGainedBonus);
     } else {
       $(document).ajaxComplete((_event, xhr, settings) => {
         if (typeof settings?.data === "string" && settings.data === "action=load_payment_methods") {
@@ -42,13 +44,13 @@ export default class PlayerPrestigeTracking extends AlwaysRunningModule {
           const tier = (response.data.products_data.prestige.tiers as Array<prestigeTier>).find(
             (tier) => tier.is_current,
           )!.id_prestige_tier;
-          const gemsGainedBonus = this.handleGemsGainedFromPrestige(tier);
-          PlayerStorageHandler.setPlayerGemsPrestigeBonus(gemsGainedBonus);
+          const gemsGainedBonus = this._handleGemsGainedFromPrestige(tier);
+          PlayerStorageHandler.setPlayerGemsPrestigeBonus_(gemsGainedBonus);
         }
       });
     }
   }
-  handleGemsGainedFromPrestige(currentTier: number) {
+  private _handleGemsGainedFromPrestige(currentTier: number) {
     if (currentTier < 9) {
       return 0;
     }

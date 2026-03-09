@@ -2,7 +2,7 @@ import { GameKey, popupForQueue } from "../types";
 import html from "./html";
 
 export default class GameHelpers {
-  static createPopup(
+  static createPopup_(
     type: popupForQueue["popup"]["type"],
     popupID: string,
     content: JQuery<HTMLElement> | string,
@@ -10,7 +10,7 @@ export default class GameHelpers {
   ) {
     switch (type) {
       case "common":
-        this.createCommonPopup(popupID, (popup, _t) => {
+        this.createCommonPopup_(popupID, (popup, _t) => {
           const $container = popup.$dom_element.find(".container-special-bg");
           if (title) {
             $container.append(html`<div class="title">${title}</div>`);
@@ -23,7 +23,7 @@ export default class GameHelpers {
     }
   }
 
-  static createCommonPopup(
+  static createCommonPopup_(
     popupID: string,
     Finit: (popup: popupForQueue["popup"], t: boolean) => void,
   ) {

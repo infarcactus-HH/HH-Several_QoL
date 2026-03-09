@@ -1,5 +1,7 @@
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import { HHModule } from "../base";
 import { LabyTeamPresetPentaDrillCss } from "../css/modules";
+import runTimingHandler from "../runTimingHandler";
 import { penta_drill_all_teams, penta_drill_team_data, StoredPentaDrillTeam } from "../types";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
@@ -17,12 +19,12 @@ export default class LabyTeamPresets extends HHModule {
       "<span tooltip='Add a button to register laby team presets, and to apply it (also for WBT)'>Laby Team Preset</span>",
     default: true,
   };
-  private StorageHandlerTeam =
+  private _StorageHandlerTeam =
     location.pathname === "/edit-labyrinth-team.html"
       ? LabyTeamStorageHandler
       : WBTTeamStorageHandler;
 
-  static shouldRun() {
+  static shouldRun_() {
     return (
       location.pathname === "/edit-labyrinth-team.html" ||
       location.pathname === "/edit-world-boss-team.html" ||
@@ -30,21 +32,22 @@ export default class LabyTeamPresets extends HHModule {
       location.pathname === "/edit-penta-drill-team"
     );
   }
-  run() {
-    if (this.hasRun || !LabyTeamPresets.shouldRun()) {
+  async run() {
+    if (this._hasRun || !LabyTeamPresets.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
-    this.migrateLocalStorageIfNeeded();
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
+    this._migrateLocalStorageIfNeeded();
     if (location.pathname === "/world-boss-pre-battle.html") {
-      this.WBTPreBattlePageRun();
+      this._WBTPreBattlePageRun();
     } else if (location.pathname === "/edit-penta-drill-team") {
-      this.PentaDrillTeamPageRun();
+      this._PentaDrillTeamPageRun();
     } else {
-      this.editTeamPageRun();
+      this._editTeamPageRun();
     }
   }
-  PentaDrillTeamPageRun() {
+  private _PentaDrillTeamPageRun() {
     const $centralButtonsPanel = $(".boss-bang-panel");
     injectCSS();
 
@@ -53,7 +56,7 @@ export default class LabyTeamPresets extends HHModule {
     );
 
     $OpenPresetManagerBtn.on("click", () => {
-      GameHelpers.createCommonPopup("laby_team_preset_manager", (popup, _t) => {
+      GameHelpers.createCommonPopup_("laby_team_preset_manager", (popup, _t) => {
         const $container = popup.$dom_element.find(".container-special-bg");
         $container.append(`<div class="title">Penta Drill Team Preset Manager</div>`);
 
@@ -82,15 +85,15 @@ export default class LabyTeamPresets extends HHModule {
         $container.append($contentArea, $registererArea);
 
         // Render presets
-        this.renderPentaDrillPresets($contentArea.find("#preset-list"));
+        this._renderPentaDrillPresets($contentArea.find("#preset-list"));
 
         // Register button handler
         $registererArea.find("#register-team-btn").on("click", () => {
           const teamName =
             ($registererArea.find("#team-name-input").val() as string) || "Unnamed Team";
-          this.registerCurrentPentaDrillTeam(teamName);
+          this._registerCurrentPentaDrillTeam(teamName);
           $registererArea.find("#team-name-input").val("");
-          this.renderPentaDrillPresets($contentArea.find("#preset-list"));
+          this._renderPentaDrillPresets($contentArea.find("#preset-list"));
         });
       });
     });
@@ -101,9 +104,9 @@ export default class LabyTeamPresets extends HHModule {
     }
   }
 
-  private renderPentaDrillPresets($container: JQuery) {
+  private _renderPentaDrillPresets($container: JQuery) {
     $container.empty();
-    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams();
+    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams_();
 
     if (presets.length === 0) {
       $container.append('<div class="penta-drill-empty-state">No presets saved yet</div>');
@@ -128,36 +131,36 @@ export default class LabyTeamPresets extends HHModule {
       `);
 
       $presetItem.find(".delete-preset-btn").on("click", () => {
-        this.deletePentaDrillPreset(index);
-        this.renderPentaDrillPresets($container);
+        this._deletePentaDrillPreset(index);
+        this._renderPentaDrillPresets($container);
       });
 
       $presetItem.find(".apply-preset-btn").on("click", () => {
-        this.applyPentaDrillPreset(index);
+        this._applyPentaDrillPreset(index);
       });
 
       $container.append($presetItem);
     });
   }
 
-  private registerCurrentPentaDrillTeam(teamName: string) {
+  private _registerCurrentPentaDrillTeam(teamName: string) {
     let teams: Record<number, [number, number, number, number, number, number, number]> = {};
 
     (unsafeWindow.all_teams as penta_drill_all_teams).forEach((e, index) => {
       teams[index] = e.girls_ids;
     });
 
-    PentaDrillTeamStorageHandler.addPentaDrillTeam({
+    PentaDrillTeamStorageHandler.addPentaDrillTeam_({
       teams,
       name: teamName,
     });
 
     console.log("Registered penta drill team:", teamName, teams);
-    //this.sendApplyPentaDrillPresetRequest(teams);
+    //this._sendApplyPentaDrillPresetRequest(teams);
   }
 
-  private applyPentaDrillPreset(index: number) {
-    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams();
+  private _applyPentaDrillPreset(index: number) {
+    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams_();
     const preset = presets[index];
 
     if (!preset) {
@@ -166,17 +169,17 @@ export default class LabyTeamPresets extends HHModule {
     }
 
     console.log("Applying penta drill preset:", preset.name, preset.teams);
-    this.sendApplyPentaDrillPresetRequest(preset.teams);
+    this._sendApplyPentaDrillPresetRequest(preset.teams);
   }
 
-  private deletePentaDrillPreset(index: number) {
-    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams();
+  private _deletePentaDrillPreset(index: number) {
+    const presets = PentaDrillTeamStorageHandler.getPentaDrillTeams_();
     if (index >= 0 && index < presets.length) {
-      PentaDrillTeamStorageHandler.deletePentaDrillTeam(index);
+      PentaDrillTeamStorageHandler.deletePentaDrillTeam_(index);
       console.log("Deleted penta drill preset at index:", index);
     }
   }
-  private sendApplyPentaDrillPresetRequest(team: StoredPentaDrillTeam["teams"]) {
+  private _sendApplyPentaDrillPresetRequest(team: StoredPentaDrillTeam["teams"]) {
     const teamsList: Record<number, Array<number>> = {};
     const teamSlots: Record<number, number> = {};
     Object.values(team).forEach((team, index) => {
@@ -199,29 +202,33 @@ export default class LabyTeamPresets extends HHModule {
     if (0 !== unsafeWindow.teamId) {
       params.id_team = unsafeWindow.teamId;
     }
-    shared.general.hh_ajax(params, (_data: any) => {
-      shared.general.navigate(unsafeWindow.redirectUrl);
-    });
+    RequestQueueHandler.getInstance_().addAjaxRequest_(
+      params,
+      (_data: any) => {
+        shared.general.navigate(unsafeWindow.redirectUrl);
+      },
+      RequestQueueHandler.PRIORITY_.HIGH,
+    );
   }
-  WBTPreBattlePageRun() {
+  private _WBTPreBattlePageRun() {
     const currentWBTId = unsafeWindow.event_data?.id_world_boss_event as number | undefined;
     if (!currentWBTId) {
       return;
     }
-    const savedWBTId = WBTTeamStorageHandler.getWBTId();
+    const savedWBTId = WBTTeamStorageHandler.getWBTId_();
     if (currentWBTId === savedWBTId) {
       return;
     }
-    HHPlusPlusReplacer.doWhenSelectorAvailable("#perform_opponent.blue_button_L", () => {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("#perform_opponent.blue_button_L", () => {
       $("#perform_opponent.blue_button_L")
         .removeClass("blue_button_L")
         .addClass("red_button_L")
         .attr("tooltip", "Set your WBT Team before continuing")
         .text("Perform without saved team ?");
     });
-    WBTTeamStorageHandler.setWBTId(currentWBTId);
+    WBTTeamStorageHandler.setWBTId_(currentWBTId);
   }
-  editTeamPageRun() {
+  private _editTeamPageRun() {
     const $centralPanel = $(".boss-bang-panel");
     const $savePresetBtn = $(
       html`<button class="green_button_L" tooltip="Save preset for later runs">
@@ -229,7 +236,7 @@ export default class LabyTeamPresets extends HHModule {
       </button>`,
     );
     $savePresetBtn.on("click", () => {
-      this.saveCurrentPreset();
+      this._saveCurrentPreset();
       $FillPresetBtn.removeAttr("disabled");
     });
     $centralPanel.append($savePresetBtn);
@@ -238,15 +245,15 @@ export default class LabyTeamPresets extends HHModule {
       <button
         class="green_button_L"
         tooltip="Use previously saved preset & leave page"
-        ${!this.StorageHandlerTeam.getTeamPreset() ? "disabled" : ""}
+        ${!this._StorageHandlerTeam.getTeamPreset_() ? "disabled" : ""}
       >
         Fill Preset
       </button>
     `);
     $FillPresetBtn.on("click", () => {
-      this.loadSavedPreset();
+      this._loadSavedPreset();
     });
-    HHPlusPlusReplacer.doWhenSelectorAvailable(
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
       ".change-team-panel .player-team .average-lvl",
       () => {
         const $averageLvl = $(".change-team-panel .player-team .average-lvl");
@@ -254,17 +261,17 @@ export default class LabyTeamPresets extends HHModule {
       },
     );
   }
-  migrateLocalStorageIfNeeded() {
+  private _migrateLocalStorageIfNeeded() {
     const oldKey = "SeveralQoL_LabyTeamPreset";
     const existingOldPreset = localStorage.getItem(oldKey);
     if (existingOldPreset) {
-      LabyTeamStorageHandler.setTeamPreset(JSON.parse(existingOldPreset));
+      LabyTeamStorageHandler.setTeamPreset_(JSON.parse(existingOldPreset));
       localStorage.removeItem(oldKey);
       console.log(`Migrated old laby team preset from key ${oldKey} to storage handler`);
     }
   }
 
-  private saveCurrentPreset() {
+  private _saveCurrentPreset() {
     let n: Record<number, string> = {};
     $(".team-hexagon .team-member-container").each(function () {
       const position = $(this).attr("data-team-member-position") as number | undefined;
@@ -274,10 +281,10 @@ export default class LabyTeamPresets extends HHModule {
       }
     });
     console.log("Saving preset: ", n);
-    this.StorageHandlerTeam.setTeamPreset(n);
+    this._StorageHandlerTeam.setTeamPreset_(n);
   }
-  private loadSavedPreset() {
-    const preset = this.StorageHandlerTeam.getTeamPreset();
+  private _loadSavedPreset() {
+    const preset = this._StorageHandlerTeam.getTeamPreset_();
     if (!preset) {
       console.warn("No saved preset found");
       return;
@@ -294,7 +301,7 @@ export default class LabyTeamPresets extends HHModule {
 
       console.log("AJAX settings: ", settings);
 
-      shared.general.hh_ajax(settings, (_data: any) => {
+      RequestQueueHandler.getInstance_().addAjaxRequest_(settings, (_data: any) => {
         shared.general.navigate(unsafeWindow.redirectUrl);
       });
     } catch (error) {

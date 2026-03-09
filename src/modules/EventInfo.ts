@@ -1,4 +1,5 @@
 import { HHModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import EventInfo_Event from "./EventInfo/EventInfo_Event";
 import EventInfo_Home from "./EventInfo/EventInfo_Home";
@@ -12,7 +13,7 @@ export default class EventInfo extends HHModule {
       "<span tooltip='Click on the Information top right of events'>Event Info : Show guides, tips, tricks & more info on events</span>",
     default: true,
   };
-  static shouldRun() {
+  static shouldRun_() {
     return (
       location.pathname === "/event.html" ||
       location.pathname === "/home.html" ||
@@ -24,11 +25,12 @@ export default class EventInfo extends HHModule {
       location.pathname === "/love-raids.html"
     );
   }
-  run() {
-    if (this.hasRun || !EventInfo.shouldRun()) {
+  async run() {
+    if (this._hasRun || !EventInfo.shouldRun_()) {
       return;
     }
-    this.hasRun = true;
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
 
     const path = location.pathname;
 
@@ -36,58 +38,61 @@ export default class EventInfo extends HHModule {
 
     switch (path) {
       case "/home.html":
-        this.runHome();
+        this._runHome();
         break;
       case "/event.html":
-        this.runEvent();
+        this._runEvent();
         break;
       case "/path-of-glory.html":
       case "/path-of-valor.html":
-        this.runPathes();
+        this._runPathes();
         break;
       case "/seasonal.html": // Mega Event
-        this.runSeasonal();
+        this._runSeasonal();
         break;
       case "/season.html":
-        this.runSeason();
+        this._runSeason();
         break;
       case "/love-raids.html":
-        this.runLoveRaids();
+        this._runLoveRaids();
         break;
     }
   }
-  runHome() {
-    new EventInfo_Home().run();
+  private _runHome() {
+    new EventInfo_Home().run_();
   }
-  runEvent() {
-    new EventInfo_Event().run();
+  private _runEvent() {
+    new EventInfo_Event().run_();
   }
-  runPathes() {
-    new EventInfo_Pathes().run();
+  private _runPathes() {
+    new EventInfo_Pathes().run_();
   }
-  runSeasonal() {
-    new EventInfo_Seasonal().run();
+  private _runSeasonal() {
+    new EventInfo_Seasonal().run_();
   }
-  runSeason() {
-    this.helperReplaceNotifButton(
+  private _runSeason() {
+    this._helperReplaceNotifButton(
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310674",
     );
   }
-  runLoveRaids() {
-    this.helperReplaceNotifButton(
+  private _runLoveRaids() {
+    this._helperReplaceNotifButton(
       "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-316577",
     );
   }
 
-  helperReplaceNotifButton(url: string) {
-    HHPlusPlusReplacer.doWhenSelectorAvailable(".button-notification-action.notif_button_s", () => {
-      console.log("EventInfo: Replacing notif button link for more info");
-      $(".button-notification-action.notif_button_s")
-        .attr("tooltip", "Several QoL: More Info on this event")
-        .off("click")
-        .on("click", () => {
-          GM_openInTab(url, { active: true });
-        });
-    });
+  private _helperReplaceNotifButton(url: string) {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(
+      ".button-notification-action.notif_button_s",
+      () => {
+        console.log("EventInfo: Replacing notif button link for more info");
+        $(".button-notification-action.notif_button_s")
+          .attr("tooltip", "Several QoL: More Info on this event")
+          .off("click")
+          .on("click", () => {
+            GM_openInTab(url, { active: true });
+          });
+      },
+    );
   }
 }

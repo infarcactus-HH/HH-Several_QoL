@@ -3,11 +3,9 @@ import type { global_pop_hero_girls_incomplete, PlacesOfPowerData } from "../typ
 import { placesOfPowerCss } from "../css/modules";
 import html from "../utils/html";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-
-declare const pop_data: Record<number, PlacesOfPowerData>;
-declare const pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>; // id_places_of_power
-declare const hh_prices_auto_start: number;
-declare const hh_prices_auto_claim: number;
+import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
+import runTimingHandler from "../runTimingHandler";
+import { UnsafeWindow_Activities } from "../types/unsafeWindows/activities";
 
 type configSchema = {
   baseKey: "placesOfPowerPlusPlus";
@@ -36,24 +34,24 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       },
     ],
   };
-  private sortedGirlsCache: Record<1 | 2 | 3, number[]> = {
+  private _sortedGirlsCache: Record<1 | 2 | 3, number[]> = {
     1: [],
     2: [],
     3: [],
   };
-  private isLoadingGirls = false;
-  private currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
-  private readonly minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
-  private hasPopupEnabled: boolean = false;
+  private _isLoadingGirls = false;
+  private _currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
+  private readonly _minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
+  private _hasPopupEnabled: boolean = false;
 
-  private readonly criteriaToClassMap: Record<PlacesOfPowerData["criteria"], 1 | 2 | 3> = {
+  private readonly _criteriaToClassMap: Record<PlacesOfPowerData["criteria"], 1 | 2 | 3> = {
     carac_1: 1,
     carac_2: 2,
     carac_3: 3,
   };
 
   // prettier-ignore
-  private readonly idealPoPOrder = [ // From HH++ slightly tweaked
+  private readonly _idealPoPOrder = [ // From HH++ slightly tweaked
     '1', '2', '3',      // primary pops
     '13', '14', '15',   // orb      / water
     '7', '8', '9',      // koban    / light
@@ -64,28 +62,52 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     '10', '11', '12',   // gem      / nature & psychic
   ];
 
-  static shouldRun() {
+  static shouldRun_() {
     return (
-      location.pathname.includes("/activities.html") &&
-      !location.search.includes("?tab=pop&index=") &&
-      unsafeWindow.pop_data !== undefined
+      location.pathname.includes("/activities.html") && !location.search.includes("?tab=pop&index=")
     );
+  }
+  async run(subSettings: SubSettingsType<configSchema>) {
+    if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
+      return;
+    }
+    this._hasPopupEnabled = subSettings?.rewardPopup ?? true;
+    this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
+    if (unsafeWindow.pop_data === undefined) {
+      return;
+    }
+    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
+    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
+    $PopSwitcher.attr("tooltip", "By infarctus");
+
+    if (location.search.includes("tab=pop")) {
+      HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
+        this._buildPopInfoWithLoadingHandling();
+        this._setupPoPSwitcherClickHandler($PopSwitcher);
+      });
+    } else {
+      this._setupPoPSwitcherClickHandler($PopSwitcher);
+    }
+
+    this._injectCustomStyles();
+    this._girlsHandler();
   }
   /**
    * Build the custom PoP UI, handling the loading state if girls are still being loaded
    */
-  private buildPopInfoWithLoadingHandling(): void {
-    if (this.isLoadingGirls) {
+  private _buildPopInfoWithLoadingHandling(): void {
+    if (this._isLoadingGirls) {
       shared.animations.loadingAnimation.start();
       $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
         shared.animations.loadingAnimation.stop();
-        HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
-          this.buildCustomPopInfo();
+        HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
+          this._buildCustomPopInfo();
         });
       });
     } else {
-      HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
-        this.buildCustomPopInfo();
+      HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
+        this._buildCustomPopInfo();
       });
     }
   }
@@ -93,45 +115,24 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   /**
    * Set up the click handler for the PoP switcher tab
    */
-  private setupPoPSwitcherClickHandler($PopSwitcher: JQuery<HTMLElement>): void {
+  private _setupPoPSwitcherClickHandler($PopSwitcher: JQuery<HTMLElement>): void {
     $PopSwitcher.on("click", () => {
-      this.buildPopInfoWithLoadingHandling();
+      this._buildPopInfoWithLoadingHandling();
     });
   }
 
-  run(subSettings: SubSettingsType<configSchema>) {
-    if (this.hasRun || !PlacesOfPowerPlusPlus.shouldRun()) {
-      return;
-    }
-    this.hasPopupEnabled = subSettings?.rewardPopup ?? true;
-    this.hasRun = true;
-
-    const $PopSwitcher = $(".switch-tab[data-tab='pop']");
-    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
-    $PopSwitcher.attr("tooltip", "By infarctus");
-
-    if (location.search.includes("tab=pop")) {
-      HHPlusPlusReplacer.doWhenSelectorAvailable("#pop_info", () => {
-        this.buildPopInfoWithLoadingHandling();
-        this.setupPoPSwitcherClickHandler($PopSwitcher);
-      });
-    } else {
-      this.setupPoPSwitcherClickHandler($PopSwitcher);
-    }
-
-    this.injectCustomStyles();
-    this.girlsHandler();
-  }
-
-  updateSuckless() {
+  private _updateSuckless() {
     if (unsafeWindow.suckless && unsafeWindow.suckless.parsePopData) {
-      console.log("Updating other scripts PoP tracked time", pop_data);
-      unsafeWindow.suckless.parsePopData(pop_data);
+      console.log(
+        "Updating other scripts PoP tracked time",
+        (unsafeWindow as UnsafeWindow_Activities).pop_data,
+      );
+      unsafeWindow.suckless.parsePopData((unsafeWindow as UnsafeWindow_Activities).pop_data);
     }
   }
 
-  updateOtherScriptsPoPTrackedTime() {
-    this.updateSuckless();
+  private _updateOtherScriptsPoPTrackedTime() {
+    this._updateSuckless();
     const localStorageKey = "HHPlusPlusTrackedTimes";
     if (!localStorage.getItem(localStorageKey)) {
       console.log("No HHPlusPlusTrackedTimes found in localStorage");
@@ -144,7 +145,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       console.log("No trackedTimes.pop or trackedTimes.popDuration found");
       return;
     }
-    const endingsIn = Object.values(pop_data)
+    const endingsIn = Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)
       .map(({ remaining_time, time_to_finish }) => ({
         endAt: remaining_time,
         duration: time_to_finish,
@@ -159,10 +160,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     localStorage.setItem(localStorageKey, JSON.stringify(trackedTimes));
   }
 
-  createOrUpdateKobanButtons() {
+  private _createOrUpdateKobanButtons() {
     let popToClaim = false;
     let popToFill = false;
-    for (const popEntry of Object.values(pop_data)) {
+    for (const popEntry of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)) {
       if (popEntry.status === "pending_reward") {
         popToClaim = true;
       }
@@ -178,12 +179,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popKobanClaimAllButton = $(html`
       <btn
         class="pop-koban-button pop-claim-all orange_button_L"
-        price="${hh_prices_auto_claim}"
+        price="${(unsafeWindow as UnsafeWindow_Activities).hh_prices_auto_claim}"
         ${popToClaim ? "" : "disabled"}
       >
         <div class="action-label">Claim All</div>
         <div class="action-cost">
-          <div class="hc-cost"><span class="hard_currency_icn"></span>${hh_prices_auto_claim}</div>
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>${(unsafeWindow as UnsafeWindow_Activities)
+              .hh_prices_auto_claim}
+          </div>
         </div>
       </btn>
     `);
@@ -197,22 +201,24 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       shared.general.hc_confirm(n!, () => {
         shared.animations.loadingAnimation.start();
         t.prop("disabled", true);
-        shared.general.hh_ajax(
+        RequestQueueHandler.getInstance_().addAjaxRequest_(
           {
             action: "pop_claim_all",
           },
           (response: any) => {
-            for (const popEntry of Object.values(pop_data)) {
+            for (const popEntry of Object.values(
+              (unsafeWindow as UnsafeWindow_Activities).pop_data,
+            )) {
               if (popEntry.status === "pending_reward") {
-                delete self.currentPoPGirls[popEntry.id_places_of_power];
+                delete self._currentPoPGirls[popEntry.id_places_of_power];
                 popEntry.status = "can_start";
               }
             }
-            if (self.hasPopupEnabled) {
+            if (self._hasPopupEnabled) {
               shared.reward_popup.Reward.handlePopup(response.rewards);
             }
             $(".pop-record .collect_notif").remove();
-            self.buildPopDetails("1");
+            self._buildPopDetails("1");
             $("pop-record").first().trigger("click");
             shared.animations.loadingAnimation.stop();
           },
@@ -223,12 +229,15 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const $popKobanFillAllButton = $(html`
       <btn
         class="pop-koban-button pop-fill-all orange_button_L"
-        price="${hh_prices_auto_start}"
+        price="${(unsafeWindow as UnsafeWindow_Activities).hh_prices_auto_start}"
         ${popToFill ? "" : "disabled"}
       >
         <div class="action-label">Fill All</div>
         <div class="action-cost">
-          <div class="hc-cost"><span class="hard_currency_icn"></span>${hh_prices_auto_start}</div>
+          <div class="hc-cost">
+            <span class="hard_currency_icn"></span>${(unsafeWindow as UnsafeWindow_Activities)
+              .hh_prices_auto_start}
+          </div>
         </div>
       </btn>
     `);
@@ -239,7 +248,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       let n = t.attr("price");
       shared.general.hc_confirm(n!, () => {
         (t.prop("disabled", !0),
-          shared.general.hh_ajax(
+          RequestQueueHandler.getInstance_().addAjaxRequest_(
             {
               action: "pop_auto_start_all",
             },
@@ -257,7 +266,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   /**
    * Convert criteria from pop_data format (carac_1) to pop_hero_girls format (carac1)
    */
-  private convertCriteriaKey(
+  private _convertCriteriaKey(
     criteria: PlacesOfPowerData["criteria"],
   ): keyof Pick<global_pop_hero_girls_incomplete, "carac1" | "carac2" | "carac3"> {
     // Convert carac_1 -> carac1, carac_2 -> carac2, carac_3 -> carac3
@@ -270,31 +279,33 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   /**
    * Assign girls to a specific PoP
    */
-  assignGirlsToPoP(popId: number) {
-    const popData = Object.values(pop_data).find((p) => p.id_places_of_power === popId);
+  private _assignGirlsToPoP(popId: number) {
+    const popData = Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data).find(
+      (p) => p.id_places_of_power === popId,
+    );
     if (!popData) return;
 
     const criteria = popData.criteria;
     const targetPower = popData.max_team_power;
 
-    const selectedGirls = this.selectOptimalGirls(popId, targetPower, criteria);
+    const selectedGirls = this._selectOptimalGirls(popId, targetPower, criteria);
     return selectedGirls;
   }
 
   /**
    * Select optimal girls for a PoP from scratch using pre-sorted lists
    */
-  selectOptimalGirls(
+  private _selectOptimalGirls(
     popId: number,
     targetPower: number,
     criteria: PlacesOfPowerData["criteria"],
   ): number[] {
-    const criteriaKey = this.convertCriteriaKey(criteria);
+    const criteriaKey = this._convertCriteriaKey(criteria);
 
-    const classNumber = this.criteriaToClassMap[criteria];
+    const classNumber = this._criteriaToClassMap[criteria];
 
     // Get pre-sorted list of girl IDs for this class (already sorted by power, descending)
-    const sortedGirlIds = this.sortedGirlsCache[classNumber];
+    const sortedGirlIds = this._sortedGirlsCache[classNumber];
 
     if (sortedGirlIds.length === 0) {
       console.error(`[PoP ${popId}] No girls available in storage!`);
@@ -303,7 +314,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Get set of girls already assigned to other PoPs
     const assignedGirls = new Set<number>();
-    for (const [otherPopId, girlIds] of Object.entries(this.currentPoPGirls)) {
+    for (const [otherPopId, girlIds] of Object.entries(this._currentPoPGirls)) {
       if (parseInt(otherPopId) !== popId) {
         girlIds.forEach((id) => assignedGirls.add(id));
       }
@@ -319,7 +330,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         continue;
       }
 
-      const girl = pop_hero_girls[girlId];
+      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
       if (!girl) continue;
 
       const girlPower = girl[criteriaKey];
@@ -345,7 +356,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
           // Skip if already assigned
           if (assignedGirls.has(nextGirlId)) continue;
 
-          const nextGirl = pop_hero_girls[nextGirlId];
+          const nextGirl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[nextGirlId];
           if (!nextGirl) continue;
 
           const nextPower = nextGirl[criteriaKey];
@@ -368,18 +379,18 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     return selectedGirls;
   }
 
-  readdGirlsFromCurrentPoP(popKey: string) {
+  private _readdGirlsFromCurrentPoP(popKey: string) {
     const popId = parseInt(popKey);
-    delete this.currentPoPGirls[popId];
+    delete this._currentPoPGirls[popId];
   }
 
-  selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
+  private _selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
     if ($currentPoPRecordSelected.length === 0) return;
     let $next = $currentPoPRecordSelected
       .nextAll()
       .filter(function () {
         const popId = $(this).data("pop-id");
-        const popData = pop_data[popId];
+        const popData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popId];
         return !popData.locked && popData && popData.status !== "in_progress";
       })
       .first();
@@ -391,14 +402,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $next = $(".pop-record")
       .filter(function () {
         const popId = $(this).data("pop-id");
-        const popData = pop_data[popId];
+        const popData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popId];
         return !popData.locked && popData && popData.status !== "in_progress";
       })
       .first();
     if ($next.length) {
       $next.trigger("click");
     } else {
-      for (const popEntry of Object.values(pop_data)) {
+      for (const popEntry of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)) {
         if (!popEntry.locked && popEntry.status !== "in_progress") {
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
@@ -408,7 +419,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $(".pop-record").first().trigger("click");
     }
   }
-  selectNextPoPFromClaim() {
+  private _selectNextPoPFromClaim() {
     const $currentPoPRecordSelected = $(".pop-record.selected");
     if ($currentPoPRecordSelected.nextAll().find(".collect_notif").length !== 0) {
       // find those after in priority
@@ -420,7 +431,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $nextWithNotif.parent().trigger("click");
       return;
     } else {
-      for (const popEntry of Object.values(pop_data)) {
+      for (const popEntry of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)) {
         if (!popEntry.locked && popEntry.status === "can_start") {
           $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
           return;
@@ -430,11 +441,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     $(".pop-record").first().trigger("click"); // default to first
   }
 
-  sendClaimRequest(popKey: string) {
+  private _sendClaimRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
     const popKeyInt = parseInt(popKey);
-    this.readdGirlsFromCurrentPoP(popKey);
-    const currentPoPData = pop_data[popKeyInt];
+    this._readdGirlsFromCurrentPoP(popKey);
+    const currentPoPData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt];
     $(".claimPoPButton").prop("disabled", true);
     if (currentPoPData.ends_in === null || currentPoPData.ends_in !== 0) {
       $(".claimPoPButton").css("display", "none");
@@ -445,8 +456,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $(".pop-record.selected .collect_notif").remove();
     } else {
       const $currentPoPRecordSelected = $(".pop-record.selected");
-      this.selectNextPoPFromFill($currentPoPRecordSelected);
-      delete pop_data[popKeyInt];
+      this._selectNextPoPFromFill($currentPoPRecordSelected);
+      delete (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt];
       $currentPoPRecordSelected.remove();
     }
     const n = {
@@ -455,24 +466,27 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       action: "claim",
       id_place_of_power: currentPoPData.id_places_of_power,
     };
-    delete this.currentPoPGirls[currentPoPData.id_places_of_power];
-    shared.general.hh_ajax(n, (response: any) => {
-      if (this.hasPopupEnabled) {
+    delete this._currentPoPGirls[currentPoPData.id_places_of_power];
+    RequestQueueHandler.getInstance_().addAjaxRequest_(n, (response: any) => {
+      if (this._hasPopupEnabled) {
         shared.reward_popup.Reward.handlePopup(response.rewards);
       }
-      this.selectNextPoPFromClaim();
-      this.updateSuckless();
+      this._selectNextPoPFromClaim();
+      this._updateSuckless();
       shared.animations.loadingAnimation.stop();
     });
   }
 
-  calculateTimeToFinishSeconds(popData: PlacesOfPowerData, selectedGirls: number[]): number {
-    const criteriaKey = this.convertCriteriaKey(popData.criteria);
+  private _calculateTimeToFinishSeconds(
+    popData: PlacesOfPowerData,
+    selectedGirls: number[],
+  ): number {
+    const criteriaKey = this._convertCriteriaKey(popData.criteria);
 
     // Calculate total power of selected girls
     let totalPower = 0;
     for (const girlId of selectedGirls) {
-      const girl = pop_hero_girls[girlId];
+      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
       if (girl) {
         totalPower += girl[criteriaKey];
       }
@@ -488,46 +502,46 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     return Math.floor(timeInMinutes * 60); // Convert minutes to seconds
   }
 
-  sendFillRequest(popKey: string) {
+  private _sendFillRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
     const popKeyInt = parseInt(popKey);
-    const currentPoPData = pop_data[popKeyInt];
+    const currentPoPData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt];
     if (currentPoPData.status !== "can_start") return;
 
     const popId = currentPoPData.id_places_of_power;
 
     // Build assignment for this specific PoP only
     console.log(`[PoP ${popId}] Building assignment for this PoP...`);
-    const selectedGirls = this.assignGirlsToPoP(popId) || [];
-    this.currentPoPGirls[popId] = selectedGirls;
+    const selectedGirls = this._assignGirlsToPoP(popId) || [];
+    this._currentPoPGirls[popId] = selectedGirls;
 
     if (selectedGirls.length === 0) {
       alert(
         `No ${GT.design.Girls} were assigned to this PoP. This might happen if all your ${GT.design.Girls} are already assigned to other PoPs.`,
       );
-      delete this.currentPoPGirls[popId];
+      delete this._currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
       return;
     }
 
     // Check if the team is maxed (capped)
-    const criteriaKey = this.convertCriteriaKey(currentPoPData.criteria);
+    const criteriaKey = this._convertCriteriaKey(currentPoPData.criteria);
     let totalPower = 0;
     for (const girlId of selectedGirls) {
-      const girl = pop_hero_girls[girlId];
+      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
       if (girl) {
         totalPower += girl[criteriaKey];
       }
     }
 
-    if (totalPower / currentPoPData.max_team_power < this.minPercentToStartPoP) {
+    if (totalPower / currentPoPData.max_team_power < this._minPercentToStartPoP) {
       alert("Not enough power to start this PoP.");
-      delete this.currentPoPGirls[popId];
+      delete this._currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
       return;
     }
 
-    const timeToFinishSeconds = this.calculateTimeToFinishSeconds(currentPoPData, selectedGirls);
+    const timeToFinishSeconds = this._calculateTimeToFinishSeconds(currentPoPData, selectedGirls);
 
     // If not capped, ask for confirmation
     if (totalPower < currentPoPData.max_team_power) {
@@ -539,7 +553,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
           `\nDo you want to continue?`,
       );
       if (!shouldContinue) {
-        delete this.currentPoPGirls[popId];
+        delete this._currentPoPGirls[popId];
         // Revert UI changes
         $(".startPoPButton").css("display", "");
         $(".claimPoPButton").css("display", "none");
@@ -560,7 +574,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       selected_girls: selectedGirls,
     };
 
-    const $timer = $('<div class="pop-timer"></div>');
+    const $timer = $('<div class="pop-plus-plus-timer"></div>');
 
     const timerElement = shared.timer.buildTimer(
       timeToFinishSeconds,
@@ -570,23 +584,26 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
     $timer.append(timerElement);
     $(".pop-record.selected").append($timer);
-    pop_data[popKeyInt].status = "in_progress";
-    pop_data[popKeyInt].time_to_finish = timeToFinishSeconds;
-    pop_data[popKeyInt].remaining_time = timeToFinishSeconds;
-    pop_data[popKeyInt].end_ts = timeToFinishSeconds + Math.floor(Date.now() / 1e3);
+    (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt].status = "in_progress";
+    (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt].time_to_finish =
+      timeToFinishSeconds;
+    (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt].remaining_time =
+      timeToFinishSeconds;
+    (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt].end_ts =
+      timeToFinishSeconds + Math.floor(Date.now() / 1e3);
 
-    shared.general.hh_ajax(n, (_response: any) => {
+    RequestQueueHandler.getInstance_().addAjaxRequest_(n, (_response: any) => {
       shared.timer.activateTimers("pop-record.selected .pop-active-timer", () => {});
-      this.selectNextPoPFromFill($(".pop-record.selected"));
-      this.updateOtherScriptsPoPTrackedTime();
+      this._selectNextPoPFromFill($(".pop-record.selected"));
+      this._updateOtherScriptsPoPTrackedTime();
       shared.animations.loadingAnimation.stop();
     });
   }
 
-  buildPopDetails(popKey: string) {
+  private _buildPopDetails(popKey: string) {
     const $popDetails = $(".pop-details-container");
     if (!$popDetails.length) return;
-    const currentPoPData = pop_data[parseInt(popKey)];
+    const currentPoPData = (unsafeWindow as UnsafeWindow_Activities).pop_data[parseInt(popKey)];
     if (!currentPoPData) return;
 
     $popDetails.empty();
@@ -650,12 +667,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     `);
     $popDetailsRight.append($claimBtn);
     $claimBtn.on("click", () => {
-      this.sendClaimRequest(popKey);
+      this._sendClaimRequest(popKey);
     });
 
     const $startFillBtn = $(`<button class="blue_button_L startPoPButton">Fill & Start</button>`);
     $startFillBtn.on("click", () => {
-      this.sendFillRequest(popKey);
+      this._sendFillRequest(popKey);
     });
     $popDetailsRight.append($startFillBtn);
     if (currentPoPData.status !== "can_start") {
@@ -663,10 +680,10 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     } else {
       $claimBtn.css("display", "none");
     }
-    this.createOrUpdateKobanButtons();
+    this._createOrUpdateKobanButtons();
   }
 
-  buildCustomPopInfo() {
+  private _buildCustomPopInfo() {
     const $popInfo = $("#pop_info");
     if (!$popInfo.length) return;
 
@@ -681,19 +698,21 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Iterate through pop_data records
     // Order them according to idealPoPOrder (if an id appears there), then fallback to numeric id order
-    const orderedEntries = Object.entries(pop_data).sort(([_aKey, aRec], [_bKey, bRec]) => {
-      const aId = String(aRec.id_places_of_power ?? _aKey);
-      const bId = String(bRec.id_places_of_power ?? _bKey);
-      const idxA = this.idealPoPOrder.indexOf(aId);
-      const idxB = this.idealPoPOrder.indexOf(bId);
-      if (idxA !== -1 || idxB !== -1) {
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
-      }
-      // fallback to numeric order
-      return Number(aId) - Number(bId);
-    });
+    const orderedEntries = Object.entries((unsafeWindow as UnsafeWindow_Activities).pop_data).sort(
+      ([_aKey, aRec], [_bKey, bRec]) => {
+        const aId = String(aRec.id_places_of_power ?? _aKey);
+        const bId = String(bRec.id_places_of_power ?? _bKey);
+        const idxA = this._idealPoPOrder.indexOf(aId);
+        const idxB = this._idealPoPOrder.indexOf(bId);
+        if (idxA !== -1 || idxB !== -1) {
+          if (idxA === -1) return 1;
+          if (idxB === -1) return -1;
+          return idxA - idxB;
+        }
+        // fallback to numeric order
+        return Number(aId) - Number(bId);
+      },
+    );
 
     orderedEntries.forEach(([key, popRecord]) => {
       const isLocked = popRecord.locked || 0;
@@ -714,7 +733,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
           // Add selection styling to clicked record
           $popRecord.addClass("selected");
           // Update details view
-          this.buildPopDetails(key);
+          this._buildPopDetails(key);
         });
 
         // Create icon (top left)
@@ -730,7 +749,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
         if (popRecord.status === "in_progress") {
           // Create timer
-          const $timer = $('<div class="pop-timer"></div>');
+          const $timer = $('<div class="pop-plus-plus-timer"></div>');
 
           const timerElement = shared.timer.buildTimer(
             popRecord.remaining_time,
@@ -766,19 +785,19 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         $(".claimPoPButton").prop("disabled", false);
       }
       const popId = $popRecord.data("pop-id");
-      pop_data[popId].status = "pending_reward";
-      pop_data[popId].remaining_time = 0;
+      (unsafeWindow as UnsafeWindow_Activities).pop_data[popId].status = "pending_reward";
+      (unsafeWindow as UnsafeWindow_Activities).pop_data[popId].remaining_time = 0;
       $popRecord.append('<div class="collect_notif"></div>');
       timer.$dom_element.parent().parent().remove();
     });
   }
-  async injectCustomStyles() {
+  private async _injectCustomStyles() {
     // Inject module-specific styling when the PoP UI is displayed
     GM_addStyle(placesOfPowerCss);
   }
 
-  async girlsHandler() {
-    this.isLoadingGirls = true;
+  private async _girlsHandler() {
+    this._isLoadingGirls = true;
 
     const byClass: { [k in 1 | 2 | 3]: { id: number; carac: number }[] } = {
       1: [],
@@ -786,24 +805,24 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       3: [],
     };
 
-    for (const g of Object.values(pop_hero_girls)) {
+    for (const g of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_hero_girls)) {
       if (!g || g.id_girl == null) continue;
       byClass[1].push({ id: g.id_girl, carac: g.carac1 });
       byClass[2].push({ id: g.id_girl, carac: g.carac2 });
       byClass[3].push({ id: g.id_girl, carac: g.carac3 });
       if (g.id_places_of_power != null && g.id_places_of_power !== 0) {
-        if (!this.currentPoPGirls[g.id_places_of_power]) {
-          this.currentPoPGirls[g.id_places_of_power] = [];
+        if (!this._currentPoPGirls[g.id_places_of_power]) {
+          this._currentPoPGirls[g.id_places_of_power] = [];
         }
-        this.currentPoPGirls[g.id_places_of_power].push(g.id_girl);
+        this._currentPoPGirls[g.id_places_of_power].push(g.id_girl);
       }
     }
 
-    this.sortedGirlsCache[1] = byClass[1].sort((a, b) => b.carac - a.carac).map((x) => x.id);
-    this.sortedGirlsCache[2] = byClass[2].sort((a, b) => b.carac - a.carac).map((x) => x.id);
-    this.sortedGirlsCache[3] = byClass[3].sort((a, b) => b.carac - a.carac).map((x) => x.id);
+    this._sortedGirlsCache[1] = byClass[1].sort((a, b) => b.carac - a.carac).map((x) => x.id);
+    this._sortedGirlsCache[2] = byClass[2].sort((a, b) => b.carac - a.carac).map((x) => x.id);
+    this._sortedGirlsCache[3] = byClass[3].sort((a, b) => b.carac - a.carac).map((x) => x.id);
 
-    this.isLoadingGirls = false;
+    this._isLoadingGirls = false;
     $(document).trigger("HH_SQoL_PoP_GirlsLoaded");
   }
 }

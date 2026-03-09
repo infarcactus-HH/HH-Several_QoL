@@ -44,7 +44,7 @@ const userscriptHeader = `// ==UserScript==
 // @grant        GM_cookie
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @run-at       document-end
+// @run-at       document-body
 // @connect      github.com
 // @connect      raw.githubusercontent.com
 // ==/UserScript==`;
@@ -111,12 +111,23 @@ const userscriptPlugin = {
         // Minify with Terser if not in watch mode
         if (!isWatch) {
           const terserResult = await terser.minify(content, {
-            format: { comments: false },
+            ecma: 2021,
+            format: { comments: false, ecma: 2021 },
             compress: {
               passes: 3,
               drop_console: ["log", "info", "debug"],
+              toplevel: true,
+              pure_getters: "strict",
+              unsafe_comps: false,
+              unsafe_math: false,
+              ecma: 2021,
             },
-            mangle: true,
+            mangle: {
+              toplevel: true,
+              properties: {
+                regex: /^_[a-z]|[a-zA-Z0-9]_$/, // Mangle properties that start or end with _
+              },
+            },
           });
           if (terserResult.code) {
             content = terserResult.code;
@@ -374,6 +385,8 @@ async function build() {
       splitting: false,
       // Keep names readable for debugging
       keepNames: isWatch,
+      // Mangle private properties (prefixed with _) for smaller output
+      mangleProps: isWatch ? undefined : /^_[a-z]/,
       // Optimization settings
       drop: isWatch ? [] : ["debugger"], // Keep debugger in watch mode
       dropLabels: isWatch ? [] : ["DEV"], // Keep DEV labeled code in watch mode

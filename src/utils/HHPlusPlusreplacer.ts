@@ -1,5 +1,5 @@
 export class HHPlusPlusReplacer {
-  static doWhenSelectorAvailable(
+  static doWhenSelectorAvailable_(
     selector: string,
     callback: ($element: JQuery<HTMLElement>) => void,
   ) {
@@ -20,7 +20,7 @@ export class HHPlusPlusReplacer {
       });
     }
   }
-  static conditionalDoWhenSelectorAvailable(
+  static conditionalDoWhenSelectorAvailable_(
     condition: ($el: JQuery<HTMLElement>) => boolean,
     selector: string,
     callback: ($element?: JQuery<HTMLElement>) => void,
