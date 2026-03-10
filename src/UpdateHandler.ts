@@ -5,6 +5,7 @@ import updateHandlerCss from "./css/UpdateHandler.css";
 import { GirlID, Grade, TrackedGirlRecords } from "./types";
 import html from "./utils/html";
 import runTimingHandler from "./runTimingHandler";
+import AddDummyToHHPlusPlus from "./SingletonModules/AddDummyToHHPlusPlus";
 
 export default class UpdateHandler {
   // needs to test it on real script not a link to local file
@@ -151,47 +152,13 @@ export default class UpdateHandler {
     GM_addStyle(updateHandlerCss);
   }
   private static _addOptionToHHPlusPlusConfig() {
-    let updatePopupEnabled = GlobalStorageHandler.getShowUpdatePopup_();
-    HHPlusPlusReplacer.doWhenSelectorAvailable_(
-      ".hh-plus-plus-config-button" +
-        (unsafeWindow.hhPlusPlusConfig?.BoobStrapped ? ".boob-strapped" : ":not(.boob-strapped)"),
-      ($element) => {
-        console.log("Adding click handler to HH++ config");
-        $element.on("click.severalQoLAddConfig", () => {
-          $element.off("click.severalQoLAddConfig");
-          console.log("clicked on config");
-          HHPlusPlusReplacer.doWhenSelectorAvailable_(
-            ".group-panel[rel='severalQoL']",
-            ($panel) => {
-              console.log("Injecting option into HH++ config");
-              const $container = $(
-                html`<div class="config-setting ${updatePopupEnabled ? "enabled" : ""}">
-                  <label class="base-setting">
-                    <span tooltip="It will only appear for important update, or new features"
-                      >Show update Popup</span
-                    >
-                  </label>
-                </div>`,
-              );
-              const $checkbox = $(
-                `<input type="checkbox" ${updatePopupEnabled ? 'checked="checked"' : ""}>`,
-              );
-              $container.find("label").append($checkbox);
-              $checkbox.on("change", () => {
-                updatePopupEnabled = !updatePopupEnabled;
-                console.log(`Update popup enabled set to ${updatePopupEnabled}`);
-                GlobalStorageHandler.setShowUpdatePopup_(updatePopupEnabled);
-                if (updatePopupEnabled) {
-                  $container.addClass("enabled");
-                } else {
-                  $container.removeClass("enabled");
-                }
-              });
-              $panel.children().first().append($container);
-            },
-          );
-        });
+    AddDummyToHHPlusPlus.getInstance_().addDummy_({
+      label: `<span tooltip="It will only appear for important update, or new features">Show update Popup</span>`,
+      active: GlobalStorageHandler.getShowUpdatePopup_(),
+      callback: (newValue) => {
+        console.log(`Update popup enabled set to ${newValue}`);
+        GlobalStorageHandler.setShowUpdatePopup_(newValue);
       },
-    );
+    });
   }
 }
