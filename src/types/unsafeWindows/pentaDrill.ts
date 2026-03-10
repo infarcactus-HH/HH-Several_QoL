@@ -1,7 +1,6 @@
 import { CompleteGirl } from "../game";
-import { BaseUnsafeWindow } from "./baseUnsafeWindow";
 
-export interface UnsafeWindow_pentaDrill extends BaseUnsafeWindow {
+export interface UnsafeWindow_pentaDrill {
   penta_drill_data: {
     cycle_data: {
       id_penta_drill: 6;

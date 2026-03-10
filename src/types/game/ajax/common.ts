@@ -1,4 +1,35 @@
-import { allOrbsType } from "../items";
+import { BasicRewards, GradeSkins, Shard, allOrbsType } from "..";
+
+export type CommonAjaxResponse = {
+  rewards?: {
+    data: {
+      has_lively_scene?: true; // when there's a video
+      girls?: AjaxShardGirlUpdate[]; // if girl is obtained
+      grade_skins?: GradeSkins; // if a skin is obtained
+      loot: true; // true indicating showing actual rewards
+      rewards?: BasicRewards;
+      shards?: AjaxShardGirlUpdate[]; // if shards are obtained
+    };
+    // Present when rewards include soft_currency or ticket entries in BasicRewards.
+    heroChangesUpdate: HeroChangesUpdate;
+    lose: boolean;
+    redirectUrl?: string; // "/troll-pre-battle.html?id_opponent=7"
+    sub_title?: string; // for reward popup
+    title: string; // for reward popup
+  };
+  result: "won";
+  success: boolean; // of the request, not the battle itself
+};
+
+export interface AjaxShardGirlUpdate extends Shard {
+  // despite the name `previous_value` it's not actually the amount of previously
+  // owned shards. it is the difference between `value` and the amount of gained
+  // shards which only matches up with the previously owned shards if there is no
+  // overflow that gets turned into skin shards or flowers.
+  previous_value: number;
+  // new owned *girl* shard value
+  value: number;
+}
 
 // soft_currency/ticket entries mirror BasicRewards items of the same type.
 export type HeroChangesCurrencyUpdate = {

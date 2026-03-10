@@ -30,6 +30,7 @@ import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import runTimingHandler from "./runTimingHandler";
 import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
 import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
+import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
 
 class Userscript {
   constructor() {
@@ -39,6 +40,10 @@ class Userscript {
     if (location.hostname.startsWith("nutaku")) {
       this._applySessionFix();
       this._allModules.push(FixSessID);
+    }
+    if (location.pathname === "/") {
+      console.log("Running frame page, returning early");
+      return;
     }
     this._run();
     this._runModules();
@@ -72,6 +77,7 @@ class Userscript {
     PlayerDrillTracking,
     PlayerClubTracking,
     PlayerActivitiesTracking,
+    GirlMonitoring,
   ];
   private _singletonInitModules = [AjaxCompleteHook];
 
