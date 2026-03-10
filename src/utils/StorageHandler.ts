@@ -248,10 +248,10 @@ export class ShardTrackerStorageHandler {
 }
 
 export class GirlGlobalStorageHandler {
-  static setGirlGlobalStorage(data: GirlGlobalStorage): void {
+  static setGirlGlobalStorage_(data: GirlGlobalStorage): void {
     GM_setValue(HH_UNIVERSE + "GirlGlobalStorage", data);
   }
-  static getGirlGlobalStorage(): GirlGlobalStorage {
+  static getGirlGlobalStorage_(): GirlGlobalStorage {
     return GM_getValue(HH_UNIVERSE + "GirlGlobalStorage", {});
   }
 }

@@ -1,11 +1,18 @@
 import { AlwaysRunningModule } from "../base";
 import runTimingHandler from "../runTimingHandler";
-import { CompleteGirl } from "../types";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
+import { CommonAjaxResponse, CompleteGirl } from "../types";
 import { HaremPlusPlusAllGirlsCache_Incomplete } from "../types/Harem++";
 import { GirlGlobalStorage } from "../types/storage/GirlGlobalStorage";
 import { UnsafeWindow_Activities } from "../types/unsafeWindows/activities";
 import { UnsafeWindow_pentaDrill } from "../types/unsafeWindows/pentaDrill";
+import { UnsafeWindow_seasonal_SEM } from "../types/unsafeWindows/seasonal";
 import { GirlGlobalStorageHandler } from "../utils/StorageHandler";
+import { SeasonalMarket_AjaxResponse } from "../types/game/ajax/seasonal_market";
+import { see_all_penta_drill_girlsResponse } from "../types/game/ajax/penta_drill";
+import { UnsafeWindow_Season } from "../types/unsafeWindows/season";
+import { UnsafeWindow_Waifu } from "../types/unsafeWindows/waifu";
+import { GetGirlsListResponse } from "../types/game/ajax/get_girls_list";
 
 type GirlEntry = GirlGlobalStorage[string];
 type GirlSkin = NonNullable<GirlEntry["skins"]>[number];
@@ -20,6 +27,7 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     this._hasRun = true;
 
     console.log("PlayerGirlMonitoring module running");
+    this._hookAjaxRequests();
     await this._migrateHHPlusPlus();
     await this._migrateHaremPlusPlus();
     await runTimingHandler.afterGameScriptsRun_();
@@ -30,6 +38,12 @@ export default class GirlMonitoring extends AlwaysRunningModule {
       this._fromEventPage();
     } else if (location.pathname === "/penta-drill.html") {
       this._fromPentaDrillPage();
+    } else if (location.pathname === "/seasonal.html") {
+      this._fromSeasonalEventPage();
+    } else if (location.pathname === "/season.html") {
+      this._fromSeasonEventPage();
+    } else if (location.pathname === "/waifu.html") {
+      this._fromWaifuPage();
     }
   }
 
@@ -45,7 +59,7 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     const merged: GirlEntry = {
       name: existing.name || incoming.name,
       rarity: existing.rarity ?? incoming.rarity,
-      shards: Math.max(existing.shards, incoming.shards),
+      shards: incoming.shards !== undefined ? incoming.shards : existing.shards,
     };
 
     const ico = incoming.ico ?? existing.ico;
@@ -71,46 +85,167 @@ export default class GirlMonitoring extends AlwaysRunningModule {
 
   // ── Page handlers ────────────────────────────────────────────────────────────
 
+  private _hookAjaxRequests() {
+    if (
+      location.pathname === "/harem.html" ||
+      location.pathname === "/waifu.html" ||
+      location.pathname.startsWith("/characters/")
+    ) {
+      console.log("Setting up AJAX hooks for girl data on characters/harem pages");
+      AjaxCompleteHook.getInstance_().addCallback_((event, xhr, settings) => {
+        if (settings?.data?.includes("action=get_girls_list")) {
+          const response = xhr.responseJSON as GetGirlsListResponse;
+          if (!response.success) return;
+          const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+          response.girls_list.forEach((girl) => {
+            stored[girl.id_girl] = this.mergeEntry_(
+              stored[girl.id_girl],
+              this._fromCompleteGirl(girl),
+            );
+          });
+        }
+      });
+    }
+    AjaxCompleteHook.getInstance_().addCallback_((event, xhr, settings) => {
+      if (xhr.responseJSON?.success) {
+        const response = xhr.responseJSON as CommonAjaxResponse;
+        if (response.rewards?.data) {
+          const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+          if (response.rewards.data.shards) {
+            response.rewards.data.shards.forEach((shard) => {
+              stored[shard.id_girl] = this.mergeEntry_(
+                stored[shard.id_girl],
+                this._createGirlEntryIcoAva(shard, shard.value),
+              );
+            });
+          }
+          if (response.rewards.data.girls) {
+            response.rewards.data.girls.forEach((girl) => {
+              stored[girl.id_girl] = this.mergeEntry_(
+                stored[girl.id_girl],
+                this._createGirlEntryIcoAva(girl, girl.value),
+              );
+            });
+          }
+        }
+      }
+    });
+  }
+
   private _fromActivitiesPage() {
     const PoPGirls = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls;
     if (!PoPGirls) return;
 
-    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
     for (const girlData of Object.values(PoPGirls)) {
       const incoming: GirlEntry = {
         name: girlData.name,
         rarity: this._rarityFromString(girlData.rarity),
         shards: 100,
-        ico: this._extractIconHash(girlData.avatar),
+        ico: this._extractIconHash(girlData.ico),
         poseImage: this._extractPoseImageHash(girlData.avatar),
       };
       stored[girlData.id_girl] = this.mergeEntry_(stored[girlData.id_girl], incoming);
     }
-    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
   }
   private _fromEventPage() {
     const eventGirls = (unsafeWindow.event_girls ??
       unsafeWindow.event_data?.girls ??
       unsafeWindow.current_event?.girls) as CompleteGirl[] | undefined;
     if (!eventGirls) return;
-    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
     eventGirls.forEach((girl) => {
       stored[girl.id_girl] = this.mergeEntry_(stored[girl.id_girl], this._fromCompleteGirl(girl));
       console.log("Merged event girl data for", girl.name, stored[girl.id_girl]);
     });
-    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
   }
 
   private _fromPentaDrillPage() {
     const drillGirl = (unsafeWindow as UnsafeWindow_pentaDrill).penta_drill_data.girl_data;
     if (!drillGirl) return;
-    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
     stored[drillGirl.id_girl] = this.mergeEntry_(
       stored[drillGirl.id_girl],
       this._fromCompleteGirl(drillGirl),
     );
     console.log("Merged penta drill girl data for", drillGirl.name, stored[drillGirl.id_girl]);
-    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
+    AjaxCompleteHook.getInstance_().addCallback_((event, xhr, settings) => {
+      if (settings?.data === "action=see_all_penta_drill_girls") {
+        const response = xhr.responseJSON as see_all_penta_drill_girlsResponse;
+        if (!response.success) return;
+        response.penta_drill_girls.forEach((girl) => {
+          stored[girl.id_girl] = this.mergeEntry_(
+            stored[girl.id_girl],
+            this._fromCompleteGirl(girl),
+          );
+          console.log("Merged penta drill girl data for", girl.name, stored[girl.id_girl]);
+        });
+      }
+    });
+  }
+  private _fromSeasonalEventPage() {
+    const seasonalEventGirls = (unsafeWindow as UnsafeWindow_seasonal_SEM).girls;
+    if (!seasonalEventGirls) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+    try {
+      seasonalEventGirls.forEach((girl) => {
+        stored[girl.id_girl] = this.mergeEntry_(
+          stored[girl.id_girl],
+          this._FromScratch(girl.girl.name, girl.girl.rarity, girl.ico, girl.ava, girl.shards ?? 0),
+        );
+        console.log("Merged seasonal event girl data for", girl.girl.name, stored[girl.id_girl]);
+      });
+    } catch (error) {
+      console.error("Error merging seasonal event", error);
+    }
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
+    AjaxCompleteHook.getInstance_().addCallback_((event, xhr, settings) => {
+      if (settings?.data === "action=event_market_get_data&feature=seasonal_event") {
+        if (!xhr.responseJSON.success) return;
+        (xhr.responseJSON as SeasonalMarket_AjaxResponse).inventory.forEach((item) => {
+          if (item.shards) {
+            item.shards.forEach((girlShards) => {
+              stored[girlShards.id_girl] = this.mergeEntry_(
+                stored[girlShards.id_girl],
+                this._createGirlEntryIcoAva(girlShards, girlShards.value),
+              );
+              console.log(
+                "Updated seasonal market girl data for",
+                girlShards.name,
+                stored[girlShards.id_girl],
+              );
+            });
+          }
+        });
+      }
+    });
+  }
+  private _fromSeasonEventPage() {
+    const seasonGirls = (unsafeWindow as UnsafeWindow_Season).seasons_girls;
+    if (!seasonGirls) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+    seasonGirls.forEach((girl) => {
+      stored[girl.id_girl] = this.mergeEntry_(
+        stored[girl.id_girl],
+        this._createGirlEntryIcoAva(girl),
+      );
+    });
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
+  }
+  private _fromWaifuPage() {
+    const waifuGirls = (unsafeWindow as UnsafeWindow_Waifu).girls_data_list;
+    if (!waifuGirls) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+    waifuGirls.forEach((girl) => {
+      stored[girl.id_girl] = this.mergeEntry_(
+        stored[girl.id_girl],
+        this._createGirlEntryIcoAva(girl),
+      );
+    });
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
   }
 
   // ── Migrations ───────────────────────────────────────────────────────────────
@@ -139,8 +274,8 @@ export default class GirlMonitoring extends AlwaysRunningModule {
         incoming[id] = this._fromHHPlusPlus(data);
       });
 
-      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage(), incoming);
-      GirlGlobalStorageHandler.setGirlGlobalStorage(merged);
+      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage_(), incoming);
+      GirlGlobalStorageHandler.setGirlGlobalStorage_(merged);
       GM_setValue(migrationKey, true);
       console.log(`HH++ migration done: ${Object.keys(incoming).length} girls`);
     } catch (error) {
@@ -165,8 +300,8 @@ export default class GirlMonitoring extends AlwaysRunningModule {
         incoming[data.id] = this._fromHaremPlusPlus(data);
       });
 
-      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage(), incoming);
-      GirlGlobalStorageHandler.setGirlGlobalStorage(merged);
+      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage_(), incoming);
+      GirlGlobalStorageHandler.setGirlGlobalStorage_(merged);
       GM_setValue(migrationKey, true);
       console.log(`Harem++ migration done: ${Object.keys(incoming).length} girls`);
     } catch (error) {
@@ -191,7 +326,7 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     const entry: GirlEntry = {
       name: girlData.name,
       rarity: this._rarityFromString(girlData.rarity),
-      shards: girlData.shards ?? 0,
+      shards: girlData.shards,
     };
     if (girlData.skins?.length > 0) {
       entry.skins = girlData.skins.map(
@@ -230,21 +365,68 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     return entry;
   }
 
-  private _fromCompleteGirl(girlData: CompleteGirl): GirlEntry {
-    return {
+  private _fromCompleteGirl(girlData: CompleteGirl, forcedShardsAmount?: number): GirlEntry {
+    return this._createGirlEntryIcoAva({
       name: girlData.name,
-      rarity: this._rarityFromString(girlData.rarity),
-      shards: 100,
-      ico: this._extractIconHash(girlData.avatar),
-      poseImage: this._extractPoseImageHash(girlData.avatar),
-      skins: girlData.preview.grade_skins_data.map((skin) => ({
-        skinIco: this._extractIconHash(skin.ico_path),
+      rarity: girlData.rarity,
+      shards: forcedShardsAmount ?? girlData.shards,
+      ico: girlData.avatar,
+      avatar: girlData.avatar,
+      skins: girlData.preview?.grade_skins_data,
+    });
+  }
+
+  private _createGirlEntryIcoAva(
+    options: {
+      name: string;
+      rarity: string;
+      shards?: number;
+      ico: string;
+      avatar: string;
+      skins?: Array<{
+        ico_path?: string;
+        id_girl_grade_skin: number;
+        image_path?: string;
+        num_order: number;
+      }>;
+    },
+    shardsAmount?: number,
+  ): GirlEntry {
+    const entry: GirlEntry = {
+      name: options.name,
+      rarity: this._rarityFromString(options.rarity),
+      shards: shardsAmount ?? options.shards,
+    };
+    const ico = this._extractIconHash(options.ico ?? "");
+    if (ico != null) entry.ico = ico;
+    const poseImage = this._extractPoseImageHash(options.avatar ?? "");
+    if (poseImage != null) entry.poseImage = poseImage;
+    if ((options.skins?.length ?? 0) > 0) {
+      entry.skins = options.skins!.map((skin) => ({
+        skinIco: this._extractIconHash(skin.ico_path ?? ""),
         id_girl_grade_skin: skin.id_girl_grade_skin,
         shards: 0,
         num_order: skin.num_order,
-        skinPose: this._extractPoseImageHash(skin.image_path),
-      })),
-    };
+        skinPose: this._extractPoseImageHash(skin.image_path ?? ""),
+      }));
+    }
+    return entry;
+  }
+
+  private _FromScratch(
+    name: string,
+    rarity: string,
+    ico: string,
+    poseImageUrl: string,
+    shards?: number,
+  ): GirlEntry {
+    return this._createGirlEntryIcoAva({
+      name,
+      rarity,
+      shards,
+      ico,
+      avatar: poseImageUrl,
+    });
   }
 
   // ── Skin merging ─────────────────────────────────────────────────────────────

@@ -1,7 +1,6 @@
-import { CompleteGirl, GirlElement, GirlID } from "../game";
-import { BaseUnsafeWindow } from "./baseUnsafeWindow";
+import { CompleteGirl, GirlElement, GirlID, livelySceneItem } from "../game";
 
-export interface UnsafeWindow_seasonal_SEM extends BaseUnsafeWindow {
+export interface UnsafeWindow_seasonal_SEM {
   mega_event_data: {
     id_seasonal_event: number;
     id_member: number;
@@ -84,5 +83,107 @@ export interface UnsafeWindow_seasonal_SEM extends BaseUnsafeWindow {
     has_animated_grades: boolean;
     id: GirlID;
   }>;
-  girls: Array<CompleteGirl>;
+  girls: Girls_SEM[];
+}
+
+interface Girls_SEM {
+  id_member: null;
+  id_girl: number;
+  shards: null;
+  level: number;
+  fav_graded: null;
+  graded: number;
+  ts_pay: null;
+  affection: null;
+  xp: null;
+  id_places_of_power: null;
+  date_added: null;
+  awakening_level: number;
+  girl: Girls_SEM_Girl;
+  armor: any[];
+  salary: number;
+  pay_time: number;
+  pay_in: number;
+  /* caracs: BlessedCaracsPvp4Class;
+  blessed_caracs: BlessedCaracsPvp4Class;
+  blessed_caracs_pvp4: BlessedCaracsPvp4Class; */
+  caracs_sum: number;
+  blessed_attributes: string[];
+  can_be_blessed: boolean;
+  can_be_blessed_pvp4: boolean;
+  graded2: string;
+  favorite_grade: number;
+  salary_per_hour: number;
+  ico: string;
+  ava: string;
+  level_cap: number;
+  awakening_costs: number;
+  is_owned: boolean;
+  /* affection_details: AffectionDetails;
+  xp_details: XPDetails;
+  skill_tiers_info: { [key: string]: BlessedCaracsElement }; */
+  skills: any[];
+  skill_trait: string;
+  skill_tiers_unlocked: any[];
+  /* battle_caracs: BattleCaracs; */
+  power_display: number;
+  /* lively_scenes: BlessedCaracsElement[]; */
+  member_grade_skins: any[];
+  grade_skins_stats_bonus: number;
+  selected_grade_skin_num: null;
+}
+
+interface Girls_SEM_Girl {
+  id_girl: number;
+  id_girl_ref: number;
+  nb_grades: number;
+  class: number;
+  figure: number;
+  carac1: number;
+  carac2: number;
+  carac3: number;
+  rarity: string;
+  id_world: number;
+  id_quest_get: number;
+  name: string;
+  release_date: string;
+  upgrade_quests: { [key: string]: number };
+  hair_color1: string;
+  hair_color2: string;
+  eye_color1: string;
+  eye_color2: string;
+  zodiac: string;
+  element: string;
+  /* animated_grades:     AnimatedGrade[]; */
+  anniversary: string;
+  grade_offset_values: Array<number[]>;
+  preview_scenes: Array<string[]>;
+  /* blessing_bonuses:    any[] | { [key: string]: BlessingBonus }; */
+  id_role: number;
+  /* role_data: RoleData; */
+  /* element_data:        ElementData; */
+  is_released: boolean;
+  /* blessed_caracs:      BlessedCaracs;
+    grade_offsets:       GradeOffsets; */
+  preview: Girls_SEM_Girl_Preview;
+  default_avatar: string;
+  grade_skins: any[];
+  grade_skins_data: any[];
+}
+
+interface Girls_SEM_Girl_Preview {
+  poses: string[];
+  scenes: string[];
+  lively_scenes: Girls_SEM_Girl_Preview_LivelyScene[];
+  position_img: string;
+}
+
+interface Girls_SEM_Girl_Preview_LivelyScene {
+  id_lively_scene: number;
+  id_girl: number;
+  order_num: number;
+  name: string;
+  is_unlocked: boolean;
+  content: livelySceneItem["display_data"];
+  release_date: string;
 }

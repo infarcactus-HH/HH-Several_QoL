@@ -4,7 +4,7 @@ export type GirlGlobalStorage = {
     rarity: number;
     ico?: string;
     poseImage?: string;
-    shards: number;
+    shards?: number;
     skins?: Array<{
       skinIco?: string;
       id_girl_grade_skin: number;

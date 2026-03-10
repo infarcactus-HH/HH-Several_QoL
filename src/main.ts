@@ -41,6 +41,10 @@ class Userscript {
       this._applySessionFix();
       this._allModules.push(FixSessID);
     }
+    if (location.pathname === "/") {
+      console.log("Running frame page, returning early");
+      return;
+    }
     this._run();
     this._runModules();
   }

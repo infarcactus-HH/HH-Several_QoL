@@ -162,25 +162,7 @@ export type CompleteGirl = {
   pay_in: number;
   pay_time: number;
   position_img: string; //"1.png", "12.png"
-  preview: {
-    grade_skins_data: Array<GradeSkinPreview>;
-    lively_scenes: Array<{
-      content: {
-        image: null | string; // string when it's dropped
-        image_censored: string;
-        video: null | string; // string when it's dropped
-        video_censored: string;
-      };
-      id_girl: GirlID;
-      id_lively_scene: number;
-      is_unlocked: boolean;
-      name: string; // "A" ????
-      order_num: number; // 0 : No idea
-      release_date: string; // "2025-10-08"
-      poses: Array<string>;
-      scenes: Array<string>; // either blurred with full path, or relative when unlocked WITHOUT sess
-    }>;
-  };
+  preview: GirlPreview;
   rarity: GirlRarity;
   release_date: string; // "2025-10-08"
   role_data: any;
@@ -207,6 +189,26 @@ export type CompleteGirl = {
   };
   xp: number;
   zodiac: string; //"♌︎ Leo";
+};
+
+export type GirlPreview = {
+  grade_skins_data: Array<GradeSkinPreview>;
+  lively_scenes: Array<{
+    content: {
+      image: null | string; // string when it's dropped
+      image_censored: string;
+      video: null | string; // string when it's dropped
+      video_censored: string;
+    };
+    id_girl: GirlID;
+    id_lively_scene: number;
+    is_unlocked: boolean;
+    name: string; // "A" ????
+    order_num: number; // 0 : No idea
+    release_date: string; // "2025-10-08"
+  }>;
+  poses: Array<string>;
+  scenes: Array<string>; // either blurred with full path, or relative when unlocked WITHOUT sess
 };
 
 export type GirlSourceList = {

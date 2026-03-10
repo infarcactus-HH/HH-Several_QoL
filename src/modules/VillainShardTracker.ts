@@ -1,7 +1,7 @@
 import { HHModule } from "../base";
 import type {
   DoBattlesTrollsResponse,
-  PostFightShard,
+  AjaxShardGirlUpdate,
   VillainPreBattle,
   TrackedGirl,
   GirlID,
@@ -96,7 +96,7 @@ export default class ShardTracker extends HHModule {
         const responseShards = (response.rewards.data.shards ?? []).filter((shard) =>
           this._trackedRarities.includes(shard.rarity),
         );
-        const dropsByGirlId = new Map<GirlID, PostFightShard>(
+        const dropsByGirlId = new Map<GirlID, AjaxShardGirlUpdate>(
           responseShards.map((shard) => [shard.id_girl, shard]),
         );
         console.log(
@@ -220,7 +220,7 @@ export default class ShardTracker extends HHModule {
     }
     function noSkinUpdateTrackedGirl(
       trackedGirl: TrackedGirl,
-      dropInfo: PostFightShard,
+      dropInfo: AjaxShardGirlUpdate,
       number_of_battles: number,
     ) {
       // value can exceed 100 with a 100 drop so it needs to be capped
@@ -233,7 +233,7 @@ export default class ShardTracker extends HHModule {
     }
     function simpleSkinUpdateTrackedGirl(
       trackedGirl: TrackedGirl,
-      dropInfo: PostFightShard,
+      dropInfo: AjaxShardGirlUpdate,
       number_of_battles: number,
     ) {
       const currentTrackedSkin = trackedGirl.skins!.find((skin) => !skin.is_owned);
@@ -247,7 +247,7 @@ export default class ShardTracker extends HHModule {
     }
     function girlAndMaybeSkinUpdateTrackedGirl(
       trackedGirl: TrackedGirl,
-      dropInfo: PostFightShard,
+      dropInfo: AjaxShardGirlUpdate,
       number_of_battles: number,
     ) {
       const lastShardCount = getGirlLastShardCount(trackedGirl, dropInfo);
@@ -283,7 +283,10 @@ export default class ShardTracker extends HHModule {
       ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
     }
-    function getGirlLastShardCount(trackedGirl: TrackedGirl, dropInfo: PostFightShard): number {
+    function getGirlLastShardCount(
+      trackedGirl: TrackedGirl,
+      dropInfo: AjaxShardGirlUpdate,
+    ): number {
       //for an eventual future use ?, maybe even asking the user if we need to fetch the harem page to see the shard count ?
       // Or make an option for the user to have a fetch option on battle page to update last shard count
       if (trackedGirl.last_shards_count !== undefined) {
@@ -297,7 +300,7 @@ export default class ShardTracker extends HHModule {
     }
     function updateMultipleSkinsTrackedGirl(
       trackedGirl: TrackedGirl,
-      dropInfo: PostFightShard,
+      dropInfo: AjaxShardGirlUpdate,
       number_of_battles: number,
       skinsDropped: GradeSkins,
     ) {

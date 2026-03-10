@@ -29,11 +29,11 @@ interface LoveRaidsUpcoming extends LoveRaidsBase {
 export type love_raids = LoveRaidsOngoing | LoveRaidsUpcoming;
 
 type love_raids_girl_dataMysteriousIncomplete = {
-  ico: `${typeof IMAGES_URL}/pictures/girls/${number}/av${string}.png`;
+  ico: string;
   name: "Mysterious girl";
 };
 
 type love_raids_girl_dataIncomplete = {
-  ico: `${typeof IMAGES_URL}/pictures/girls/${number}/av${string}.png`;
+  ico: string;
   name: string;
 };

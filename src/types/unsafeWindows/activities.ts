@@ -1,7 +1,6 @@
 import { CompleteGirl, global_pop_hero_girls_incomplete, PlacesOfPowerData, Rarity } from "../game";
-import { BaseUnsafeWindow } from "./baseUnsafeWindow";
 
-export interface UnsafeWindow_Activities extends BaseUnsafeWindow {
+export interface UnsafeWindow_Activities {
   player_missions: (PlayerMissionNotQueued | PlayerMissionPending)[];
   pop_data: Record<number, PlacesOfPowerData>;
   pop_hero_girls: Record<number, Omit<CompleteGirl, "preview">>;
