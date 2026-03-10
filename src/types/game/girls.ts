@@ -163,7 +163,7 @@ export type CompleteGirl = {
   pay_time: number;
   position_img: string; //"1.png", "12.png"
   preview: {
-    grade_skin_data: Array<GradeSkinPreview>;
+    grade_skins_data: Array<GradeSkinPreview>;
     lively_scenes: Array<{
       content: {
         image: null | string; // string when it's dropped

@@ -1,10 +1,10 @@
-import { global_pop_hero_girls_incomplete, PlacesOfPowerData, Rarity } from "../game";
+import { CompleteGirl, global_pop_hero_girls_incomplete, PlacesOfPowerData, Rarity } from "../game";
 import { BaseUnsafeWindow } from "./baseUnsafeWindow";
 
 export interface UnsafeWindow_Activities extends BaseUnsafeWindow {
   player_missions: (PlayerMissionNotQueued | PlayerMissionPending)[];
   pop_data: Record<number, PlacesOfPowerData>;
-  pop_hero_girls: Record<number, global_pop_hero_girls_incomplete>;
+  pop_hero_girls: Record<number, Omit<CompleteGirl, "preview">>;
   hh_prices_auto_start: number;
   hh_prices_auto_claim: number;
 }

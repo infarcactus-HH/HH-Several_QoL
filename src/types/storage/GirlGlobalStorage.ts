@@ -1,5 +1,3 @@
-import { GirlRarity } from "../game";
-
 export type GirlGlobalStorage = {
   [key: string]: {
     name: string;

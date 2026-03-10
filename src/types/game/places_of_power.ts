@@ -6,6 +6,7 @@ export interface global_pop_hero_girls_incomplete {
   carac2: number;
   carac3: number;
   id_places_of_power: number | null;
+  avatar: string;
 }
 
 export interface PoPGirlData {

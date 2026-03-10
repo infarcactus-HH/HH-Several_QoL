@@ -30,6 +30,7 @@ import MythicGirlEquipmentTracker from "./modules/MythicGirlEquipmentTracker";
 import runTimingHandler from "./runTimingHandler";
 import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
 import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
+import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
 
 class Userscript {
   constructor() {
@@ -72,6 +73,7 @@ class Userscript {
     PlayerDrillTracking,
     PlayerClubTracking,
     PlayerActivitiesTracking,
+    GirlMonitoring,
   ];
   private _singletonInitModules = [AjaxCompleteHook];
 

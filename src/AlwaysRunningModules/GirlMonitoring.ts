@@ -1,188 +1,276 @@
 import { AlwaysRunningModule } from "../base";
+import runTimingHandler from "../runTimingHandler";
+import { CompleteGirl } from "../types";
 import { HaremPlusPlusAllGirlsCache_Incomplete } from "../types/Harem++";
 import { GirlGlobalStorage } from "../types/storage/GirlGlobalStorage";
+import { UnsafeWindow_Activities } from "../types/unsafeWindows/activities";
+import { UnsafeWindow_pentaDrill } from "../types/unsafeWindows/pentaDrill";
 import { GirlGlobalStorageHandler } from "../utils/StorageHandler";
 
-type GirlSkin = NonNullable<GirlGlobalStorage[string]["skins"]>[number];
+type GirlEntry = GirlGlobalStorage[string];
+type GirlSkin = NonNullable<GirlEntry["skins"]>[number];
 
 export default class GirlMonitoring extends AlwaysRunningModule {
-  static shouldRun() {
+  static shouldRun_() {
     return true;
   }
-  async run() {
-    if (this.hasRun) {
-      return;
-    }
-    this.hasRun = true;
+
+  async run_() {
+    if (this._hasRun) return;
+    this._hasRun = true;
+
     console.log("PlayerGirlMonitoring module running");
-    //this.testReset();
-    await this._tryDataMigrationHHPlusPLus();
-    await this._tryDataMigrationHaremPlusPLus();
-    switch (location.pathname) {
+    await this._migrateHHPlusPlus();
+    await this._migrateHaremPlusPlus();
+    await runTimingHandler.afterGameScriptsRun_();
+
+    if (location.pathname === "/activities.html") {
+      this._fromActivitiesPage();
+    } else if (location.pathname === "/event.html") {
+      this._fromEventPage();
+    } else if (location.pathname === "/penta-drill.html") {
+      this._fromPentaDrillPage();
     }
   }
-  private testReset() {
-    let prefix = location.ancestorOrigins.length ? location.ancestorOrigins[0] : location.hostname;
-    GM_deleteValue(prefix + "_PlayerGirlMonitoringHHPlusPLusDataMigrated");
-    GM_deleteValue(prefix + "_PlayerGirlMonitoringHaremPlusPlusDataMigrated");
-    GirlGlobalStorageHandler.setGirlGlobalStorage({});
+
+  // ── Entry merging ────────────────────────────────────────────────────────────
+
+  /**
+   * Merges an incoming girl entry into an existing one.
+   * Existing non-null values take priority; shards are kept at max.
+   */
+  mergeEntry_(existing: GirlEntry | undefined, incoming: GirlEntry): GirlEntry {
+    if (!existing) return incoming;
+
+    const merged: GirlEntry = {
+      name: existing.name || incoming.name,
+      rarity: existing.rarity ?? incoming.rarity,
+      shards: Math.max(existing.shards, incoming.shards),
+    };
+
+    const ico = incoming.ico ?? existing.ico;
+    if (ico != null) merged.ico = ico;
+
+    const poseImage = incoming.poseImage ?? existing.poseImage;
+    if (poseImage != null) merged.poseImage = poseImage;
+
+    const skins = this._mergeSkins(existing.skins, incoming.skins);
+    if (skins != undefined) merged.skins = skins;
+
+    return merged;
   }
-  private async _tryDataMigrationHHPlusPLus() {
-    let prefix = location.ancestorOrigins.length ? location.ancestorOrigins[0] : location.hostname;
-    const migrationKeyHHPlusPlus = prefix + "_PlayerGirlMonitoringHHPlusPLusDataMigrated";
-    if (GM_getValue(migrationKeyHHPlusPlus, false)) {
+
+  /** Merges all entries from `incoming` into `base`, applying mergeEntry_ per girl. */
+  mergeStorage_(base: GirlGlobalStorage, incoming: GirlGlobalStorage): GirlGlobalStorage {
+    const result: GirlGlobalStorage = { ...base };
+    for (const [id, entry] of Object.entries(incoming)) {
+      result[id] = this.mergeEntry_(result[id], entry);
+    }
+    return result;
+  }
+
+  // ── Page handlers ────────────────────────────────────────────────────────────
+
+  private _fromActivitiesPage() {
+    const PoPGirls = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls;
+    if (!PoPGirls) return;
+
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    for (const girlData of Object.values(PoPGirls)) {
+      const incoming: GirlEntry = {
+        name: girlData.name,
+        rarity: this._rarityFromString(girlData.rarity),
+        shards: 100,
+        ico: this._extractIconHash(girlData.avatar),
+        poseImage: this._extractPoseImageHash(girlData.avatar),
+      };
+      stored[girlData.id_girl] = this.mergeEntry_(stored[girlData.id_girl], incoming);
+    }
+    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+  }
+  private _fromEventPage() {
+    const eventGirls = (unsafeWindow.event_girls ??
+      unsafeWindow.event_data?.girls ??
+      unsafeWindow.current_event?.girls) as CompleteGirl[] | undefined;
+    if (!eventGirls) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    eventGirls.forEach((girl) => {
+      stored[girl.id_girl] = this.mergeEntry_(stored[girl.id_girl], this._fromCompleteGirl(girl));
+      console.log("Merged event girl data for", girl.name, stored[girl.id_girl]);
+    });
+    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+  }
+
+  private _fromPentaDrillPage() {
+    const drillGirl = (unsafeWindow as UnsafeWindow_pentaDrill).penta_drill_data.girl_data;
+    if (!drillGirl) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage();
+    stored[drillGirl.id_girl] = this.mergeEntry_(
+      stored[drillGirl.id_girl],
+      this._fromCompleteGirl(drillGirl),
+    );
+    console.log("Merged penta drill girl data for", drillGirl.name, stored[drillGirl.id_girl]);
+    GirlGlobalStorageHandler.setGirlGlobalStorage(stored);
+  }
+
+  // ── Migrations ───────────────────────────────────────────────────────────────
+
+  private async _migrateHHPlusPlus() {
+    const prefix = location.ancestorOrigins.length
+      ? location.ancestorOrigins[0]
+      : location.hostname;
+    const migrationKey = prefix + "_PlayerGirlMonitoringHHPlusPLusDataMigrated";
+
+    if (GM_getValue(migrationKey, false)) {
       console.log("HH++ data migration already completed, skipping");
       return;
     }
-    if (unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary) {
-      try {
-        const girlDictionary = (await unsafeWindow.HHPlusPlus.Helpers.getGirlDictionary()) as Map<
-          string,
-          any
-        >;
-        console.log("HH++ girlDictionary:");
-        console.log(girlDictionary);
-
-        const transformedGirls: GirlGlobalStorage = {};
-        girlDictionary.forEach((girlData: any, girlId: string) => {
-          transformedGirls[girlId] = this._transformHHPlusPlusGirlData(girlData);
-        });
-
-        // Merge with existing data instead of overwriting
-        const existingGirls = GirlGlobalStorageHandler.getGirlGlobalStorage();
-        const mergedGirls: GirlGlobalStorage = this._mergeGirlData(existingGirls, transformedGirls);
-        GirlGlobalStorageHandler.setGirlGlobalStorage(mergedGirls);
-
-        // Mark migration as complete
-        GM_setValue(migrationKeyHHPlusPlus, true);
-        console.log(
-          `HH++ data migration completed: ${Object.keys(transformedGirls).length} girls migrated`,
-        );
-      } catch (error) {
-        console.error("Failed to migrate HH++ data:", error);
-      }
-    }
-  }
-  private async _tryDataMigrationHaremPlusPLus() {
-    let prefix = location.ancestorOrigins.length ? location.ancestorOrigins[0] : location.hostname;
-    const migrationKeyHaremPlusPlus = prefix + "_PlayerGirlMonitoringHaremPlusPlusDataMigrated";
-    if (GM_getValue(migrationKeyHaremPlusPlus, false)) {
-      return;
-    }
-
-    async function loadHaremDataFromCache() {
-      const DATA_CACHE = "harem-cache-0.10.0";
-      const HAREM_DATA_REQUEST2 = "/quickHaremData2.json";
-
-      try {
-        if (await caches.has(DATA_CACHE)) {
-          const cache = await caches.open(DATA_CACHE);
-          const response = await cache.match(new Request(HAREM_DATA_REQUEST2));
-          if (response) {
-            return (await response.json()).allGirls;
-          }
-        }
-      } catch (error) {
-        console.warn("Failed to load harem data from cache:", error);
-      }
-      throw new Error("Harem data not found in cache");
-    }
+    if (!unsafeWindow.HHPlusPlus?.Helpers?.getGirlDictionary) return;
 
     try {
-      const haremData =
-        (await loadHaremDataFromCache()) as Array<HaremPlusPlusAllGirlsCache_Incomplete>;
-      console.log("Harem++ haremData:");
-      console.log(haremData);
+      const girlDictionary = (await unsafeWindow.HHPlusPlus.Helpers.getGirlDictionary()) as Map<
+        string,
+        any
+      >;
+      console.log("HH++ girlDictionary:", girlDictionary);
 
-      const transformedGirls: GirlGlobalStorage = {};
-      haremData.forEach((girlData: HaremPlusPlusAllGirlsCache_Incomplete) => {
-        transformedGirls[girlData.id] = this._transformHaremPlusPlusGirlData(girlData);
+      const incoming: GirlGlobalStorage = {};
+      girlDictionary.forEach((data, id) => {
+        incoming[id] = this._fromHHPlusPlus(data);
       });
 
-      // Merge with existing data (in case some girls exist from HH++ migration)
-      const existingGirls = GirlGlobalStorageHandler.getGirlGlobalStorage();
-      const mergedGirls: GirlGlobalStorage = this._mergeGirlData(existingGirls, transformedGirls);
-      console.log("Merged girl data after Harem++ migration:");
-      console.log(mergedGirls);
-      GirlGlobalStorageHandler.setGirlGlobalStorage(mergedGirls);
+      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage(), incoming);
+      GirlGlobalStorageHandler.setGirlGlobalStorage(merged);
+      GM_setValue(migrationKey, true);
+      console.log(`HH++ migration done: ${Object.keys(incoming).length} girls`);
+    } catch (error) {
+      console.error("Failed to migrate HH++ data:", error);
+    }
+  }
 
-      // Mark migration as complete
-      GM_setValue(migrationKeyHaremPlusPlus, true);
-      console.log(
-        `Harem++ data migration completed: ${Object.keys(transformedGirls).length} girls migrated`,
-      );
+  private async _migrateHaremPlusPlus() {
+    const prefix = location.ancestorOrigins.length
+      ? location.ancestorOrigins[0]
+      : location.hostname;
+    const migrationKey = prefix + "_PlayerGirlMonitoringHaremPlusPlusDataMigrated";
+
+    if (GM_getValue(migrationKey, false)) return;
+
+    try {
+      const haremData = await this._loadHaremPlusPlusCache();
+      console.log("Harem++ haremData:", haremData);
+
+      const incoming: GirlGlobalStorage = {};
+      haremData.forEach((data: HaremPlusPlusAllGirlsCache_Incomplete) => {
+        incoming[data.id] = this._fromHaremPlusPlus(data);
+      });
+
+      const merged = this.mergeStorage_(GirlGlobalStorageHandler.getGirlGlobalStorage(), incoming);
+      GirlGlobalStorageHandler.setGirlGlobalStorage(merged);
+      GM_setValue(migrationKey, true);
+      console.log(`Harem++ migration done: ${Object.keys(incoming).length} girls`);
     } catch (error) {
       console.error("Failed to migrate Harem++ data:", error);
     }
   }
-  private _mergeGirlData(
-    existing: GirlGlobalStorage,
-    newData: GirlGlobalStorage,
-  ): GirlGlobalStorage {
-    const result: GirlGlobalStorage = { ...existing };
 
-    for (const [girlId, newGirl] of Object.entries(newData)) {
-      const existingGirl = result[girlId];
+  private async _loadHaremPlusPlusCache(): Promise<HaremPlusPlusAllGirlsCache_Incomplete[]> {
+    const DATA_CACHE = "harem-cache-0.10.0";
+    const HAREM_DATA_REQUEST = "/quickHaremData2.json";
 
-      if (!existingGirl) {
-        // No existing data, use new data
-        result[girlId] = newGirl;
-      } else {
-        const girlIdResult = result[girlId];
-        // Merge: take best values from both sources
-        result[girlId] = {
-          name: existingGirl.name || newGirl.name,
-          rarity: existingGirl.rarity || newGirl.rarity,
-          shards: Math.max(existingGirl.shards, newGirl.shards),
-        };
-        if (existingGirl.ico || newGirl.ico) {
-          result[girlId].ico = existingGirl.ico || newGirl.ico;
-        }
-        if (existingGirl.poseImage || newGirl.poseImage) {
-          result[girlId].poseImage = existingGirl.poseImage || newGirl.poseImage;
-        }
-        if (existingGirl.skins || newGirl.skins) {
-          result[girlId].skins = this._mergeSkins(existingGirl.skins, newGirl.skins);
-        }
-      }
-    }
-
-    return result;
+    if (!(await caches.has(DATA_CACHE))) throw new Error("Harem++ cache not found");
+    const cache = await caches.open(DATA_CACHE);
+    const response = await cache.match(new Request(HAREM_DATA_REQUEST));
+    if (!response) throw new Error("Harem data not found in cache");
+    return (await response.json()).allGirls;
   }
+
+  // ── Transforms ───────────────────────────────────────────────────────────────
+
+  private _fromHHPlusPlus(girlData: any): GirlEntry {
+    const entry: GirlEntry = {
+      name: girlData.name,
+      rarity: this._rarityFromString(girlData.rarity),
+      shards: girlData.shards ?? 0,
+    };
+    if (girlData.skins?.length > 0) {
+      entry.skins = girlData.skins.map(
+        (skin: any): GirlSkin => ({
+          skinIco: this._extractIconHash(skin.ico_path),
+          id_girl_grade_skin: skin.id_girl_grade_skin,
+          shards: skin.shards_count ?? 0,
+          num_order: skin.num_order,
+        }),
+      );
+    }
+    return entry;
+  }
+
+  private _fromHaremPlusPlus(girlData: HaremPlusPlusAllGirlsCache_Incomplete): GirlEntry {
+    const entry: GirlEntry = {
+      name: girlData.name,
+      rarity: girlData.rarity,
+      shards: girlData.shards,
+    };
+    const ico = this._extractIconHash(girlData.icon0);
+    if (ico != null) entry.ico = ico;
+    const poseImage = this._extractPoseImageHash(girlData.poseImage0);
+    if (poseImage != null) entry.poseImage = poseImage;
+    if (girlData.gradeSkins?.length > 0) {
+      entry.skins = girlData.gradeSkins.map(
+        (skin): GirlSkin => ({
+          skinIco: this._extractIconHash(skin.ico_path),
+          id_girl_grade_skin: skin.id_girl_grade_skin,
+          shards: 0,
+          num_order: skin.num_order,
+          skinPose: this._extractPoseImageHash(skin.image_path),
+        }),
+      );
+    }
+    return entry;
+  }
+
+  private _fromCompleteGirl(girlData: CompleteGirl): GirlEntry {
+    return {
+      name: girlData.name,
+      rarity: this._rarityFromString(girlData.rarity),
+      shards: 100,
+      ico: this._extractIconHash(girlData.avatar),
+      poseImage: this._extractPoseImageHash(girlData.avatar),
+      skins: girlData.preview.grade_skins_data.map((skin) => ({
+        skinIco: this._extractIconHash(skin.ico_path),
+        id_girl_grade_skin: skin.id_girl_grade_skin,
+        shards: 0,
+        num_order: skin.num_order,
+        skinPose: this._extractPoseImageHash(skin.image_path),
+      })),
+    };
+  }
+
+  // ── Skin merging ─────────────────────────────────────────────────────────────
 
   private _mergeSkins(
     existing: GirlSkin[] | undefined,
-    newSkins: GirlSkin[] | undefined,
+    incoming: GirlSkin[] | undefined,
   ): GirlSkin[] | undefined {
-    if (!existing) return newSkins;
-    if (!newSkins) return existing;
+    if (!existing) return incoming;
+    if (!incoming) return existing;
 
-    const skinMap = new Map<number, GirlSkin>();
-
-    // Add existing skins first
-    existing.forEach((skin) => {
-      skinMap.set(skin.id_girl_grade_skin, skin);
-    });
-
-    // Merge new skins: take highest shard count
-    newSkins.forEach((newSkin) => {
-      const existingSkin = skinMap.get(newSkin.id_girl_grade_skin);
-      if (!existingSkin) {
-        skinMap.set(newSkin.id_girl_grade_skin, newSkin);
-      } else {
-        const mergedSkin: GirlSkin = {
-          ...existingSkin,
-          shards: Math.max(existingSkin.shards, newSkin.shards),
-        };
-        skinMap.set(newSkin.id_girl_grade_skin, mergedSkin);
-      }
-    });
-
+    const skinMap = new Map<number, GirlSkin>(existing.map((s) => [s.id_girl_grade_skin, s]));
+    for (const newSkin of incoming) {
+      const prev = skinMap.get(newSkin.id_girl_grade_skin);
+      skinMap.set(
+        newSkin.id_girl_grade_skin,
+        prev ? { ...prev, shards: Math.max(prev.shards, newSkin.shards) } : newSkin,
+      );
+    }
     return Array.from(skinMap.values());
   }
 
-  private _convertRarity(rarity: string): number {
-    const rarityMap: Record<string, number> = {
+  // ── Utilities ────────────────────────────────────────────────────────────────
+
+  private _rarityFromString(rarity: string): number {
+    const map: Record<string, number> = {
       starting: 0,
       common: 1,
       rare: 2,
@@ -190,117 +278,63 @@ export default class GirlMonitoring extends AlwaysRunningModule {
       legendary: 4,
       mythic: 5,
     };
-    return rarityMap[rarity] ?? 1;
+    return map[rarity] ?? 1;
   }
-  private _transformHHPlusPlusGirlData(girlData: any): GirlGlobalStorage[string] {
-    // Transform a single girlData object to GirlGlobalStorage format
-    const result: GirlGlobalStorage[string] = {
-      name: girlData.name,
-      rarity: this._convertRarity(girlData.rarity),
-      shards: girlData.shards ?? 0,
-    };
 
-    if (girlData.skins && girlData.skins.length > 0) {
-      result.skins = girlData.skins.map((skin: any) => ({
-        ico_path: skin.ico_path,
-        id_girl_grade_skin: skin.id_girl_grade_skin,
-        shards: skin.shards_count,
-        num_order: skin.num_order,
-      }));
-    }
-
-    return result;
-  }
-  private _transformHaremPlusPlusGirlData(
-    girlData: HaremPlusPlusAllGirlsCache_Incomplete,
-  ): GirlGlobalStorage[string] {
-    // Transform Harem++ girl data to GirlGlobalStorage format
-    const result: GirlGlobalStorage[string] = {
-      name: girlData.name,
-      rarity: girlData.rarity,
-      shards: girlData.shards,
-    };
-
-    const poseImageHash = this._extractAndMinifyPoseImage(girlData.poseImage0);
-    if (poseImageHash) {
-      result.poseImage = poseImageHash;
-    }
-
-    const icoHash = this._extractAndMinifyIcon(girlData.icon0);
-    if (icoHash) {
-      result.ico = icoHash;
-    }
-
-    if (girlData.gradeSkins && girlData.gradeSkins.length > 0) {
-      result.skins = girlData.gradeSkins.map((skin) => ({
-        skinIco: this._extractAndMinifyIcon(skin.ico_path),
-        id_girl_grade_skin: skin.id_girl_grade_skin,
-        shards: 0, // Harem++ cache doesn't have shard count per skin
-        num_order: skin.num_order,
-        skinPose: this._extractAndMinifyPoseImage(skin.image_path),
-      }));
-    }
-
-    return result;
-  }
-  private _extractAndMinifyPoseImage(poseImage: string): string | undefined {
-    if (!poseImage) {
-      return undefined;
-    }
-    if (poseImage.includes("/avb0") || poseImage.includes("/grade_skins")) {
-      return undefined;
-    }
-
-    // Extract gallery path and hash from URL like:
-    // "https://hh.hh-content.com/pictures/gallery/70/1200x-black/41414350-7c325f588fb0a2aa0b05bf3720368e6b.png"
-    const match = poseImage.match(/\/pictures\/gallery\/\d+\/[^/]+\/\d+-(.+)\.png/);
+  private _extractPoseImageHash(url: string): string | undefined {
+    if (!url) return undefined;
+    if (url.includes("/avb0") || url.includes("/grade_skins")) return undefined;
+    const match = url.match(/\/pictures\/gallery\/\d+\/[^/]+\/\d+-(.+?)\.png/);
     if (!match) {
-      console.warn("Failed to extract pose image info from URL:", poseImage);
+      console.warn("Failed to extract pose image hash from URL:", url);
       return undefined;
     }
-    const hexHash = match[1];
-
-    // Minify hex hash to base64url (32 hex chars -> 22 base64url chars)
-    // Each hex char = 4 bits, each base64 char = 6 bits
-    // 32 * 4 = 128 bits -> 128 / 6 = ~22 chars
-    const poseImageHash = this._hexToBase64Url(hexHash);
-
-    return poseImageHash;
+    return this._hexToBase64Url(match[1]);
   }
 
-  private _extractAndMinifyIcon(ico: string | undefined) {
-    if (!ico) {
-      return undefined;
-    }
+  private _extractIconHash(url: string | undefined): string | undefined {
+    if (!url) return undefined;
+    const match = url.match(/\/pictures\/gallery\/\d+\/[^/]+\/\d+-(.+?)\.png/);
+    if (!match) return undefined;
+    return this._hexToBase64Url(match[1]);
+  }
 
-    // Extract hash from icon URL like:
-    // "https://hh.hh-content.com/pictures/gallery/70/ico/41414350-7c325f588fb0a2aa0b05bf3720368e6b.png"
-    const match = ico.match(/\/pictures\/gallery\/\d+\/[^/]+\/\d+-(.+)\.png$/);
-    if (!match) {
-      return undefined;
-    }
+  // ── Minification / unminification ────────────────────────────────────────────
 
-    const hexHash = match[1];
-    const icoHash = this._hexToBase64Url(hexHash);
+  /** Converts a stored base64url hash back to a lowercase hex string. */
+  unminifyHash_(hash: string): string {
+    return this._base64UrlToHex(hash);
+  }
 
-    return icoHash;
+  /** Converts a stored ico hash back to a lowercase hex string. */
+  unminifyIconHash_(hash: string): string {
+    return this._base64UrlToHex(hash);
+  }
+
+  /** Converts a stored poseImage hash back to a lowercase hex string. */
+  unminifyPoseImageHash_(hash: string): string {
+    return this._base64UrlToHex(hash);
   }
 
   private _hexToBase64Url(hex: string): string {
-    // Convert hex string to bytes
     const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
       bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
     }
-
-    // Convert bytes to base64
     let binary = "";
     for (let i = 0; i < bytes.length; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-    const base64 = btoa(binary);
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
 
-    // Convert to base64url (URL-safe, no padding)
-    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  private _base64UrlToHex(base64url: string): string {
+    const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(base64);
+    let hex = "";
+    for (let i = 0; i < binary.length; i++) {
+      hex += binary.charCodeAt(i).toString(16).padStart(2, "0");
+    }
+    return hex;
   }
 }
