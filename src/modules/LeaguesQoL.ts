@@ -22,7 +22,7 @@ type LeaguesQoL_configSchema = {
     },
     {
       key: "noRefillEnergyConfirm";
-      label: "Disable koban spending confirmation when refilling energy in leagues";
+      label: "Disable koban spending confirmation for leagues energy refill";
       default: false;
     },
     {
@@ -52,13 +52,13 @@ export default class LeaguesQoL extends HHModule {
       },
       {
         key: "noRefillEnergyConfirm",
-        label: "Disable koban spending confirmation when refilling energy in leagues",
+        label: "Disable spending confirmation for leagues energy refill",
         default: false,
       },
       {
         key: "simv4Fix",
         label:
-          "<span tooltip='Fetches pre-battle page, skill sim & booster sim may still be a bit inaccurate but the sim on the right is still good'>Fix simv4 by fetching correct opponent data, **requires** Leagues++</span>",
+          "<span tooltip='Fetches pre-battle page, Booster Sims & Skill sims are still incorrect for them check Pre-Battle Page'>Fix simv4 : **requires** Leagues++</span>",
         default: false,
       },
     ],

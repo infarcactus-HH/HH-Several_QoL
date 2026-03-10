@@ -1,0 +1,68 @@
+img[src*="/pictures/gallery/"],
+img[src*="/pictures/girls/"],
+img[src*="/images/members/"],
+.square-avatar-wrapper,
+img[src*="/design/leagues/"],
+.product-offer-background-container,
+img[src*="/pictures/items/"],
+img[src*="/pictures/misc/items_icons/"],
+img[src*="/pictures/design/pachinko/"],
+img[src*="/pictures/design/battle_positions/"],
+img[src*="/pictures/pantheon/"],
+.champions-over__champion-image,
+[carac="1"]::before,
+[carac="carac1"]::before,
+[carac="class1"]::before,
+[carac="2"]::before,
+[carac="carac2"]::before,
+[carac="class2"]::before,
+[carac="3"]::before,
+[carac="carac3"]::before,
+[carac="class3"]::before,
+img[src*="/pictures/misc/shops/"],
+#girl_preview_popup img[src*="/pictures/girls/"],
+#girl_preview_popup img[src*="/pictures/gallery/"],
+img[src*="/pictures/hero/ico/"],
+img[src*="/pictures/design/hero_leveling_girl"],
+img[src*="/pictures/design/el_teams-girls.png"],
+#bg_all.map > div > img,
+.crosspromo_banner,
+img[src*="/pictures/hero/ico/"],
+img[src*="/img/quests/"],
+img[src*="/images/pictures/design/double_pachinko/"] {
+  filter: opacity(0) !important;
+}
+
+#bg_all > .fixed_scaled > img[src*="/pictures/gallery/"] {
+  filter: opacity(0.3) !important;
+}
+.page-pantheon-pre-battle > #bg_all > .fixed_scaled > img[src*="/pictures/backgrounds/"] {
+  filter: opacity(0) !important;
+}
+
+.popup_wrapper
+  #no_HC
+  .content-container.monthly_card
+  .bundle-container
+  .mc-card-container
+  .rewards-container,
+.adventures .adventure-card-container,
+.custom-background,
+.contest_header {
+  background-image: none !important;
+}
+
+img[src*="/img/quests/"] {
+  filter: opacity(0);
+  transition: none;
+}
+
+.page-map #bg_all.map > div > img {
+  filter: none !important;
+}
+
+/*img[src*="/pictures/gallery/68/"] boosters */
+
+#login_register_form > .game_logo {
+  filter: opacity(0) !important;
+}

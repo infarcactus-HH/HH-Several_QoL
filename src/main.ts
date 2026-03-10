@@ -31,6 +31,7 @@ import runTimingHandler from "./runTimingHandler";
 import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
 import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
 import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
+import BetterNSFWCensor from "./AlwaysRunningModules/BetterNSFWCensor";
 
 class Userscript {
   constructor() {
@@ -52,10 +53,10 @@ class Userscript {
   private _allModules = [
     PopupMinusMinus,
     StyleTweak,
-    PlacesOfPowerPlusPlus,
+    LeaguesQoL,
     NoReloadFromClaimingDailyChests,
     People,
-    LeaguesQoL,
+    PlacesOfPowerPlusPlus,
     LoveRaids,
     MenuExtensions,
     PopupPlusPlus,
@@ -78,6 +79,7 @@ class Userscript {
     PlayerClubTracking,
     PlayerActivitiesTracking,
     GirlMonitoring,
+    BetterNSFWCensor,
   ];
   private _singletonInitModules = [AjaxCompleteHook];
 
@@ -165,13 +167,13 @@ class Userscript {
   private _run() {
     UpdateHandler.run_();
     Several_QoL_Badges.ensureCacheIsValid();
+    this._singletonInitModules.forEach(async (module) => {
+      module.init_();
+    });
     this._alwaysRunningModules.forEach(async (module) => {
       if (module.shouldRun_()) {
         new module().run_();
       }
-    });
-    this._singletonInitModules.forEach(async (module) => {
-      module.init_();
     });
   }
 }

@@ -31,6 +31,12 @@ export class GlobalStorageHandler {
   static getBadgeCache_(): BadgeDataCache | null {
     return GM_getValue("S_QoL_badge_cache", null);
   }
+  static setBetterNsfwCensorEnabled_(enabled: boolean): void {
+    GM_setValue("BetterNSFWCensorEnabled", enabled);
+  }
+  static getBetterNsfwCensorEnabled_(): boolean {
+    return GM_getValue("BetterNSFWCensorEnabled", false);
+  }
 }
 
 export class PlayerStorageHandler {

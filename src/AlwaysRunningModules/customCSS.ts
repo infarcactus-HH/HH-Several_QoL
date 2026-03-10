@@ -9,6 +9,8 @@ export default class CustomCSS extends AlwaysRunningModule {
       GM_addStyle(
         `h4.severalQoL.selected::after{content: 'v${GM_info.script.version}';display: block;position: absolute;top: -10px;right: -15px;font-size: 10px;}`,
       );
+      GM_addStyle(`.hh-plus-plus-config-panel .group-panel .config-setting.has-subsettings[rel="severalQoL_noReloadFromClaimingDailyChests"],
+.hh-plus-plus-config-panel .group-panel .config-setting.has-subsettings[rel="severalQoL_placesOfPowerPlusPlus"] { grid-row-end: span 1;}`);
     }
   }
 }
