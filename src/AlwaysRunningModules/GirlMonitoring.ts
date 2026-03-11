@@ -292,7 +292,20 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     if (GM_getValue(migrationKey, false)) return;
 
     try {
-      const haremData = await this._loadHaremPlusPlusCache();
+      const DATA_CACHE = "harem-cache-0.10.0";
+      const HAREM_DATA_REQUEST = "/quickHaremData2.json";
+
+      if (!(await caches.has(DATA_CACHE))) {
+        GM_setValue(migrationKey, true);
+        return;
+      }
+      const cache = await caches.open(DATA_CACHE);
+      const response = await cache.match(new Request(HAREM_DATA_REQUEST));
+      if (!response) {
+        GM_setValue(migrationKey, true);
+        return;
+      }
+      const haremData = (await response.json()).allGirls as HaremPlusPlusAllGirlsCache_Incomplete[];
       console.log("Harem++ haremData:", haremData);
 
       const incoming: GirlGlobalStorage = {};
@@ -307,17 +320,6 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     } catch (error) {
       console.error("Failed to migrate Harem++ data:", error);
     }
-  }
-
-  private async _loadHaremPlusPlusCache(): Promise<HaremPlusPlusAllGirlsCache_Incomplete[]> {
-    const DATA_CACHE = "harem-cache-0.10.0";
-    const HAREM_DATA_REQUEST = "/quickHaremData2.json";
-
-    if (!(await caches.has(DATA_CACHE))) throw new Error("Harem++ cache not found");
-    const cache = await caches.open(DATA_CACHE);
-    const response = await cache.match(new Request(HAREM_DATA_REQUEST));
-    if (!response) throw new Error("Harem data not found in cache");
-    return (await response.json()).allGirls;
   }
 
   // ── Transforms ───────────────────────────────────────────────────────────────
