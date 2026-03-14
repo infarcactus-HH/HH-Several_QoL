@@ -115,7 +115,7 @@ const userscriptPlugin = {
             format: { comments: false, ecma: 2021 },
             compress: {
               passes: 3,
-              drop_console: ["log", "info", "debug"],
+              drop_console: ["log", "debug"],
               toplevel: true,
               pure_getters: "strict",
               unsafe_comps: false,
