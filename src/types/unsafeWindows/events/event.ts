@@ -18,7 +18,7 @@ export interface UnsafeWindow_Event extends BaseUnsafeWindow {
     participation_info: string; // message when you can't participate
     progression_href: string; // /quest/etc
     seconds_until_event_ends: number;
-    subtype: "classic" | (string & {});
+    subtype: "classic" | "orgy";
     type: "event";
   };
   event_data: UnsafeWindow_Event["current_event"];
