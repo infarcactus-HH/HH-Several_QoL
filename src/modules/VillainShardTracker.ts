@@ -154,6 +154,9 @@ export default class ShardTracker extends HHModule {
               trackedGirl,
               dropInfo,
               number_of_battles,
+              response.rewards.data.grade_skins?.filter((skin) => {
+                skin.id_girl === girlID;
+              }) ?? [],
             );
           } else {
             // 100% sure it's only skin shards
@@ -249,9 +252,15 @@ export default class ShardTracker extends HHModule {
       trackedGirl: TrackedGirl,
       dropInfo: AjaxShardGirlUpdate,
       number_of_battles: number,
+      skinsDropped: GradeSkins,
     ) {
       const lastShardCount = getGirlLastShardCount(trackedGirl, dropInfo);
-      const totalShards = dropInfo.value - dropInfo.previous_value;
+      const totalShards =
+        dropInfo.value -
+        dropInfo.previous_value +
+        skinsDropped.reduce((sum, skin) => {
+          return sum + (skin.shards_added - skin.previous_skin_shards);
+        }, 0);
       const gainedGirlShards = number_of_battles === 1 ? totalShards : 100 - lastShardCount;
       let skinShardsPool = totalShards - gainedGirlShards;
       trackedGirl.dropped_shards += gainedGirlShards;
@@ -261,24 +270,52 @@ export default class ShardTracker extends HHModule {
           ? 1
           : Math.round((number_of_battles * gainedGirlShards) / totalShards);
       trackedGirl.number_fight += fightsGirl;
-      if (number_of_battles > 1) {
-        let fightsAccounted = fightsGirl;
-        while (skinShardsPool > 0) {
-          // in case of multi skin drops, shouldn't be an issue doing it like this
-          const i = trackedGirl.skins!.findIndex((skin) => !skin.is_owned)!;
-          const lastSkin = i === trackedGirl.skins!.length;
-          const currentTrackedSkin = trackedGirl.skins![i];
 
-          const skinsShardsToFill = lastSkin ? skinShardsPool : Math.min(33, skinShardsPool);
-          skinShardsPool -= skinsShardsToFill;
-          currentTrackedSkin.dropped_shards += skinsShardsToFill;
-
-          const fightsSkin = lastSkin
-            ? number_of_battles - fightsAccounted
-            : number_of_battles - Math.round((number_of_battles * skinsShardsToFill) / totalShards);
-          currentTrackedSkin.number_fight += fightsSkin;
-          fightsAccounted += fightsSkin;
+      // Properly handle each dropped skin by matching with ico_path
+      const totalSkinShardsDropped = skinShardsPool;
+      skinsDropped.forEach((skinDrop) => {
+        const currentTrackedSkin = trackedGirl.skins!.find((s) => s.ico_path === skinDrop.ico_path);
+        const droppedShardsForThisSkin = skinDrop.shards_added - skinDrop.previous_skin_shards;
+        const nbFightsForThisSkin = Math.round(
+          number_of_battles * (droppedShardsForThisSkin / totalSkinShardsDropped),
+        );
+        skinShardsPool -= droppedShardsForThisSkin;
+        if (!currentTrackedSkin) {
+          alert(
+            "ShardTracker: encountered a skin drop that is not tracked, this should not happen.",
+          );
+          const newSkinTracked = {
+            ico_path: skinDrop.ico_path,
+            number_fight: nbFightsForThisSkin,
+            is_owned: skinDrop.is_owned,
+            dropped_shards: droppedShardsForThisSkin,
+          };
+          trackedGirl.skins!.push(newSkinTracked);
+          return;
+        } else {
+          currentTrackedSkin.number_fight += nbFightsForThisSkin;
+          currentTrackedSkin.dropped_shards += droppedShardsForThisSkin;
         }
+      });
+      if (skinShardsPool > 33) {
+        // XXX: is this necessarily an error? I don't remember if `previous_value`
+        //   includes overflow to flowers or not. if it does this is certainly
+        //   possible and would only be an error if there is still an unowned
+        //   skin left
+        // YYY: you can't say is this necessarily an error and on the while loop
+        //   below that it should only run once. Because it will only run more than once
+        //   When skinShardsPool >= 33 here
+        alert(
+          "ShardTracker: encountered more skin shards dropped than possible, this should not happen.",
+        );
+      }
+      const currentTrackedSkin = trackedGirl.skins!.find((s) => !s.is_owned);
+      if (skinShardsPool > 0 && currentTrackedSkin) {
+        const shardsToAdd = Math.min(33 - (currentTrackedSkin.dropped_shards ?? 0), skinShardsPool);
+        currentTrackedSkin.dropped_shards += shardsToAdd;
+        const fightsToAdd = Math.round(number_of_battles * (shardsToAdd / totalSkinShardsDropped));
+        currentTrackedSkin.number_fight += fightsToAdd;
+        skinShardsPool -= shardsToAdd;
       }
       ShardTrackerStorageHandler.upsertTrackedGirl_(dropInfo.id_girl, trackedGirl);
       return trackedGirl;
@@ -304,7 +341,12 @@ export default class ShardTracker extends HHModule {
       number_of_battles: number,
       skinsDropped: GradeSkins,
     ) {
-      let skinShardsPool = dropInfo.value - dropInfo.previous_value;
+      let skinShardsPool =
+        dropInfo.value -
+        dropInfo.previous_value +
+        skinsDropped.reduce((sum, skin) => {
+          return sum + (skin.shards_added - skin.previous_skin_shards);
+        }, 0);
       const totalSkinShardsDropped = skinShardsPool;
       skinsDropped.forEach((skinDrop) => {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => s.ico_path === skinDrop.ico_path);
