@@ -259,7 +259,7 @@ export default class ShardTracker extends HHModule {
         dropInfo.value -
         dropInfo.previous_value +
         skinsDropped.reduce((sum, skin) => {
-          return sum + (skin.shards_added - skin.previous_skin_shards);
+          return sum + skin.shards_added;
         }, 0);
       const gainedGirlShards = number_of_battles === 1 ? totalShards : 100 - lastShardCount;
       let skinShardsPool = totalShards - gainedGirlShards;
@@ -275,7 +275,7 @@ export default class ShardTracker extends HHModule {
       const totalSkinShardsDropped = skinShardsPool;
       skinsDropped.forEach((skinDrop) => {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => s.ico_path === skinDrop.ico_path);
-        const droppedShardsForThisSkin = skinDrop.shards_added - skinDrop.previous_skin_shards;
+        const droppedShardsForThisSkin = skinDrop.shards_added;
         const nbFightsForThisSkin = Math.round(
           number_of_battles * (droppedShardsForThisSkin / totalSkinShardsDropped),
         );
@@ -345,12 +345,12 @@ export default class ShardTracker extends HHModule {
         dropInfo.value -
         dropInfo.previous_value +
         skinsDropped.reduce((sum, skin) => {
-          return sum + (skin.shards_added - skin.previous_skin_shards);
+          return sum + skin.shards_added;
         }, 0);
       const totalSkinShardsDropped = skinShardsPool;
       skinsDropped.forEach((skinDrop) => {
         const currentTrackedSkin = trackedGirl.skins!.find((s) => s.ico_path === skinDrop.ico_path);
-        const droppedShardsForThisSkin = skinDrop.shards_added - skinDrop.previous_skin_shards;
+        const droppedShardsForThisSkin = skinDrop.shards_added;
         const nbFightsForThisSkin = Math.round(
           number_of_battles * (droppedShardsForThisSkin / totalSkinShardsDropped),
         );
