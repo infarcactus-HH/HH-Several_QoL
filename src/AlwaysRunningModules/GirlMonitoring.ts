@@ -127,6 +127,18 @@ export default class GirlMonitoring extends AlwaysRunningModule {
               );
             });
           }
+          if (response.rewards.data.grade_skins) {
+            response.rewards.data.grade_skins.forEach((skin) => {
+              stored[skin.id_girl].skins = this._mergeSkins(stored[skin.id_girl].skins, [
+                {
+                  skinIco: this._extractIconHash(skin.ico_path),
+                  id_girl_grade_skin: skin.id_girl_grade_skin,
+                  shards: skin.shards_count,
+                  num_order: skin.num_order,
+                },
+              ]);
+            });
+          }
         }
       }
     });

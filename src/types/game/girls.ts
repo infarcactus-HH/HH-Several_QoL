@@ -34,6 +34,7 @@ export interface GradeSkinPreview {
     animated: Array<number>;
     static: Array<number>;
   };
+  shards_count: number;
   previous_skin_shards: number;
   rarity: GirlRarity;
   release_date: string; // "2025-10-08"
