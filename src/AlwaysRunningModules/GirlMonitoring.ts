@@ -56,10 +56,21 @@ export default class GirlMonitoring extends AlwaysRunningModule {
   mergeEntry_(existing: GirlEntry | undefined, incoming: GirlEntry): GirlEntry {
     if (!existing) return incoming;
 
+    const existingShards = existing.shards;
+    const incomingShards = incoming.shards;
+    let mergedShards: number | undefined;
+    if (existingShards === undefined) {
+      mergedShards = incomingShards;
+    } else if (incomingShards === undefined) {
+      mergedShards = existingShards;
+    } else {
+      mergedShards = Math.max(existingShards, incomingShards);
+    }
+
     const merged: GirlEntry = {
       name: existing.name || incoming.name,
       rarity: existing.rarity ?? incoming.rarity,
-      shards: incoming.shards !== undefined ? incoming.shards : existing.shards,
+      shards: mergedShards,
     };
 
     const ico = incoming.ico ?? existing.ico;
@@ -103,6 +114,7 @@ export default class GirlMonitoring extends AlwaysRunningModule {
               this._fromCompleteGirl(girl),
             );
           });
+          GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
         }
       });
     }
@@ -129,7 +141,11 @@ export default class GirlMonitoring extends AlwaysRunningModule {
           }
           if (response.rewards.data.grade_skins) {
             response.rewards.data.grade_skins.forEach((skin) => {
-              stored[skin.id_girl].skins = this._mergeSkins(stored[skin.id_girl].skins, [
+              const girlEntry = stored[skin.id_girl];
+              if (!girlEntry) {
+                return;
+              }
+              girlEntry.skins = this._mergeSkins(girlEntry.skins, [
                 {
                   skinIco: this._extractIconHash(skin.ico_path),
                   id_girl_grade_skin: skin.id_girl_grade_skin,
@@ -139,6 +155,7 @@ export default class GirlMonitoring extends AlwaysRunningModule {
               ]);
             });
           }
+          GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
         }
       }
     });
@@ -154,8 +171,8 @@ export default class GirlMonitoring extends AlwaysRunningModule {
         name: girlData.name,
         rarity: this._rarityFromString(girlData.rarity),
         shards: 100,
-        ico: this._extractIconHash(girlData.ico),
-        poseImage: this._extractPoseImageHash(girlData.avatar),
+        ico: this._extractIconHash(girlData.images.ico[0]),
+        poseImage: this._extractPoseImageHash(girlData.images.ava[0]),
       };
       stored[girlData.id_girl] = this.mergeEntry_(stored[girlData.id_girl], incoming);
     }
@@ -252,10 +269,13 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     if (!waifuGirls) return;
     const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
     waifuGirls.forEach((girl) => {
-      stored[girl.id_girl] = this.mergeEntry_(
-        stored[girl.id_girl],
-        this._createGirlEntryIcoAva(girl),
-      );
+      if (girl.id_girl === 344662796) {
+        console.log(girl);
+      }
+      stored[girl.id_girl] = this.mergeEntry_(stored[girl.id_girl], this._fromCompleteGirl(girl));
+      if (girl.id_girl === 344662796) {
+        console.log(stored);
+      }
     });
     GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
   }
@@ -384,8 +404,8 @@ export default class GirlMonitoring extends AlwaysRunningModule {
       name: girlData.name,
       rarity: girlData.rarity,
       shards: forcedShardsAmount ?? girlData.shards,
-      ico: girlData.avatar,
-      avatar: girlData.avatar,
+      ico: girlData.images.ico[0],
+      avatar: girlData.images.ava[0],
       skins: girlData.preview?.grade_skins_data,
     });
   }
@@ -457,7 +477,14 @@ export default class GirlMonitoring extends AlwaysRunningModule {
       const prev = skinMap.get(newSkin.id_girl_grade_skin);
       skinMap.set(
         newSkin.id_girl_grade_skin,
-        prev ? { ...prev, shards: Math.max(prev.shards, newSkin.shards) } : newSkin,
+        prev
+          ? {
+              ...prev,
+              skinIco: prev.skinIco ?? newSkin.skinIco,
+              skinPose: prev.skinPose ?? newSkin.skinPose,
+              shards: Math.max(prev.shards, newSkin.shards),
+            }
+          : { ...newSkin },
       );
     }
     return Array.from(skinMap.values());

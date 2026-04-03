@@ -10,7 +10,11 @@ import type {
   HeroChangesCurrencyUpdate,
   gemsItem,
 } from "../types";
-import { PlayerStorageHandler, ShardTrackerStorageHandler } from "../utils/StorageHandler";
+import {
+  GirlGlobalStorageHandler,
+  PlayerStorageHandler,
+  ShardTrackerStorageHandler,
+} from "../utils/StorageHandler";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { villainShardTrackerCss } from "../css/modules";
@@ -525,6 +529,8 @@ export default class ShardTracker extends HHModule {
   }
 
   private _createGirlEntry(id_girl: GirlID, girl: TrackedGirl): JQuery<HTMLElement> {
+    const globalGirl = GirlGlobalStorageHandler.getGirlGlobalStorage_()[id_girl];
+    const iconSrc = GameHelpers.buildGirlIconPathFromHash_(id_girl, globalGirl?.ico, girl.ico);
     const shards =
       girl.dropped_shards +
       (girl.skins ?? []).reduce((sum, skin) => {
@@ -539,7 +545,7 @@ export default class ShardTracker extends HHModule {
       <div id_girl="${id_girl}">
         <div girl="${id_girl}" class="harem-girl">
           <div class="left">
-            <img class="${girl.rarity}" src="${girl.ico}" alt="" />
+            <img class="${girl.rarity}" src="${iconSrc}" alt="" />
           </div>
           <div class="right">
             <h4>${girl.name}</h4>
@@ -557,6 +563,8 @@ export default class ShardTracker extends HHModule {
     return girlDiv;
   }
   private _generateGirlDetail(id_girl: GirlID, girl: TrackedGirl) {
+    const globalGirl = GirlGlobalStorageHandler.getGirlGlobalStorage_()[id_girl];
+    const poseSrc = GameHelpers.buildGirlPosePathFromHash_(id_girl, globalGirl?.poseImage);
     const $girlDetail = $(
       "#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-detail",
     ).empty();
@@ -585,11 +593,7 @@ export default class ShardTracker extends HHModule {
 
     const girlDetail = html`
       <div class="girl-detail-container">
-        <img
-          src="${IMAGES_URL + "/pictures/girls/" + id_girl + "/ava0.png"}"
-          class="background-pose"
-          alt="${girl.name}"
-        />
+        <img src="${poseSrc}" class="background-pose" alt="${girl.name}" />
         <div class="girl-detail-content">
           <h2>${girl.name}</h2>
           <div class="graded-detail">${"<g></g>".repeat(girl.grade)}</div>

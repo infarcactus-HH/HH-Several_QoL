@@ -97,6 +97,63 @@ export default class GameHelpers {
     }
     return "HH";
   }
+
+  static buildGirlIconPathFromHash_(id_girl: number, iconHash?: string, fallback?: string): string {
+    const hashHex = this._hexFromHash_(iconHash);
+    if (hashHex) {
+      return `${IMAGES_URL}/pictures/gallery/77/300x/${id_girl}-${hashHex}.png`;
+    }
+    return fallback ?? `${IMAGES_URL}/pictures/girls/${id_girl}/ava0.png`;
+  }
+
+  static buildGirlPosePathFromHash_(id_girl: number, poseHash?: string, fallback?: string): string {
+    const hashHex = this._hexFromHash_(poseHash);
+    if (hashHex) {
+      return `${IMAGES_URL}/pictures/gallery/70/1200x/${id_girl}-${hashHex}.png`;
+    }
+    return fallback ?? `${IMAGES_URL}/pictures/girls/${id_girl}/ava0.png`;
+  }
+
+  private static _hexFromHash_(hash?: string): string | undefined {
+    if (!hash) return undefined;
+    if (hash.indexOf("/") !== -1) return undefined;
+
+    if (/^[a-fA-F0-9]+$/.test(hash) && hash.length % 2 === 0) {
+      return hash.toLowerCase();
+    }
+
+    try {
+      return this._base64UrlToHex_(hash);
+    } catch (_error) {
+      return undefined;
+    }
+  }
+
+  private static _parseGalleryUrl_(url?: string): { id_girl: number; hashHex: string } | undefined {
+    if (!url) return undefined;
+
+    const match = url.match(/\/pictures\/gallery\/\d+\/[^/]+\/(\d+)-([a-fA-F0-9]+)\.png/);
+    if (!match) return undefined;
+
+    return {
+      id_girl: Number(match[1]),
+      hashHex: match[2].toLowerCase(),
+    };
+  }
+
+  private static _base64UrlToHex_(base64url: string): string {
+    const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+    const padLen = (4 - (base64.length % 4)) % 4;
+    const paddedBase64 = base64 + "=".repeat(padLen);
+    const binary = atob(paddedBase64);
+    let hex = "";
+    for (let i = 0; i < binary.length; i++) {
+      const hexByte = binary.charCodeAt(i).toString(16);
+      hex += hexByte.length === 1 ? "0" + hexByte : hexByte;
+    }
+    return hex;
+  }
+
   /**
    * This is not fullproof since the shown value is rounded beforehand
    * @param shownMoney 4digits max
