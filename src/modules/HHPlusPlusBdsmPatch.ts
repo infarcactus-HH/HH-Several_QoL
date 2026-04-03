@@ -4,17 +4,23 @@ import runTimingHandler from "../runTimingHandler";
 import { TooltipHook } from "../SingletonModules/TooltipHook";
 import { UnsafeWindow_Activities } from "../types/unsafeWindows/activities";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { PlayerStorageHandler } from "../utils/StorageHandler";
+import { GirlGlobalStorageHandler, PlayerStorageHandler } from "../utils/StorageHandler";
 import html from "../utils/html";
+import GameHelpers from "../utils/GameHelpers";
 
 type HHPlusPlusBdsmPatch_configSchema = {
   baseKey: "hhPlusPlusBdsmPatch";
-  label: "<span tooltip='Add some things BDSM will add at some point'>HH++ BDSM Patch (Temporary fix/addons)</span>";
+  label: "<span tooltip='Add some things BDSM may add at some point'>HH++ BDSM Patch (Temporary fix/addons)</span>";
   default: true;
   subSettings: [
     {
       key: "temporaryPoPBar";
-      label: "Temporary PoP Bar";
+      label: "PoP/Mission Bar";
+      default: true;
+    },
+    {
+      key: "fixVillainFightSelectorGirlIcon";
+      label: "Fix villain fight selector icon for new girls";
       default: true;
     },
   ];
@@ -32,6 +38,11 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         label: "PoP/Mission Bar",
         default: true,
       },
+      {
+        key: "fixVillainFightSelectorGirlIcon",
+        label: "Fix villain fight selector icon for new girls",
+        default: true,
+      },
     ],
   };
   static shouldRun_() {
@@ -45,6 +56,9 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
     await runTimingHandler.afterGameScriptsRun_();
     if (subSettings.temporaryPoPBar) {
       this._addPoPBar();
+    }
+    if (subSettings.fixVillainFightSelectorGirlIcon) {
+      this._fixVillainFightSelectorGirlIcon();
     }
   }
   private _addPoPBar() {
@@ -294,5 +308,34 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         }
       },
     );
+  }
+  private _fixVillainFightSelectorGirlIcon() {
+    HHPlusPlusReplacer.doWhenSelectorAvailable_(".energy_counter[type='fight']", ($el) => {
+      $el.on("click", () => {
+        HHPlusPlusReplacer.doWhenSelectorAvailable_(
+          ".script-fight-a-villain-menu .menu-villain-bottom .girl_ico>img",
+          ($icos) => {
+            let storedGirls = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+            $icos.each((_, ico) => {
+              if (ico.getAttribute("src")?.includes("ico0-300x")) {
+                const id = ico
+                  .getAttribute("src")
+                  ?.match(/\/pictures\/girls\/(\d+)\/ico0-300x/)?.[1];
+                if (!id) return;
+                const storedGirl = storedGirls[id];
+                if (storedGirl) {
+                  const newSrc = GameHelpers.buildGirlIconPathFromHash_(
+                    Number(id),
+                    storedGirl.ico,
+                    ico.getAttribute("src")!,
+                  );
+                  ico.setAttribute("src", newSrc);
+                }
+              }
+            });
+          },
+        );
+      });
+    });
   }
 }
