@@ -311,7 +311,7 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
   }
   private _fixVillainFightSelectorGirlIcon() {
     HHPlusPlusReplacer.doWhenSelectorAvailable_(".energy_counter[type='fight']", ($el) => {
-      $el.on("click", () => {
+      $el.one("click", () => {
         HHPlusPlusReplacer.doWhenSelectorAvailable_(
           ".script-fight-a-villain-menu .menu-villain-bottom .girl_ico>img",
           ($icos) => {
