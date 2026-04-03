@@ -1,3 +1,4 @@
+import "jquery";
 import type { HHModule_ConfigSchema } from "./base";
 import PopupPlusPlus from "./modules/Popup++";
 import People from "./modules/PeopleToWiki";
