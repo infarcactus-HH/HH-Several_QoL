@@ -34,7 +34,7 @@ export default class AddDummyToHHPlusPlus {
       return;
     }
     HHPlusPlusReplacer.doWhenSelectorAvailable_(".hh-plus-plus-config-button", ($button) => {
-      $button.on("click.addDummyToHHPlusPlus", () => {
+      $button.one("click.addDummyToHHPlusPlus", () => {
         HHPlusPlusReplacer.doWhenSelectorAvailable_(
           ".hh-plus-plus-config-panel .group-panel[rel='severalQoL'] .panel-contents",
           ($QoLpanel) => {
