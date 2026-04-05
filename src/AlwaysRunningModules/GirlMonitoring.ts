@@ -13,7 +13,7 @@ import { see_all_penta_drill_girlsResponse } from "../types/game/ajax/penta_dril
 import { UnsafeWindow_Season } from "../types/unsafeWindows/season";
 import { UnsafeWindow_Waifu } from "../types/unsafeWindows/waifu";
 import { GetGirlsListResponse } from "../types/game/ajax/get_girls_list";
-import { UnsafeWindow_love_raids } from "../types/unsafeWindows/love_raids";
+import { love_raids_type, UnsafeWindow_love_raids } from "../types/unsafeWindows/love_raids";
 
 type GirlEntry = GirlGlobalStorage[string];
 type GirlSkin = NonNullable<GirlEntry["skins"]>[number];
@@ -26,12 +26,12 @@ export default class GirlMonitoring extends AlwaysRunningModule {
   async run_() {
     if (this._hasRun) return;
     this._hasRun = true;
+    await runTimingHandler.afterGameScriptsRun_();
 
     console.log("PlayerGirlMonitoring module running");
     this._hookAjaxRequests();
     await this._migrateHHPlusPlus();
     await this._migrateHaremPlusPlus();
-    await runTimingHandler.afterGameScriptsRun_();
 
     if (location.pathname === "/activities.html") {
       this._fromActivitiesPage();
@@ -284,13 +284,22 @@ export default class GirlMonitoring extends AlwaysRunningModule {
   }
 
   private _fromLoveRaidsPage() {
-    const loveRaidsGirls = (unsafeWindow as UnsafeWindow_love_raids).love_raids;
-    if (!loveRaidsGirls) return;
+    const key = "__GM_LOVE_RAIDS_" + Math.random().toString(36).slice(2);
+    const s = document.createElement("script");
+    s.textContent = `(function(){Object.defineProperty(window, '${key}', {configurable: true,get() { try { return typeof love_raids === 'undefined' ? null : love_raids; } finally { delete window['${key}'];}}});})();`;
+    document.documentElement.appendChild(s);
+    s.remove();
+    const loveRaids = unsafeWindow[key] as love_raids_type[] | null;
+    if (!loveRaids) return;
     const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
-    loveRaidsGirls.forEach((raid) => {
+    loveRaids.forEach((raid) => {
       const girlID = raid.id_girl;
       if ("images" in raid.girl_data && raid.girl_data.images !== undefined) {
         stored[girlID] = this.mergeEntry_(stored[girlID], this._fromCompleteGirl(raid.girl_data));
+      } else {
+        if (stored[girlID]) {
+          stored[girlID].shards = raid.girl_data.shards;
+        }
       }
     });
     GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
@@ -299,9 +308,10 @@ export default class GirlMonitoring extends AlwaysRunningModule {
   // ── Migrations ───────────────────────────────────────────────────────────────
 
   private async _migrateHHPlusPlus() {
-    const prefix = location.ancestorOrigins.length
-      ? location.ancestorOrigins[0]
-      : location.hostname;
+    const prefix =
+      location.ancestorOrigins && location.ancestorOrigins?.length
+        ? location.ancestorOrigins[0]
+        : location.hostname;
     const migrationKey = prefix + "_PlayerGirlMonitoringHHPlusPLusDataMigrated";
 
     if (GM_getValue(migrationKey, false)) {
@@ -332,9 +342,10 @@ export default class GirlMonitoring extends AlwaysRunningModule {
   }
 
   private async _migrateHaremPlusPlus() {
-    const prefix = location.ancestorOrigins.length
-      ? location.ancestorOrigins[0]
-      : location.hostname;
+    const prefix =
+      location.ancestorOrigins && location.ancestorOrigins?.length
+        ? location.ancestorOrigins[0]
+        : location.hostname;
     const migrationKey = prefix + "_PlayerGirlMonitoringHaremPlusPlusDataMigrated";
 
     if (GM_getValue(migrationKey, false)) return;
