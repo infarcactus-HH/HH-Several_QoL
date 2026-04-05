@@ -3,7 +3,6 @@ export type * from "./event";
 export type * from "./fighter";
 export type * from "./girls";
 export type * from "./league";
-export type * from "./love_raids";
 export type * from "./ME";
 export type * from "./objective";
 export type * from "./places_of_power";

@@ -8,11 +8,11 @@ import {
   GirlElement,
   GirlEquipmentListResponse,
 } from "../types";
-import { girls_data_listIncomplete } from "../types/game/waifu";
 import GameHelpers from "../utils/GameHelpers";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import RequestQueueHandler from "../SingletonModules/RequestQueueHandler";
 import runTimingHandler from "../runTimingHandler";
+import { UnsafeWindow_Waifu } from "../types/unsafeWindows/waifu";
 
 export default class MythicGirlEquipmentTracker extends HHModule {
   readonly configSchema = {
@@ -248,13 +248,13 @@ export default class MythicGirlEquipmentTracker extends HHModule {
 
   // Run asynchronously to gain time
   private async _getEquipDataFromEquippedGirls() {
-    const girlsDataList = unsafeWindow.girls_data_list as girls_data_listIncomplete | undefined;
+    const girlsDataList = (unsafeWindow as UnsafeWindow_Waifu).girls_data_list;
     if (!girlsDataList) {
       alert("Unable to access girls_data_list");
       return;
     }
     for (const girlData of girlsDataList) {
-      if (girlData.armor.length > 0) {
+      if (girlData.armor && girlData.armor.length > 0) {
         girlData.armor.forEach((armorItem) => {
           if (armorItem.rarity === "mythic") {
             const figure = armorItem.variation.figure;

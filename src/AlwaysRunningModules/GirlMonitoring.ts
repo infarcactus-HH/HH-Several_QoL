@@ -13,6 +13,7 @@ import { see_all_penta_drill_girlsResponse } from "../types/game/ajax/penta_dril
 import { UnsafeWindow_Season } from "../types/unsafeWindows/season";
 import { UnsafeWindow_Waifu } from "../types/unsafeWindows/waifu";
 import { GetGirlsListResponse } from "../types/game/ajax/get_girls_list";
+import { UnsafeWindow_love_raids } from "../types/unsafeWindows/love_raids";
 
 type GirlEntry = GirlGlobalStorage[string];
 type GirlSkin = NonNullable<GirlEntry["skins"]>[number];
@@ -44,6 +45,8 @@ export default class GirlMonitoring extends AlwaysRunningModule {
       this._fromSeasonEventPage();
     } else if (location.pathname === "/waifu.html") {
       this._fromWaifuPage();
+    } else if (location.pathname === "/love-raids.html") {
+      this._fromLoveRaidsPage();
     }
   }
 
@@ -280,6 +283,19 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
   }
 
+  private _fromLoveRaidsPage() {
+    const loveRaidsGirls = (unsafeWindow as UnsafeWindow_love_raids).love_raids;
+    if (!loveRaidsGirls) return;
+    const stored = GirlGlobalStorageHandler.getGirlGlobalStorage_();
+    loveRaidsGirls.forEach((raid) => {
+      const girlID = raid.id_girl;
+      if ("images" in raid.girl_data && raid.girl_data.images !== undefined) {
+        stored[girlID] = this.mergeEntry_(stored[girlID], this._fromCompleteGirl(raid.girl_data));
+      }
+    });
+    GirlGlobalStorageHandler.setGirlGlobalStorage_(stored);
+  }
+
   // ── Migrations ───────────────────────────────────────────────────────────────
 
   private async _migrateHHPlusPlus() {
@@ -399,7 +415,22 @@ export default class GirlMonitoring extends AlwaysRunningModule {
     return entry;
   }
 
-  private _fromCompleteGirl(girlData: CompleteGirl, forcedShardsAmount?: number): GirlEntry {
+  private _fromCompleteGirl<
+    T extends {
+      name: string;
+      rarity: string;
+      shards?: number;
+      images: { ico: string[]; ava: string[] };
+      preview?: {
+        grade_skins_data?: Array<{
+          ico_path?: string;
+          id_girl_grade_skin: number;
+          image_path?: string;
+          num_order: number;
+        }>;
+      };
+    },
+  >(girlData: T, forcedShardsAmount?: number): GirlEntry {
     return this._createGirlEntryIcoAva({
       name: girlData.name,
       rarity: girlData.rarity,

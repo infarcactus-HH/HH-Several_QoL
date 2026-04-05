@@ -1,5 +1,4 @@
 import { HHModule, HHModule_ConfigSchema, SubSettingsType } from "../base";
-import type { love_raids } from "../types";
 import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { LoveRaidsStorageHandler } from "../utils/StorageHandler";
 import { loveRaidsCss } from "../css/modules";
@@ -7,8 +6,9 @@ import GameHelpers from "../utils/GameHelpers";
 import html from "../utils/html";
 import { ReducedLoveRaid } from "../types/storage/love_raids";
 import runTimingHandler from "../runTimingHandler";
+import { love_raids_type } from "../types/unsafeWindows/love_raids";
 
-declare const love_raids: Array<love_raids> | undefined;
+declare const love_raids: Array<love_raids_type> | undefined;
 
 type configSchema = {
   baseKey: "loveRaids";
@@ -84,7 +84,7 @@ export default class LoveRaids extends HHModule {
 
     function handleRaidCards(
       storedRaid: ReducedLoveRaid | undefined,
-      raid: love_raids,
+      raid: love_raids_type,
       element: HTMLElement,
     ) {
       console.log("Handling raid card for raid:", storedRaid);
@@ -289,7 +289,7 @@ export default class LoveRaids extends HHModule {
           }
           refreshHiddenRaidsCss();
         }
-        function showGirlAvatarForHidden(raidData: love_raids, $element: JQuery<HTMLElement>) {
+        function showGirlAvatarForHidden(raidData: love_raids_type, $element: JQuery<HTMLElement>) {
           if (raidData.announcement_type_name !== "full" && raidData.status !== "ongoing") {
             // mysterious ones
             const $girlImg = $element.find(".girl-img.avatar");
@@ -301,7 +301,7 @@ export default class LoveRaids extends HHModule {
           }
         }
         function addNotificationForFavoriteRaid(
-          raidData: love_raids,
+          raidData: love_raids_type,
           $element: JQuery<HTMLElement>,
         ) {
           const $raidName = $element.find(".raid-name");
