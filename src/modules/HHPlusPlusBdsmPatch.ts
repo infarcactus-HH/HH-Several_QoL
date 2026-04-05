@@ -317,19 +317,32 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
           ($icos) => {
             let storedGirls = GirlGlobalStorageHandler.getGirlGlobalStorage_();
             $icos.each((_, ico) => {
-              if (ico.getAttribute("src")?.includes("ico0-300x")) {
-                const id = ico
-                  .getAttribute("src")
-                  ?.match(/\/pictures\/girls\/(\d+)\/ico0-300x/)?.[1];
+              const img = ico as HTMLImageElement;
+              const srcAttr = img.getAttribute("src");
+              if (srcAttr?.includes("ico0-300x")) {
+                const id = srcAttr.match(/\/pictures\/girls\/(\d+)\/ico0-300x/)?.[1];
                 if (!id) return;
                 const storedGirl = storedGirls[id];
-                if (storedGirl) {
-                  const newSrc = GameHelpers.buildGirlIconPathFromHash_(
-                    Number(id),
-                    storedGirl.ico,
-                    ico.getAttribute("src")!,
-                  );
-                  ico.setAttribute("src", newSrc);
+                if (!storedGirl) return;
+
+                const newSrc = GameHelpers.buildGirlIconPathFromHash_(
+                  Number(id),
+                  storedGirl.ico,
+                  srcAttr,
+                );
+
+                const onError = function onError() {
+                  img.removeEventListener("error", onError);
+                  if (img.getAttribute("src") !== newSrc) {
+                    img.setAttribute("src", newSrc);
+                  }
+                };
+
+                img.addEventListener("error", onError);
+
+                // If image already failed to load, trigger replacement immediately
+                if (img.complete && img.naturalWidth === 0) {
+                  onError();
                 }
               }
             });
