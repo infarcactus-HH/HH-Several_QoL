@@ -7,6 +7,13 @@ import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
 import { GirlGlobalStorageHandler, PlayerStorageHandler } from "../utils/StorageHandler";
 import html from "../utils/html";
 import GameHelpers from "../utils/GameHelpers";
+import {
+  DoBattlesTrollsResponse,
+  gemsItem,
+  HeroChangesCurrencyUpdate,
+  VillainPreBattle,
+} from "../types";
+import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
 
 type HHPlusPlusBdsmPatch_configSchema = {
   baseKey: "hhPlusPlusBdsmPatch";
@@ -43,6 +50,11 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         label: "Fix villain fight selector icon for new girls",
         default: true,
       },
+      /* {
+        key: "fixSandalwoodTracking",
+        label: "Fix Sandalwood for skins & for non mythics",
+        default: true,
+      }, */
     ],
   };
   static shouldRun_() {
@@ -350,5 +362,114 @@ export default class HHPlusPlusBdsmPatch extends HHModule {
         );
       });
     });
+  }
+  /* private _fixSandalwoodTracking() {
+    if (
+      location.pathname !== "/troll-pre-battle.html" &&
+      location.pathname !== "/troll-battle.html"
+    ) {
+      return;
+    }
+    let Sandalwood = JSON.parse(
+        localStorage.getItem("HHPlusPlusBoosterStatus") ?? "{}",
+      ).mythic.find((a: any) => a.item.identifier == "MB1");
+    if (PlayerStorageHandler.getShouldApplyStoredSandalwood()) {
+      let newSandalwood = PlayerStorageHandler.getPlayerSandalwood();
+      if(newSandalwood == null) { // case where HH++ didn't correctly 
+        if(Sandalwood){
+
+        }
+      }
+    }
+    if (location.pathname === "/troll-battle.html") {
+      if (PlayerStorageHandler.getShouldApplyStoredSandalwood()) {
+      }
+      
+      PlayerStorageHandler.setPlayerSandalwood(Sandalwood);
+    }
+    let currentSandalwood = PlayerStorageHandler.getPlayerSandalwood();
+    if (currentSandalwood) {
+      AjaxCompleteHook.getInstance_().addCallback_((event, xhr, settings) => {
+        if (
+          typeof settings?.data === "string" &&
+          settings.data.includes("action=do_battles_trolls")
+        ) {
+          const response = xhr.responseJSON as DoBattlesTrollsResponse;
+          const battlesMatch = settings.data.match(/number_of_battles=(\d+)/);
+          const number_of_battles = battlesMatch ? parseInt(battlesMatch[1], 10) : 1;
+          let nbFightsThatDroppedShards = this._calculateNumberOfFightsThatDroppedShards(
+            response,
+            number_of_battles,
+          );
+
+          if (nbFightsThatDroppedShards !== 0) {
+            PlayerStorageHandler.setShouldApplyStoredSandalwood(true);
+            if (currentSandalwood.usages_remaining < nbFightsThatDroppedShards) {
+              PlayerStorageHandler.setPlayerSandalwood(null);
+            } else {
+              currentSandalwood.usages_remaining -= nbFightsThatDroppedShards;
+              PlayerStorageHandler.setPlayerSandalwood(currentSandalwood);
+            }
+          }
+        }
+      }, true);
+    }
+  } */
+
+  private _calculateNumberOfFightsThatDroppedShards(
+    response: DoBattlesTrollsResponse,
+    nbFights: number,
+  ): number {
+    if (!response.rewards) {
+      return 0;
+    }
+    const rewardsData = response.rewards.data;
+    if (nbFights === 1) {
+      return rewardsData.shards || rewardsData.girls || rewardsData.grade_skins ? 1 : 0;
+    }
+    if (!rewardsData.rewards) {
+      return nbFights;
+    }
+    let accountedFights = 0;
+    const opponentFighter = unsafeWindow.opponent_fighter as VillainPreBattle;
+    for (const reward of rewardsData.rewards) {
+      if (reward.type === "gems") {
+        // Only way this breaks, is with gem boosters (mythic booster) and it runs out halfway through the drops
+        const gainedGems = reward.value; // This includes prestige boost, but villain shown gem doesn't account for it
+        const gemVilain = opponentFighter!.rewards.data.rewards.find(
+          (r) => "gem_type" in r && r.gem_type === reward.gem_type,
+        )! as gemsItem;
+        const gemPrestigeBoost = PlayerStorageHandler.getPlayerGemsPrestigeBonus_();
+        accountedFights += Math.round(gainedGems / (1 + gemPrestigeBoost) / gemVilain.value);
+      } else if (reward.type === "soft_currency") {
+        const newSoftCurrency = (response.rewards.heroChangesUpdate as HeroChangesCurrencyUpdate)
+          .currency!.soft_currency!;
+        const oldSoftCurrency = shared.Hero.currencies.soft_currency;
+        const currencyDiff = newSoftCurrency - oldSoftCurrency;
+        const villainCurrencyAmount = GameHelpers.convertShownMoneyToNumber(
+          opponentFighter!.rewards.data.rewards.find((r) => r.type === "soft_currency")!.value,
+        );
+        accountedFights += Math.round(currencyDiff / villainCurrencyAmount);
+      } else if (reward.type === "lively_scene") {
+        accountedFights += 1;
+      } else if (reward.type === "item") {
+        accountedFights += reward.value.quantity;
+      } else if (reward.type === "energy_quest") {
+        const EnergyQuestVilain = opponentFighter!.rewards.data.rewards.find(
+          (r) => r.type === "energy_quest",
+        )!;
+        accountedFights += Math.round(Number(reward.value) / Number(EnergyQuestVilain.value));
+      } else if (typeof reward.value === "number") {
+        accountedFights += reward.value;
+      } else if (typeof reward.value === "string" && !isNaN(Number(reward.value))) {
+        accountedFights += Number(reward.value);
+      } else {
+        console.warn("Unknown reward type encountered in shard tracker:", reward);
+        if ((reward as any).value && !isNaN(Number((reward as any).value))) {
+          accountedFights += Number((reward as any).value);
+        }
+      }
+    }
+    return nbFights - accountedFights;
   }
 }
