@@ -18,6 +18,9 @@ export default class AjaxCompleteHook {
   private async _HookAjax() {
     await runTimingHandler.afterJQueryLoaded_();
     $(document).ajaxComplete((event, xhr, settings) => {
+      if (this._ajaxHistory.length >= 10) {
+        this._ajaxHistory.shift();
+      }
       this._ajaxHistory.push({ event, xhr, settings });
       this._callbacks.forEach((callback) => callback(event, xhr, settings));
       if (settings.data && settings.data.includes("action=do_battles_trolls")) {
