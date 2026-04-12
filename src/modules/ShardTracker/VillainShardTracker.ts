@@ -1,4 +1,4 @@
-import { HHModule } from "../base";
+import { SubModule } from "../../base";
 import type {
   DoBattlesTrollsResponse,
   AjaxShardGirlUpdate,
@@ -7,15 +7,15 @@ import type {
   GirlID,
   GirlRarity,
   GradeSkins,
-} from "../types";
-import type { GirlGlobalStorage } from "../types/storage/GirlGlobalStorage";
-import { GirlGlobalStorageHandler, ShardTrackerStorageHandler } from "../utils/StorageHandler";
-import GameHelpers from "../utils/GameHelpers";
-import { HHPlusPlusReplacer } from "../utils/HHPlusPlusreplacer";
-import { villainShardTrackerCss } from "../css/modules";
-import html from "../utils/html";
-import AjaxCompleteHook from "../SingletonModules/AjaxCompleteHook";
-import runTimingHandler from "../runTimingHandler";
+} from "../../types";
+import type { GirlGlobalStorage } from "../../types/storage/GirlGlobalStorage";
+import { GirlGlobalStorageHandler, ShardTrackerStorageHandler } from "../../utils/StorageHandler";
+import GameHelpers from "../../utils/GameHelpers";
+import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
+import { villainShardTrackerCss } from "../../css/modules";
+import html from "../../utils/html";
+import AjaxCompleteHook from "../../SingletonModules/AjaxCompleteHook";
+import runTimingHandler from "../../runTimingHandler";
 
 type PreBattleGirl = VillainPreBattle["rewards"]["girls_plain"][number];
 type PreBattleShard = NonNullable<VillainPreBattle["rewards"]["data"]["shards"]>[number];
@@ -28,14 +28,7 @@ type GirlDictionaryPatch = {
   shards?: number;
 };
 
-export default class ShardTracker extends HHModule {
-  readonly configSchema = {
-    baseKey: "villainShardTracker",
-    label:
-      "<span tooltip='When on a villain Page, top right of the villain click the book'>Tracks your Legendary & Mythic drops from Villains</span>",
-    default: true,
-  };
-
+export default class ShardTracker implements SubModule {
   private static readonly EVENT_OPTIONS = [
     "Mythic Days (Revival)",
     "Legendary Days",
@@ -62,11 +55,10 @@ export default class ShardTracker extends HHModule {
   // XXX: could be made configurable
   private readonly _trackedRarities: Array<GirlRarity> = ["mythic", "legendary"];
 
-  async run() {
-    if (this._hasRun || !ShardTracker.shouldRun_()) {
+  async run_() {
+    if (!ShardTracker.shouldRun_()) {
       return;
     }
-    this._hasRun = true;
     await runTimingHandler.afterGameScriptsRun_();
     if (location.pathname === "/troll-pre-battle.html") {
       this._injectCSS();
@@ -223,40 +215,46 @@ export default class ShardTracker extends HHModule {
 
   private _applyDropUpdate(
     trackedGirl: TrackedGirl,
-    numberOfBattles: number,
+    successfulBattles: number,
     dropInfo: AjaxShardGirlUpdate | undefined,
     skinsDropped: GradeSkins,
     girlWasObtained: boolean,
   ): void {
     if (!dropInfo) {
-      this._addFightsToTrackedGirl(trackedGirl, numberOfBattles);
+      this._addFightsToTrackedGirl(trackedGirl, successfulBattles);
       return;
     }
 
     if (dropInfo.previous_value > 100) {
+      alert(
+        "ShardTracker: encountered unusable shard payload, this fight was skipped in tracking.\nIF YOU WANT TO REPORT SEND A SCREENSHOT OF THE DROP",
+      );
       console.warn("unusable shard drop info:", dropInfo);
       return;
     }
 
     if (dropInfo.value !== 100 || !trackedGirl.skins?.length) {
-      this._applyGirlShardDrop(trackedGirl, dropInfo, numberOfBattles);
+      this._applyGirlShardDrop(trackedGirl, dropInfo, successfulBattles);
       return;
     }
 
     if (girlWasObtained) {
-      this._applyGirlAndSkinDrop(trackedGirl, dropInfo, numberOfBattles, skinsDropped);
+      this._applyGirlAndSkinDrop(trackedGirl, dropInfo, successfulBattles, skinsDropped);
       return;
     }
 
     if (skinsDropped.length) {
-      this._applySkinOnlyDrop(trackedGirl, dropInfo, numberOfBattles, skinsDropped);
+      this._applySkinOnlyDrop(trackedGirl, dropInfo, successfulBattles, skinsDropped);
       return;
     }
 
-    this._applySimpleSkinDrop(trackedGirl, dropInfo, numberOfBattles);
+    this._applySimpleSkinDrop(trackedGirl, dropInfo, successfulBattles);
   }
 
   private _addFightsToTrackedGirl(trackedGirl: TrackedGirl, nbFights: number): void {
+    if (nbFights <= 0) {
+      return;
+    }
     if (trackedGirl.last_shards_count === 100) {
       const firstUnownedSkin = trackedGirl.skins?.find((skin) => !skin.is_owned);
       if (firstUnownedSkin) {
@@ -944,10 +942,7 @@ export default class ShardTracker extends HHModule {
     Object.entries(ShardTrackerStorageHandler.getTrackedGirls_())
       .filter(
         ([_, girl]) =>
-          girl.number_fight +
-            (girl.skins ?? []).reduce((sum, skin) => {
-              return sum + skin.number_fight;
-            }, 0) >
+          girl.number_fight + (girl.skins ?? []).reduce((sum, skin) => sum + skin.number_fight, 0) >
           0,
       )
       .sort(([_, a], [__, b]) => b.last_fight_time - a.last_fight_time)

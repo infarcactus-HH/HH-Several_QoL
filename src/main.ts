@@ -11,7 +11,7 @@ import UpdateHandler from "./UpdateHandler";
 import LoveRaids from "./modules/LoveRaids";
 import FixSessID from "./modules/FixSessID";
 import { sessionStorageHandler } from "./utils/StorageHandler";
-import ShardTracker from "./modules/VillainShardTracker";
+import ShardTrackersQoL from "./modules/ShardTrackersQoL";
 import PopupMinusMinus from "./modules/Popup--";
 import CustomCSS from "./AlwaysRunningModules/customCSS";
 import PlayerLeagueTracking from "./AlwaysRunningModules/PlayerLeagueTracking";
@@ -64,7 +64,7 @@ class Userscript {
     MERankingInfo,
     WhaleBossTournament,
     EventInfo,
-    ShardTracker,
+    ShardTrackersQoL,
     ChampionFightsFromMap,
     HHPlusPlusBdsmPatch,
     MythicGirlEquipmentTracker,

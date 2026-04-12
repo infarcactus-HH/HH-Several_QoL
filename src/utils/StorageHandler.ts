@@ -335,13 +335,186 @@ export class ShardTrackerStorageHandler {
         dropped_shards: tracked.dropped_shards,
         last_fight_time: tracked.last_fight_time,
       };
-
       if (tracked.last_shards_count !== undefined)
         compactedGirl.last_shards_count = tracked.last_shards_count;
       if (tracked.event_source !== undefined) compactedGirl.event_source = tracked.event_source;
       if (tracked.skins) compactedGirl.skins = tracked.skins.map((skin) => ({ ...skin }));
 
       // Keep fallback metadata only when global storage does not provide it yet.
+      if (!globalEntry?.name) compactedGirl.name = tracked.name;
+      if (!globalEntry?.ico) compactedGirl.ico = tracked.ico;
+      if (globalEntry?.rarity === undefined) compactedGirl.rarity = tracked.rarity;
+
+      compacted[id] = compactedGirl;
+    }
+
+    return compacted;
+  }
+
+  private static _hasMetadataDuplication_(records: StoredTrackedGirlRecords): boolean {
+    const globalStorage = GirlGlobalStorageHandler.getGirlGlobalStorage_() as Record<
+      string,
+      GirlGlobalStorageEntry | undefined
+    >;
+
+    for (const girlId in records) {
+      if (!Object.prototype.hasOwnProperty.call(records, girlId)) continue;
+
+      const stored = records[Number(girlId) as GirlID];
+      const globalEntry = globalStorage[girlId];
+      if (!globalEntry) continue;
+
+      if (stored.name !== undefined || stored.ico !== undefined || stored.rarity !== undefined) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static _rarityToString_(rarity: number | undefined): GirlRarity {
+    const map: Record<number, GirlRarity> = {
+      0: "starting",
+      1: "common",
+      2: "rare",
+      3: "epic",
+      4: "legendary",
+      5: "mythic",
+    };
+    return map[rarity ?? 1] ?? "common";
+  }
+
+  private static _buildGirlIcoPath_(id_girl: GirlID, iconHash: string | undefined): string {
+    return GameHelpers.buildGirlIconPathFromHash_(id_girl, iconHash);
+  }
+}
+
+export class SeasonShardTrackerStorageHandler {
+  private static _currentStoredRecords: TrackedGirlRecords | null = null;
+
+  private static _trackedGirlsStorageKey_(): string {
+    return HH_UNIVERSE + "SeasonShardTrackerTrackedGirls";
+  }
+
+  private static _trackingStateKey_(): string {
+    return HH_UNIVERSE + "SeasonShardTrackerTrackingState";
+  }
+
+  static setCurrentTrackingState_(girlIds: GirlID[] = []): void {
+    GM_setValue(this._trackingStateKey_(), {
+      girlIds,
+    });
+  }
+
+  static getCurrentTrackingState_(): { girlIds: GirlID[] } {
+    return GM_getValue(this._trackingStateKey_(), {
+      girlIds: [],
+    }) as { girlIds: GirlID[] };
+  }
+
+  static getTrackedGirls_(): TrackedGirlRecords {
+    if (this._currentStoredRecords === null) {
+      const rawRecords = GM_getValue(
+        this._trackedGirlsStorageKey_(),
+        {},
+      ) as StoredTrackedGirlRecords;
+      this._currentStoredRecords = this._hydrateTrackedGirls_(rawRecords);
+
+      if (this._hasMetadataDuplication_(rawRecords)) {
+        GM_setValue(
+          this._trackedGirlsStorageKey_(),
+          this._compactTrackedGirls_(this._currentStoredRecords),
+        );
+      }
+    }
+    return this._currentStoredRecords!;
+  }
+
+  static setTrackedGirls_(records: TrackedGirlRecords): void {
+    this._currentStoredRecords = records;
+    GM_setValue(
+      this._trackedGirlsStorageKey_(),
+      this._compactTrackedGirls_(this._currentStoredRecords),
+    );
+  }
+
+  static getTrackedGirl_(id_girl: GirlID): TrackedGirl | undefined {
+    const records = this.getTrackedGirls_();
+    return records[id_girl];
+  }
+
+  static upsertTrackedGirl_(id_girl: GirlID, record: TrackedGirl): void {
+    const records = this.getTrackedGirls_();
+    this.setTrackedGirls_({ ...records, [id_girl]: record });
+  }
+
+  static removeTrackedGirl_(id_girl: GirlID): void {
+    const records = this.getTrackedGirls_();
+    if (records[id_girl]) {
+      const { [id_girl]: _removed, ...rest } = records;
+      this.setTrackedGirls_(rest);
+    }
+  }
+
+  private static _hydrateTrackedGirls_(records: StoredTrackedGirlRecords): TrackedGirlRecords {
+    const hydrated: TrackedGirlRecords = {};
+    const globalStorage = GirlGlobalStorageHandler.getGirlGlobalStorage_() as Record<
+      string,
+      GirlGlobalStorageEntry | undefined
+    >;
+
+    for (const girlId in records) {
+      if (!Object.prototype.hasOwnProperty.call(records, girlId)) continue;
+
+      const id = Number(girlId) as GirlID;
+      const stored = records[id];
+      const globalEntry = globalStorage[girlId];
+      const hydratedGirl: TrackedGirl = {
+        number_fight: stored.number_fight ?? 0,
+        grade: stored.grade ?? 0,
+        dropped_shards: stored.dropped_shards ?? 0,
+        last_fight_time: stored.last_fight_time ?? 0,
+        name: stored.name ?? globalEntry?.name ?? `Girl ${girlId}`,
+        ico: stored.ico ?? this._buildGirlIcoPath_(id, globalEntry?.ico),
+        rarity: stored.rarity ?? this._rarityToString_(globalEntry?.rarity),
+      };
+
+      if (stored.last_shards_count !== undefined)
+        hydratedGirl.last_shards_count = stored.last_shards_count;
+      if (stored.event_source !== undefined) hydratedGirl.event_source = stored.event_source;
+      if (stored.skins) hydratedGirl.skins = stored.skins.map((skin) => ({ ...skin }));
+
+      hydrated[id] = hydratedGirl;
+    }
+
+    return hydrated;
+  }
+
+  private static _compactTrackedGirls_(records: TrackedGirlRecords): StoredTrackedGirlRecords {
+    const compacted: StoredTrackedGirlRecords = {};
+    const globalStorage = GirlGlobalStorageHandler.getGirlGlobalStorage_() as Record<
+      string,
+      GirlGlobalStorageEntry | undefined
+    >;
+
+    for (const girlId in records) {
+      if (!Object.prototype.hasOwnProperty.call(records, girlId)) continue;
+
+      const id = Number(girlId) as GirlID;
+      const tracked = records[id];
+      const globalEntry = globalStorage[girlId];
+      const compactedGirl: StoredTrackedGirl = {
+        number_fight: tracked.number_fight,
+        grade: tracked.grade,
+        dropped_shards: tracked.dropped_shards,
+        last_fight_time: tracked.last_fight_time,
+      };
+
+      if (tracked.last_shards_count !== undefined)
+        compactedGirl.last_shards_count = tracked.last_shards_count;
+      if (tracked.event_source !== undefined) compactedGirl.event_source = tracked.event_source;
+      if (tracked.skins) compactedGirl.skins = tracked.skins.map((skin) => ({ ...skin }));
+
       if (!globalEntry?.name) compactedGirl.name = tracked.name;
       if (!globalEntry?.ico) compactedGirl.ico = tracked.ico;
       if (globalEntry?.rarity === undefined) compactedGirl.rarity = tracked.rarity;
