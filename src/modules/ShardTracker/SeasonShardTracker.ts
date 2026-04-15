@@ -740,7 +740,7 @@ export default class SeasonShardTracker implements SubModule {
         </div>
         <div class="total-fights">
           <span class="label">${fights}</span>
-          <span class="icon fights"></span>
+          <span class="icon kiss"></span>
         </div>
         <div class="drop-rate">
           <span class="label">${percent}</span>
