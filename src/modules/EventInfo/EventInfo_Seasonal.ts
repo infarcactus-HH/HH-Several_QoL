@@ -4,10 +4,11 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 export default class EventInfo_Seasonal implements SubModule {
   private readonly _EventInfoSeasonalLinks2: string[] = [
     "",
-    "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310068",
+    "",
     "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310473",
   ];
   private readonly _EventInfoSeasonalLinks: { [key: number]: string } = {
+    2: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310068", // LR
     4: "https://forum.kinkoid.com/index.php?/topic/31207-vademecum-rerum-gestarum-ex-haremverse-a-guide-to-the-events/#comment-310475", // SEM
   };
   run_() {
