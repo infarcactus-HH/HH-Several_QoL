@@ -78,7 +78,8 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       return;
     }
     const $PopSwitcher = $(".switch-tab[data-tab='pop']");
-    $PopSwitcher.contents()[0].nodeValue = "Places of Power++";
+    let NodePoP = $PopSwitcher.contents()[0];
+    NodePoP.nodeValue = NodePoP.nodeValue?.trim() + "++";
     $PopSwitcher.attr("tooltip", "By infarctus");
 
     if (location.search.includes("tab=pop")) {
@@ -473,6 +474,12 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       }
       this._selectNextPoPFromClaim();
       this._updateSuckless();
+      if (
+        $(".pop-record > .collect_notif").length === 0 &&
+        $(".switch-tab[data-tab='pop'] > .collect_notif").length
+      ) {
+        $(".switch-tab[data-tab='pop'] > .collect_notif").remove();
+      }
       shared.animations.loadingAnimation.stop();
     });
   }
