@@ -32,6 +32,7 @@ import AjaxCompleteHook from "./SingletonModules/AjaxCompleteHook";
 import PlayerActivitiesTracking from "./AlwaysRunningModules/PlayerActivitiesTracking";
 import GirlMonitoring from "./AlwaysRunningModules/GirlMonitoring";
 import BetterNSFWCensor from "./AlwaysRunningModules/BetterNSFWCensor";
+import LabyLocking from "./AlwaysRunningModules/LabyLocking";
 
 class Userscript {
   constructor() {
@@ -80,6 +81,7 @@ class Userscript {
     PlayerActivitiesTracking,
     GirlMonitoring,
     BetterNSFWCensor,
+    LabyLocking,
   ];
   private _singletonInitModules = [AjaxCompleteHook];
 

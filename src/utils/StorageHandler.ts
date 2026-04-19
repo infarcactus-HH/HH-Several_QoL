@@ -94,6 +94,12 @@ export class PlayerStorageHandler {
   static getPlayerMissionDuration_(): number | null {
     return GM_getValue(HH_UNIVERSE + "PlayerMissionDuration", null);
   }
+  static setPlayerLabyLockedDifficulty_(difficulty: string | number | null) {
+    GM_setValue(HH_UNIVERSE + "PlayerLabyLockedDifficulty", difficulty);
+  }
+  static getPlayerLabyLockedDifficulty(): string | number | null {
+    return GM_getValue(HH_UNIVERSE + "PlayerLabyLockedDifficulty", null);
+  }
 }
 
 export class LeagueStorageHandler {
