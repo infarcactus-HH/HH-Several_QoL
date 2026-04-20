@@ -4,6 +4,8 @@ import type {
   DoBattlesTrollsResponse,
   GirlID,
   GirlRarity,
+  GradeSkins,
+  Shard,
   TrackedGirl,
 } from "../../types";
 import type { GirlGlobalStorage } from "../../types/storage/GirlGlobalStorage";
@@ -37,6 +39,10 @@ type SeasonShardLike = {
   is_girl_owned?: boolean;
   value?: number;
   previous_value?: number;
+  grade_skins?: Array<{
+    ico_path: string;
+    is_owned: boolean;
+  }>;
 };
 
 type SeasonOpponent = {
@@ -44,7 +50,8 @@ type SeasonOpponent = {
     id_fighter?: number;
   };
   rewards?: {
-    shards?: Array<any>;
+    shards?: Array<Shard>;
+    grade_skins?: GradeSkins;
     data?: {
       shards?: Array<any>;
     };
@@ -120,6 +127,86 @@ export default class SeasonShardTracker implements SubModule {
     return battlesMatch ? parseInt(battlesMatch[1], 10) : 1;
   }
 
+  private _groupDroppedSkinsByGirlId_(skins: GradeSkins): Map<GirlID, GradeSkins> {
+    const skinsByGirlId = new Map<GirlID, GradeSkins>();
+    skins.forEach((skin) => {
+      const trackedSkins = skinsByGirlId.get(skin.id_girl);
+      if (trackedSkins) {
+        trackedSkins.push(skin);
+      } else {
+        skinsByGirlId.set(skin.id_girl, [skin]);
+      }
+    });
+    return skinsByGirlId;
+  }
+
+  private _normalizeSeasonSkinList_(rawSkins: unknown):
+    | Array<{
+        ico_path: string;
+        is_owned: boolean;
+      }>
+    | undefined {
+    if (!Array.isArray(rawSkins) || !rawSkins.length) {
+      return undefined;
+    }
+
+    const normalized = rawSkins
+      .map((skin) => {
+        if (!skin || typeof skin !== "object") {
+          return undefined;
+        }
+        const maybeSkin = skin as { ico_path?: unknown; is_owned?: unknown };
+        if (typeof maybeSkin.ico_path !== "string" || !maybeSkin.ico_path) {
+          return undefined;
+        }
+        return {
+          ico_path: maybeSkin.ico_path,
+          is_owned: Boolean(maybeSkin.is_owned),
+        };
+      })
+      .filter((skin): skin is { ico_path: string; is_owned: boolean } => skin !== undefined);
+
+    return normalized.length ? normalized : undefined;
+  }
+
+  private _mergeSeasonSkinLists_(
+    previousSkins:
+      | Array<{
+          ico_path: string;
+          is_owned: boolean;
+        }>
+      | undefined,
+    incomingSkins:
+      | Array<{
+          ico_path: string;
+          is_owned: boolean;
+        }>
+      | undefined,
+  ):
+    | Array<{
+        ico_path: string;
+        is_owned: boolean;
+      }>
+    | undefined {
+    if (!previousSkins?.length) {
+      return incomingSkins?.length ? [...incomingSkins] : undefined;
+    }
+    if (!incomingSkins?.length) {
+      return [...previousSkins];
+    }
+
+    const merged = [...previousSkins.map((skin) => ({ ...skin }))];
+    incomingSkins.forEach((incomingSkin) => {
+      const trackedSkin = merged.find((skin) => skin.ico_path === incomingSkin.ico_path);
+      if (trackedSkin) {
+        trackedSkin.is_owned = trackedSkin.is_owned || incomingSkin.is_owned;
+      } else {
+        merged.push({ ...incomingSkin });
+      }
+    });
+    return merged;
+  }
+
   private _toNumberOrUndefined_(value: unknown): number | undefined {
     if (value === undefined || value === null) {
       return undefined;
@@ -172,6 +259,8 @@ export default class SeasonShardTracker implements SubModule {
     const dropsByGirlId = new Map<GirlID, AjaxShardGirlUpdate>(
       shardDrops.map((shard) => [shard.id_girl, shard]),
     );
+    const skinsByGirlId = this._groupDroppedSkinsByGirlId_(rewards.grade_skins ?? []);
+    const obtainedGirlIds = new Set<GirlID>((rewards.girls ?? []).map((girl) => girl.id_girl));
 
     const currentTrackingState = SeasonShardTrackerStorageHandler.getCurrentTrackingState_();
     if (!currentTrackingState.girlIds.length) {
@@ -181,6 +270,9 @@ export default class SeasonShardTracker implements SubModule {
 
     const globalStorage = GirlGlobalStorageHandler.getGirlGlobalStorage_();
     let dictionaryChanged = this._mergeRewardsIntoGirlDictionary_(globalStorage, shardDrops);
+    dictionaryChanged =
+      this._mergeRewardsIntoGirlDictionary_(globalStorage, rewards.girls ?? []) ||
+      dictionaryChanged;
 
     const completedGirlIds: GirlID[] = [];
     currentTrackingState.girlIds.forEach((girlID) => {
@@ -192,7 +284,13 @@ export default class SeasonShardTracker implements SubModule {
       this._fillTrackedGirlFromDictionary_(girlID, trackedGirl, globalStorage);
       trackedGirl.last_fight_time = Date.now();
 
-      this._applyDropUpdate_(trackedGirl, successfulBattles, dropsByGirlId.get(girlID));
+      this._applyDropUpdate_(
+        trackedGirl,
+        successfulBattles,
+        dropsByGirlId.get(girlID),
+        skinsByGirlId.get(girlID) ?? [],
+        obtainedGirlIds.has(girlID),
+      );
       SeasonShardTrackerStorageHandler.upsertTrackedGirl_(girlID, trackedGirl);
 
       dictionaryChanged =
@@ -236,6 +334,8 @@ export default class SeasonShardTracker implements SubModule {
     trackedGirl: TrackedGirl,
     successfulBattles: number,
     dropInfo: AjaxShardGirlUpdate | undefined,
+    skinsDropped: GradeSkins,
+    girlWasObtained: boolean,
   ): void {
     if (!dropInfo) {
       this._addFightsToTrackedGirl_(trackedGirl, successfulBattles);
@@ -250,13 +350,42 @@ export default class SeasonShardTracker implements SubModule {
       return;
     }
 
-    this._applyGirlShardDrop_(trackedGirl, dropInfo, successfulBattles);
+    if (dropInfo.value !== 100) {
+      this._applyGirlShardDrop_(trackedGirl, dropInfo, successfulBattles);
+      return;
+    }
+
+    if (girlWasObtained) {
+      this._applyGirlAndSkinDrop_(trackedGirl, dropInfo, successfulBattles, skinsDropped);
+      return;
+    }
+
+    if (skinsDropped.length) {
+      this._applySkinOnlyDrop_(trackedGirl, dropInfo, successfulBattles, skinsDropped);
+      return;
+    }
+
+    if (trackedGirl.skins?.length) {
+      this._applySimpleSkinDrop_(trackedGirl, dropInfo, successfulBattles);
+      return;
+    }
+
+    this._addFightsToTrackedGirl_(trackedGirl, successfulBattles);
   }
 
   private _addFightsToTrackedGirl_(trackedGirl: TrackedGirl, nbFights: number): void {
     if (nbFights <= 0) {
       return;
     }
+
+    if (trackedGirl.last_shards_count === 100) {
+      const firstUnownedSkin = trackedGirl.skins?.find((skin) => !skin.is_owned);
+      if (firstUnownedSkin) {
+        firstUnownedSkin.number_fight += nbFights;
+        return;
+      }
+    }
+
     trackedGirl.number_fight += nbFights;
   }
 
@@ -270,8 +399,160 @@ export default class SeasonShardTracker implements SubModule {
     trackedGirl.dropped_shards += Math.max(dropInfo.value - dropInfo.previous_value, 0);
   }
 
+  private _applySimpleSkinDrop_(
+    trackedGirl: TrackedGirl,
+    dropInfo: AjaxShardGirlUpdate,
+    numberOfBattles: number,
+  ): void {
+    const currentTrackedSkin = trackedGirl.skins?.find((skin) => !skin.is_owned);
+    if (!currentTrackedSkin) {
+      this._addFightsToTrackedGirl_(trackedGirl, numberOfBattles);
+      return;
+    }
+
+    currentTrackedSkin.number_fight += numberOfBattles;
+    currentTrackedSkin.dropped_shards += Math.max(dropInfo.value - dropInfo.previous_value, 0);
+  }
+
+  private _applyGirlAndSkinDrop_(
+    trackedGirl: TrackedGirl,
+    dropInfo: AjaxShardGirlUpdate,
+    numberOfBattles: number,
+    skinsDropped: GradeSkins,
+  ): void {
+    const lastShardCount = this._getGirlLastShardCount_(trackedGirl, dropInfo);
+    const totalShards =
+      Math.max(dropInfo.value - dropInfo.previous_value, 0) +
+      this._sumDroppedSkinShards_(skinsDropped);
+    const gainedGirlShards =
+      numberOfBattles === 1
+        ? totalShards
+        : Math.min(Math.max(100 - lastShardCount, 0), totalShards);
+    const skinShardsPool = Math.max(totalShards - gainedGirlShards, 0);
+
+    trackedGirl.dropped_shards += gainedGirlShards;
+    trackedGirl.last_shards_count = 100;
+
+    const fightsGirl =
+      numberOfBattles === 1
+        ? 1
+        : totalShards === 0
+          ? 0
+          : Math.round((numberOfBattles * gainedGirlShards) / totalShards);
+    trackedGirl.number_fight += fightsGirl;
+
+    this._applySkinDrops_(trackedGirl, numberOfBattles, skinsDropped, skinShardsPool);
+  }
+
+  private _applySkinOnlyDrop_(
+    trackedGirl: TrackedGirl,
+    dropInfo: AjaxShardGirlUpdate,
+    numberOfBattles: number,
+    skinsDropped: GradeSkins,
+  ): void {
+    const totalSkinShards =
+      Math.max(dropInfo.value - dropInfo.previous_value, 0) +
+      this._sumDroppedSkinShards_(skinsDropped);
+    this._applySkinDrops_(trackedGirl, numberOfBattles, skinsDropped, totalSkinShards);
+  }
+
+  private _sumDroppedSkinShards_(skinsDropped: GradeSkins): number {
+    return skinsDropped.reduce((sum, skin) => {
+      return sum + Math.max(skin.shards_added, 0);
+    }, 0);
+  }
+
+  private _applySkinDrops_(
+    trackedGirl: TrackedGirl,
+    numberOfBattles: number,
+    skinsDropped: GradeSkins,
+    totalSkinShards: number,
+  ): void {
+    if (totalSkinShards <= 0) {
+      return;
+    }
+
+    if (!trackedGirl.skins) {
+      trackedGirl.skins = [];
+    }
+
+    const totalSkinShardsDropped = totalSkinShards;
+    let skinShardsPool = totalSkinShards;
+
+    skinsDropped.forEach((skinDrop) => {
+      const droppedShardsForThisSkin = Math.max(skinDrop.shards_added, 0);
+      if (droppedShardsForThisSkin === 0) {
+        return;
+      }
+
+      const nbFightsForThisSkin =
+        totalSkinShardsDropped === 0
+          ? 0
+          : Math.round(numberOfBattles * (droppedShardsForThisSkin / totalSkinShardsDropped));
+      skinShardsPool -= droppedShardsForThisSkin;
+
+      const currentTrackedSkin = trackedGirl.skins!.find(
+        (skin) => skin.ico_path === skinDrop.ico_path,
+      );
+      if (!currentTrackedSkin) {
+        trackedGirl.skins!.push({
+          ico_path: skinDrop.ico_path,
+          number_fight: nbFightsForThisSkin,
+          is_owned: skinDrop.is_owned,
+          dropped_shards: droppedShardsForThisSkin,
+        });
+        return;
+      }
+
+      currentTrackedSkin.number_fight += nbFightsForThisSkin;
+      currentTrackedSkin.dropped_shards += droppedShardsForThisSkin;
+      currentTrackedSkin.is_owned = skinDrop.is_owned;
+    });
+
+    if (skinShardsPool > 33) {
+      alert(
+        "SeasonShardTracker: encountered more skin shards dropped than possible, this should not happen.\nIF YOU WANT TO REPORT SEND A SCREENSHOT OF THE DROP",
+      );
+    }
+
+    if (skinShardsPool <= 0) {
+      return;
+    }
+
+    const currentTrackedSkin = trackedGirl.skins.find((skin) => !skin.is_owned);
+    if (!currentTrackedSkin) {
+      return;
+    }
+
+    const remainingShardsCapacity = Math.max(33 - (currentTrackedSkin.dropped_shards ?? 0), 0);
+    const shardsToAdd = Math.min(remainingShardsCapacity, skinShardsPool);
+    if (shardsToAdd <= 0) {
+      return;
+    }
+
+    currentTrackedSkin.dropped_shards += shardsToAdd;
+    const fightsToAdd =
+      totalSkinShardsDropped === 0
+        ? 0
+        : Math.round(numberOfBattles * (shardsToAdd / totalSkinShardsDropped));
+    currentTrackedSkin.number_fight += fightsToAdd;
+  }
+
+  private _getGirlLastShardCount_(trackedGirl: TrackedGirl, dropInfo: AjaxShardGirlUpdate): number {
+    if (
+      trackedGirl.last_shards_count !== undefined &&
+      trackedGirl.last_shards_count >= dropInfo.previous_value
+    ) {
+      return trackedGirl.last_shards_count;
+    }
+    return dropInfo.previous_value;
+  }
+
   private _isTrackingCompleted_(trackedGirl: TrackedGirl): boolean {
-    return trackedGirl.last_shards_count === 100;
+    return (
+      trackedGirl.last_shards_count === 100 &&
+      (!trackedGirl.skins || trackedGirl.skins.every((skin) => skin.is_owned))
+    );
   }
 
   private _mergeRewardsIntoGirlDictionary_(
@@ -436,6 +717,7 @@ export default class SeasonShardTracker implements SubModule {
       is_girl_owned: Boolean(rawShard?.is_girl_owned),
       value: this._toNumberOrUndefined_(rawShard?.value),
       previous_value: this._toNumberOrUndefined_(rawShard?.previous_value),
+      grade_skins: this._normalizeSeasonSkinList_(rawShard?.grade_skins),
     };
   }
 
@@ -447,6 +729,9 @@ export default class SeasonShardTracker implements SubModule {
 
     const result: SeasonShardLike[] = [];
     opponents.forEach((opponent) => {
+      const opponentSkinsByGirlId = this._groupDroppedSkinsByGirlId_(
+        opponent.rewards?.grade_skins ?? [],
+      );
       const shardRows = [
         ...(Array.isArray(opponent.rewards?.shards) ? opponent.rewards!.shards! : []),
         ...(Array.isArray(opponent.rewards?.data?.shards) ? opponent.rewards!.data!.shards! : []),
@@ -454,6 +739,10 @@ export default class SeasonShardTracker implements SubModule {
       shardRows.forEach((rawShard) => {
         const normalizedShard = this._normalizeSeasonShardLike_(rawShard);
         if (normalizedShard) {
+          normalizedShard.grade_skins = this._mergeSeasonSkinLists_(
+            normalizedShard.grade_skins,
+            this._normalizeSeasonSkinList_(opponentSkinsByGirlId.get(normalizedShard.id_girl)),
+          );
           result.push(normalizedShard);
         }
       });
@@ -480,6 +769,7 @@ export default class SeasonShardTracker implements SubModule {
         is_girl_owned: seasonGirl.is_girl_owned,
         value: this._toNumberOrUndefined_(seasonGirl.value),
         previous_value: this._toNumberOrUndefined_(seasonGirl.previous_value),
+        grade_skins: this._normalizeSeasonSkinList_(seasonGirl.preview?.grade_skins_data),
       };
       if (this._trackedRarities.includes(normalized.rarity)) {
         result.push(normalized);
@@ -510,6 +800,7 @@ export default class SeasonShardTracker implements SubModule {
           girl.previous_value !== undefined
             ? Math.max(girl.previous_value, previous.previous_value ?? 0)
             : previous.previous_value,
+        grade_skins: this._mergeSeasonSkinLists_(previous.grade_skins, girl.grade_skins),
       });
     });
 
@@ -521,7 +812,11 @@ export default class SeasonShardTracker implements SubModule {
     const fallbackGirls = this._mergeSeasonGirls_(this._collectGirlsFromSeasonWindow_());
     const girlsToTrackSource = opponentGirls.length ? opponentGirls : fallbackGirls;
     const candidateGirls = girlsToTrackSource.filter((girl) => {
-      return !girl.is_girl_owned || (girl.value ?? 0) < 100;
+      return (
+        !girl.is_girl_owned ||
+        (girl.value ?? 0) < 100 ||
+        Boolean(girl.grade_skins?.some((skin) => !skin.is_owned))
+      );
     });
 
     if (!candidateGirls.length) {
@@ -589,6 +884,18 @@ export default class SeasonShardTracker implements SubModule {
       last_fight_time: 0,
     };
 
+    if (seasonGirl.grade_skins?.length) {
+      const unownedSkins = seasonGirl.grade_skins.filter((skin) => !skin.is_owned);
+      if (unownedSkins.length) {
+        trackedGirlRecord.skins = unownedSkins.map((skin) => ({
+          ico_path: skin.ico_path,
+          number_fight: 0,
+          is_owned: skin.is_owned,
+          dropped_shards: 0,
+        }));
+      }
+    }
+
     if (seasonGirl.is_girl_owned || (seasonGirl.value ?? 0) >= 100 || globalGirl?.shards === 100) {
       trackedGirlRecord.last_shards_count = 100;
     }
@@ -645,6 +952,37 @@ export default class SeasonShardTracker implements SubModule {
       hasChanges = true;
     }
 
+    if (seasonGirl.grade_skins?.length) {
+      const newSkinsTracked: NonNullable<TrackedGirl["skins"]> = [];
+      let skinsChanged = false;
+
+      seasonGirl.grade_skins.forEach((skin) => {
+        const skinTracked =
+          existingTrackedGirl.skins &&
+          existingTrackedGirl.skins.find((trackedSkin) => trackedSkin.ico_path === skin.ico_path);
+        if (!skinTracked && !skin.is_owned) {
+          newSkinsTracked.push({
+            ico_path: skin.ico_path,
+            number_fight: 0,
+            is_owned: skin.is_owned,
+            dropped_shards: 0,
+          });
+          skinsChanged = true;
+        } else if (skinTracked) {
+          if (skinTracked.is_owned !== skin.is_owned) {
+            skinTracked.is_owned = skin.is_owned;
+            skinsChanged = true;
+          }
+          newSkinsTracked.push(skinTracked);
+        }
+      });
+
+      if (skinsChanged) {
+        existingTrackedGirl.skins = newSkinsTracked.length ? newSkinsTracked : undefined;
+        hasChanges = true;
+      }
+    }
+
     if (hasChanges) {
       SeasonShardTrackerStorageHandler.upsertTrackedGirl_(seasonGirl.id_girl, existingTrackedGirl);
     }
@@ -662,6 +1000,16 @@ export default class SeasonShardTracker implements SubModule {
     this._fillTrackedGirlFromDictionary_(id_girl, girl, globalStorage);
     const globalGirl = globalStorage[id_girl];
     const iconSrc = GameHelpers.buildGirlIconPathFromHash_(id_girl, globalGirl?.ico, girl.ico);
+    const shards =
+      girl.dropped_shards +
+      (girl.skins ?? []).reduce((sum, skin) => {
+        return sum + (skin.dropped_shards ?? 0);
+      }, 0);
+    const fights =
+      girl.number_fight +
+      (girl.skins ?? []).reduce((sum, skin) => {
+        return sum + skin.number_fight;
+      }, 0);
 
     const girlDiv = $(html`
       <div id_girl="${id_girl}">
@@ -674,7 +1022,7 @@ export default class SeasonShardTracker implements SubModule {
             <div class="g_infos">
               <div class="graded">${"<g></g>".repeat(girl.grade)}</div>
             </div>
-            ${this._generateDropDisplay(girl.dropped_shards, girl.number_fight)}
+            ${this._generateDropDisplay(shards, fights)}
           </div>
         </div>
       </div>
@@ -696,6 +1044,23 @@ export default class SeasonShardTracker implements SubModule {
       "#popup-drop-log-several-qol > .container-special-bg > .drop-log > .girl-detail",
     ).empty();
 
+    let skinsHtml = "";
+    if (girl.skins && girl.skins.length > 0) {
+      skinsHtml = `<div class="skins-section">
+        <h3>Skins</h3>
+        <div class="skins-list">
+          ${girl.skins
+            .map((skin, index) => {
+              return `<div class="skin-entry">
+              <div class="skin-ico"><img src="${skin.ico_path}" alt="Skin ${index + 1}" /></div>
+              ${this._generateDropDisplay(skin.dropped_shards ?? 0, skin.number_fight)}
+            </div>`;
+            })
+            .join("")}
+        </div>
+      </div>`;
+    }
+
     const girlDetail = html`
       <div class="girl-detail-container">
         <img src="${poseSrc}" class="background-pose" alt="${girl.name}" />
@@ -706,6 +1071,7 @@ export default class SeasonShardTracker implements SubModule {
             <h3>Season Stats</h3>
             ${this._generateDropDisplay(girl.dropped_shards, girl.number_fight)}
           </div>
+          ${skinsHtml}
           <div class="detail-actions">
             <button class="delete-girl-btn" type="button">Delete Tracked Data</button>
           </div>
