@@ -28,7 +28,7 @@ export default class UpdateHandler {
     //  .split(".")
     //  .map(Number);
 
-    if (storedMajor == 2 && storedMinor == 0 && GlobalStorageHandler.getShowUpdatePopup_()) {
+    if (storedMajor == 2 && storedMinor == 1 && GlobalStorageHandler.getShowUpdatePopup_()) {
       UpdateHandler._injectCSS();
       await runTimingHandler.afterGameScriptsRun_();
       GameHelpers.createCommonPopup_("update-several-qol", (popup, _t) => {
@@ -36,17 +36,21 @@ export default class UpdateHandler {
         $container.append(`<div class="banner">Several QoL - Update to ${currentVersion}</div>`);
         $container.append(html`
           <div class="changelog-content hh-scroll">
-            <h2>New Module : Better NSFW Censor</h2>
+            <h2>New SubModule : Season Shard Tracker</h2>
             <p>
-              HH++ censor is a bit lacking and all the blur is easily spottable from a distance, so this is more sneaky and less blurry
+              You can now also track drops for season battles, works teh same as villain shard tracker.
+            </p>
+            <h2>New "hidden" module : Laby Locking</h2>
+            <p>
+              You can now lock a labyrinth difficulty in the entrance, this is to avoid missclicks and make a more streamlined approach.
             </p>
             <h3>Misc</h3>
             <p>
-              [VillainShardTracker] Made x1 a lot more reliable</br>
-              [No reload claiming dailies] Removed a race condition</br>
-              [PoP Bar] Now also does daily mission tracking, if you want a toggle for only PoP complain on discord/forum</br>
-              [simv4 fix] Fixed Booster sim/skill sim not working when switching to an opponent and coming back</br>
-              [Request Handler] Added a RequestHandler to queue requests & avoid getting IP blocked (you can freely use opponent history & simv4 fix without worrying about that) </br>
+              [VillainShardTracker] Fixed skin drops sometimes counting negative,</br>
+              [Better Censor] Added SM which was missing to censor</br>
+              [PoP++] When having claimed all PoPs now removes the gift on the tab switcher</br>
+              [HH++ BDSM Patch] Fix girl icon sometimes not showing properly</br>
+              [Settings] Stopped some settings appearing multiple times when click multiple times on HH++ settings</br>
             </p>
           </div>
         `);
