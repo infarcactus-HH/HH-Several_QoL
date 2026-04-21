@@ -509,12 +509,6 @@ export default class SeasonShardTracker implements SubModule {
       currentTrackedSkin.is_owned = skinDrop.is_owned;
     });
 
-    if (skinShardsPool > 33) {
-      alert(
-        "SeasonShardTracker: encountered more skin shards dropped than possible, this should not happen.\nIF YOU WANT TO REPORT SEND A SCREENSHOT OF THE DROP",
-      );
-    }
-
     if (skinShardsPool <= 0) {
       return;
     }
@@ -952,15 +946,35 @@ export default class SeasonShardTracker implements SubModule {
       hasChanges = true;
     }
 
-    if (seasonGirl.grade_skins?.length) {
+    if (seasonGirl.grade_skins?.length || existingTrackedGirl.skins?.length) {
       const newSkinsTracked: NonNullable<TrackedGirl["skins"]> = [];
       let skinsChanged = false;
 
-      seasonGirl.grade_skins.forEach((skin) => {
-        const skinTracked =
-          existingTrackedGirl.skins &&
-          existingTrackedGirl.skins.find((trackedSkin) => trackedSkin.ico_path === skin.ico_path);
-        if (!skinTracked && !skin.is_owned) {
+      // Preserve all existing tracked skins first
+      if (existingTrackedGirl.skins?.length) {
+        existingTrackedGirl.skins.forEach((trackedSkin) => {
+          const skinFromSeason = seasonGirl.grade_skins?.find(
+            (skin) => skin.ico_path === trackedSkin.ico_path,
+          );
+
+          if (skinFromSeason) {
+            // Skin still in season data, update ownership if changed
+            if (skinFromSeason.is_owned !== trackedSkin.is_owned) {
+              trackedSkin.is_owned = skinFromSeason.is_owned;
+              skinsChanged = true;
+            }
+          }
+          // Keep the skin in tracking regardless of whether it's in current season data
+          newSkinsTracked.push(trackedSkin);
+        });
+      }
+
+      // Add any new unowned skins from season data that aren't already tracked
+      seasonGirl.grade_skins?.forEach((skin) => {
+        const alreadyTracked = newSkinsTracked.some(
+          (trackedSkin) => trackedSkin.ico_path === skin.ico_path,
+        );
+        if (!alreadyTracked && !skin.is_owned) {
           newSkinsTracked.push({
             ico_path: skin.ico_path,
             number_fight: 0,
@@ -968,12 +982,6 @@ export default class SeasonShardTracker implements SubModule {
             dropped_shards: 0,
           });
           skinsChanged = true;
-        } else if (skinTracked) {
-          if (skinTracked.is_owned !== skin.is_owned) {
-            skinTracked.is_owned = skin.is_owned;
-            skinsChanged = true;
-          }
-          newSkinsTracked.push(skinTracked);
         }
       });
 
