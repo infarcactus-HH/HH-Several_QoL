@@ -10,12 +10,12 @@ type ShardTrackersQoL_configSchema = {
   subSettings: [
     {
       key: "villainShardTracker";
-      label: "Enable villain shard tracker";
+      label: "<span tooltip='Top right of opponent on villain page'>Enable villain shard tracker</span>";
       default: true;
     },
     {
       key: "seasonShardTracker";
-      label: "Enable season shard tracker";
+      label: "<span tooltip='Top right yourself on season battle page'>Enable season shard tracker</span>";
       default: true;
     },
   ];

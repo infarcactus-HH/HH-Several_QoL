@@ -1161,12 +1161,6 @@ export default class SeasonShardTracker implements SubModule {
           />
         </span>
       `);
-      $showLogButton.css({
-        position: "absolute",
-        right: "0px",
-        top: "15px",
-        zIndex: "5",
-      });
 
       $host.append($showLogButton);
       $showLogButton.on("click", () => {

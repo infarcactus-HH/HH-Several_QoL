@@ -537,3 +537,10 @@
 span.icon.kiss {
   background-image: url(/images/pictures/design/ic_kiss.png);
 }
+
+#show-drop-log-season-several-qol {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 5;
+}
