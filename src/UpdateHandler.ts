@@ -38,7 +38,7 @@ export default class UpdateHandler {
           <div class="changelog-content hh-scroll">
             <h2>New SubModule : Season Shard Tracker</h2>
             <p>
-              You can now also track drops for season battles, works teh same as villain shard tracker.
+              You can now also track drops for season battles, works the same as villain shard tracker.
             </p>
             <h2>New "hidden" module : Laby Locking</h2>
             <p>
@@ -49,7 +49,7 @@ export default class UpdateHandler {
               [VillainShardTracker] Fixed skin drops sometimes counting negative,</br>
               [Better Censor] Added SM which was missing to censor</br>
               [PoP++] When having claimed all PoPs now removes the gift on the tab switcher</br>
-              [HH++ BDSM Patch] Fix girl icon sometimes not showing properly</br>
+              [HH++ BDSM Patch] Villain Fight Selector : Fix girl icon sometimes not showing properly</br>
               [Settings] Stopped some settings appearing multiple times when click multiple times on HH++ settings</br>
             </p>
           </div>
