@@ -250,8 +250,13 @@ export default class SeasonShardTracker implements SubModule {
 
     const numberOfBattles = this._extractNumberOfBattles_(requestData);
     const rewards = response.rewards.data;
-    // Do not track losses for seasons — treat all requested battles as successful
-    const successfulBattles = numberOfBattles;
+
+    const successfulBattles =
+      numberOfBattles -
+      (rewards.rewards?.find((reward) => reward.type === "battle_lost")?.value ?? 0);
+    if (successfulBattles <= 0) {
+      return;
+    }
 
     const shardDrops = (rewards.shards ?? [])
       .map((rawShard) => this._normalizeAjaxShardDrop_(rawShard))
@@ -950,40 +955,45 @@ export default class SeasonShardTracker implements SubModule {
       const newSkinsTracked: NonNullable<TrackedGirl["skins"]> = [];
       let skinsChanged = false;
 
-      // Preserve all existing tracked skins first
-      if (existingTrackedGirl.skins?.length) {
-        existingTrackedGirl.skins.forEach((trackedSkin) => {
-          const skinFromSeason = seasonGirl.grade_skins?.find(
-            (skin) => skin.ico_path === trackedSkin.ico_path,
+      // First pass: iterate through grade_skins to maintain order
+      if (seasonGirl.grade_skins?.length) {
+        seasonGirl.grade_skins.forEach((skin) => {
+          const skinTracked = existingTrackedGirl.skins?.find(
+            (trackedSkin) => trackedSkin.ico_path === skin.ico_path,
           );
 
-          if (skinFromSeason) {
-            // Skin still in season data, update ownership if changed
-            if (skinFromSeason.is_owned !== trackedSkin.is_owned) {
-              trackedSkin.is_owned = skinFromSeason.is_owned;
+          if (skinTracked) {
+            // Preserve tracked data, update ownership if changed
+            if (skinTracked.is_owned !== skin.is_owned) {
+              skinTracked.is_owned = skin.is_owned;
               skinsChanged = true;
             }
+            newSkinsTracked.push(skinTracked);
+          } else if (!skin.is_owned) {
+            // New unowned skin
+            newSkinsTracked.push({
+              ico_path: skin.ico_path,
+              number_fight: 0,
+              is_owned: skin.is_owned,
+              dropped_shards: 0,
+            });
+            skinsChanged = true;
           }
-          // Keep the skin in tracking regardless of whether it's in current season data
-          newSkinsTracked.push(trackedSkin);
         });
       }
 
-      // Add any new unowned skins from season data that aren't already tracked
-      seasonGirl.grade_skins?.forEach((skin) => {
-        const alreadyTracked = newSkinsTracked.some(
-          (trackedSkin) => trackedSkin.ico_path === skin.ico_path,
-        );
-        if (!alreadyTracked && !skin.is_owned) {
-          newSkinsTracked.push({
-            ico_path: skin.ico_path,
-            number_fight: 0,
-            is_owned: skin.is_owned,
-            dropped_shards: 0,
-          });
-          skinsChanged = true;
-        }
-      });
+      // Second pass: add any existing tracked skins not in current grade_skins
+      if (existingTrackedGirl.skins?.length) {
+        existingTrackedGirl.skins.forEach((trackedSkin) => {
+          const alreadyAdded = newSkinsTracked.some(
+            (skin) => skin.ico_path === trackedSkin.ico_path,
+          );
+          if (!alreadyAdded) {
+            newSkinsTracked.push(trackedSkin);
+            skinsChanged = true;
+          }
+        });
+      }
 
       if (skinsChanged) {
         existingTrackedGirl.skins = newSkinsTracked.length ? newSkinsTracked : undefined;

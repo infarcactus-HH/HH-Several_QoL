@@ -372,9 +372,6 @@ export default class ShardTracker implements SubModule {
         (skin) => skin.ico_path === skinDrop.ico_path,
       );
       if (!currentTrackedSkin) {
-        alert(
-          "ShardTracker: encountered a skin drop that is not tracked, this should not happen.\n IF YOU WANT TO REPORT SEND A SCREENSHOT OF THE DROP",
-        );
         trackedGirl.skins!.push({
           ico_path: skinDrop.ico_path,
           number_fight: nbFightsForThisSkin,
@@ -388,12 +385,6 @@ export default class ShardTracker implements SubModule {
       currentTrackedSkin.dropped_shards += droppedShardsForThisSkin;
       currentTrackedSkin.is_owned = skinDrop.is_owned;
     });
-
-    if (skinShardsPool > 33) {
-      alert(
-        "ShardTracker: encountered more skin shards dropped than possible, this should not happen. \n IF YOU WANT TO REPORT SEND A SCREENSHOT OF THE DROP",
-      );
-    }
 
     if (skinShardsPool <= 0) {
       return;
@@ -744,30 +735,50 @@ export default class ShardTracker implements SubModule {
       hasChanges = true;
     }
 
-    if (girlPlain.grade_skins) {
+    if (girlPlain.grade_skins || existingTrackedGirl.skins?.length) {
       const newSkinsTracked: NonNullable<TrackedGirl["skins"]> = [];
       let skinsChanged = false;
-      girlPlain.grade_skins.forEach((skin) => {
-        // important to keep the shown order
-        const skinTracked =
-          existingTrackedGirl.skins &&
-          existingTrackedGirl.skins.find((trackedSkin) => trackedSkin.ico_path === skin.ico_path);
-        if (!skinTracked && !skin.is_owned) {
-          newSkinsTracked.push({
-            ico_path: skin.ico_path,
-            number_fight: 0,
-            is_owned: skin.is_owned,
-            dropped_shards: 0,
-          });
-          skinsChanged = true;
-        } else if (skinTracked) {
-          if (skinTracked.is_owned !== skin.is_owned) {
-            skinTracked.is_owned = skin.is_owned;
+
+      // First pass: iterate through grade_skins to maintain order
+      if (girlPlain.grade_skins?.length) {
+        girlPlain.grade_skins.forEach((skin) => {
+          const skinTracked = existingTrackedGirl.skins?.find(
+            (trackedSkin) => trackedSkin.ico_path === skin.ico_path,
+          );
+
+          if (skinTracked) {
+            // Preserve tracked data, update ownership if changed
+            if (skinTracked.is_owned !== skin.is_owned) {
+              skinTracked.is_owned = skin.is_owned;
+              skinsChanged = true;
+            }
+            newSkinsTracked.push(skinTracked);
+          } else if (!skin.is_owned) {
+            // New unowned skin
+            newSkinsTracked.push({
+              ico_path: skin.ico_path,
+              number_fight: 0,
+              is_owned: skin.is_owned,
+              dropped_shards: 0,
+            });
             skinsChanged = true;
           }
-          newSkinsTracked.push(skinTracked);
-        }
-      });
+        });
+      }
+
+      // Second pass: add any existing tracked skins not in current grade_skins
+      if (existingTrackedGirl.skins?.length) {
+        existingTrackedGirl.skins.forEach((trackedSkin) => {
+          const alreadyAdded = newSkinsTracked.some(
+            (skin) => skin.ico_path === trackedSkin.ico_path,
+          );
+          if (!alreadyAdded) {
+            newSkinsTracked.push(trackedSkin);
+            skinsChanged = true;
+          }
+        });
+      }
+
       if (skinsChanged) {
         existingTrackedGirl.skins = newSkinsTracked.length ? newSkinsTracked : undefined;
         hasChanges = true;
