@@ -36,5 +36,12 @@
     "patreon-gold": [{ "id": "1813", "name": "Darkyz" }],
     "patreon-silver": [],
     "patreon-bronze": []
+  },
+  "test_h": {
+    "major-contributor": [],
+    "small-contributor": [],
+    "patreon-gold": [{ "id": "158794", "name": "Darkyz" }],
+    "patreon-silver": [],
+    "patreon-bronze": []
   }
 }
