@@ -125,7 +125,7 @@ const userscriptPlugin = {
             mangle: {
               toplevel: true,
               properties: {
-                regex: /^_[a-z]|[a-zA-Z0-9]_$/, // Mangle properties that start or end with _
+                regex: /^_[a-zA-Z]|[a-zA-Z0-9]_$/, // Mangle properties that start or end with _
               },
             },
           });
