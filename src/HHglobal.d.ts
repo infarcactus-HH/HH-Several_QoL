@@ -50,6 +50,25 @@ export declare global {
           timeout_id: number; // unknown
         }) => void,
       ): void; // careful to not activate multiple time the same timer
+      createTimer(
+        parentElement: JQuery<HTMLElement>,
+        timeToFinishInSeconds: number,
+        unknown?: any, // a function ??? but never gets called or smthing
+        unknown2?: any, // doesn't event seem to be passed AT ALL
+      ): {
+        getState(): {
+          $dom_element: JQuery<HTMLElement>;
+          time_remaining: number;
+          timeout_id: number;
+          next_tick?: number;
+        };
+        //getTotalRemainingTime(): undefined | {}; // don't use
+        startTimer(): void;
+        updateTimer(newTime: number): void;
+        stopTimer(): void; // Makes times entirely display none and stops counting, can be resumed later
+        //updateText(): void; // unsure how it works, for now don't use it
+        isRunning(): boolean;
+      };
     };
     Hero: sharedHeroIncomplete;
     popup_payment: any;
