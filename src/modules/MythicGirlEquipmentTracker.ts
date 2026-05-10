@@ -243,6 +243,7 @@ export default class MythicGirlEquipmentTracker extends HHModule {
     const b = this._getEquipDataFromEquippedGirls();
     await Promise.all([a, b]);
     console.log("Initialization complete. Equipment data:", this._equipmentData);
+    unsafeWindow.QoL_girlEquipmentData = this._equipmentData;
     this._girlEquipmentButton.prop("disabled", false);
   }
 
