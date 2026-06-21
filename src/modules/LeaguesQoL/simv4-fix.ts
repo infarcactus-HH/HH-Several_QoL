@@ -23,7 +23,7 @@ export default class simv4Fix implements SubModule {
     GM_addStyle(simv4FixCss);
   }
   private _hookTableClick() {
-    $(".league_table > .data-list > .body-row").on("click.SeveralQoL", (clickEvent) => {
+    $(".league_table > .data-list > .body-row:not(.player-row)").on("click.SeveralQoL", (clickEvent) => {
       const idMember = Number(
         clickEvent.delegateTarget.querySelector("[id-member].nickname")?.getAttribute("id-member"),
       );
