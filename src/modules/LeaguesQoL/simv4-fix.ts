@@ -7,6 +7,7 @@ import { HHPlusPlusReplacer } from "../../utils/HHPlusPlusreplacer";
 export default class simv4Fix implements SubModule {
   private _opponentsRequestSubmitted = new Set<number>();
   private _opponentsSimmed = new Set<number>();
+  private _opponentsPoisonous = new Set<number>();
   private _lastOpponentClickedId: number | null = null;
   run_() {
     console.log("Running simv4Fix");
@@ -44,6 +45,8 @@ export default class simv4Fix implements SubModule {
             `.player_team_block:not(.result-QoLed)`,
             (el) => {
               el.addClass("result-QoLed");
+              // temporary, see below
+              if (this._opponentsPoisonous.has(idMember)) el.addClass("poisonous");
             },
           );
         } else {
@@ -54,6 +57,9 @@ export default class simv4Fix implements SubModule {
               const LeaguePlusPlusTeamBlock = document.querySelector(".player_team_block");
               if (LeaguePlusPlusTeamBlock) {
                 LeaguePlusPlusTeamBlock.className += " result-QoLed";
+                // temporary, see below
+                if (this._opponentsPoisonous.has(idMember))
+                  LeaguePlusPlusTeamBlock.className += " poisonous";
               }
             },
           );
@@ -82,6 +88,15 @@ export default class simv4Fix implements SubModule {
               const selfData = JSON.parse(match[1]);
               const opponentData = JSON.parse(match[2]);
               console.log("Fetched opponent data for id ", idMember, opponentData);
+
+              // temporary
+              // check if any girl in the opponent's team has the defense skill 4
+              // mark the opponent to take a closer look at the fight and see if the skill causes weird behavior
+              const poisonous = opponentData.team.girls.reduce((acc: number, girl: any) => {
+                return acc || !!girl.skills[10]?.level;
+              }, false);
+              if (poisonous) this._opponentsPoisonous.add(idMember);
+
               const simResultFullRequest = unsafeWindow.HHBattleSimulator.simulateFromFightersEx(
                 "Full",
                 selfData,
@@ -128,6 +143,8 @@ export default class simv4Fix implements SubModule {
                   this._toPercentage(simResultFull.chance);
                 simResultPercentageElement.setAttribute("tooltip", `Not supported yet`);
                 LeaguePlusPlusTeamBlock.className += " result-QoLed";
+                // temporary, see above
+                if (poisonous) LeaguePlusPlusTeamBlock.className += " poisonous";
               }
             } else {
               console.warn(
