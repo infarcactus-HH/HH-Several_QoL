@@ -49,7 +49,7 @@ export default class simv4Fix implements SubModule {
         } else {
           this._lastOpponentClickedId = idMember;
           HHPlusPlusReplacer.doWhenSelectorAvailable_(
-            `.player_team_block .player-name[title='${opponent.nickname}']`,
+            `.player_team_block .player-name[title='${opponent.nickname.replace(/'/g, "\\'")}']`,
             () => {
               const LeaguePlusPlusTeamBlock = document.querySelector(".player_team_block");
               if (LeaguePlusPlusTeamBlock) {
