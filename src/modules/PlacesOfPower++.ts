@@ -68,6 +68,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     );
   }
   async run(subSettings: SubSettingsType<configSchema>) {
+    return;
     if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
       return;
     }
