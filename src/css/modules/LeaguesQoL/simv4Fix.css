@@ -19,6 +19,6 @@
 }
 
 /* replace the class icon with a poison bottle */
-.player_team_block.poisonous .player_details [carac]::before {
+/*.player_team_block.poisonous .player_details [carac]::before {
   background-image: url(/images/caracs/mana_generation_icon.png);
-}
+}*/
