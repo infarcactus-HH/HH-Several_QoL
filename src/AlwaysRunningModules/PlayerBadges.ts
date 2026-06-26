@@ -151,6 +151,9 @@ export default class PlayerBadges extends AlwaysRunningModule {
           console.log(`Added badge to player ${playerData.nickname} in labyrinth leaderboard`, el);
         }
       });
+      $(el).on("click", () => {
+        shared.general.hero_page_popup({ id: playerData.id_member });
+      });
     });
   }
   private _addStandardLeaderboardBadges(

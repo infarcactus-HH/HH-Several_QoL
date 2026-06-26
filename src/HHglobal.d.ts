@@ -8,7 +8,7 @@ export declare global {
       close(options: { type: "toast" | "common" | "sliding" | "notification" }): void; // at the end calls $dom_element.remove()
     };
     general: {
-      hc_confirm: (price: string | number, callback: () => void) => void; // opens the confirm popup for premium spending
+      hc_confirm: (price: string | number, callback?: () => void) => void; // opens the confirm popup for premium spending
       hh_ajax: (options: { [key: string]: any }, callback: (response: any) => void) => void; // jQuery ajax wrapper for HH games
       navigate(url: string): void; // navigate to a new page
       getDocumentHref(url: string): string; // useful for completing sessIds
@@ -21,6 +21,7 @@ export declare global {
         $parentContainer: JQuery<HTMLElement> = null, // unsure if it has to be the parent container
         unknown6: boolean = false, // unsure of it's purpose ? On love raid pages only called with true, but on main page called with false
       ): void;
+      hero_page_popup(option: { id: number; profile_fallback?: boolean }): void;
     };
     reward_popup: any;
     reward: any;
