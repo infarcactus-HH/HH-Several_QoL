@@ -34,13 +34,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       },
     ],
   };
-  private _sortedGirlsCache: Record<1 | 2 | 3, number[]> = {
-    1: [],
-    2: [],
-    3: [],
-  };
-  private _isLoadingGirls = false;
-  private _currentPoPGirls: Record<number, number[]> = {}; // popId -> array of girl IDs
   private readonly _minPercentToStartPoP: number = 0.05; // Minimum percent of max power required to start a PoP (5%)
   private _hasPopupEnabled: boolean = false;
 
@@ -64,11 +57,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
   static shouldRun_() {
     return (
-      location.pathname.includes("/activities.html") && !location.search.includes("?tab=pop&index=")
+      location.pathname.includes("/activities.html") &&
+      !location.search.includes("?tab=pop&pop_id=")
     );
   }
   async run(subSettings: SubSettingsType<configSchema>) {
-    return;
     if (this._hasRun || !PlacesOfPowerPlusPlus.shouldRun_()) {
       return;
     }
@@ -93,25 +86,14 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     }
 
     this._injectCustomStyles();
-    this._girlsHandler();
   }
   /**
    * Build the custom PoP UI, handling the loading state if girls are still being loaded
    */
   private _buildPopInfoWithLoadingHandling(): void {
-    if (this._isLoadingGirls) {
-      shared.animations.loadingAnimation.start();
-      $(document).on("HH_SQoL_PoP_GirlsLoaded", () => {
-        shared.animations.loadingAnimation.stop();
-        HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
-          this._buildCustomPopInfo();
-        });
-      });
-    } else {
-      HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
-        this._buildCustomPopInfo();
-      });
-    }
+    HHPlusPlusReplacer.doWhenSelectorAvailable_("#pop_info", () => {
+      this._buildCustomPopInfo();
+    });
   }
 
   /**
@@ -212,7 +194,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
               (unsafeWindow as UnsafeWindow_Activities).pop_data,
             )) {
               if (popEntry.status === "pending_reward") {
-                delete self._currentPoPGirls[popEntry.id_places_of_power];
                 popEntry.status = "can_start";
               }
             }
@@ -266,124 +247,75 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   }
 
   /**
-   * Convert criteria from pop_data format (carac_1) to pop_hero_girls format (carac1)
-   */
-  private _convertCriteriaKey(
-    criteria: PlacesOfPowerData["criteria"],
-  ): keyof Pick<global_pop_hero_girls_incomplete, "carac1" | "carac2" | "carac3"> {
-    // Convert carac_1 -> carac1, carac_2 -> carac2, carac_3 -> carac3
-    return criteria.replace("_", "") as keyof Pick<
-      global_pop_hero_girls_incomplete,
-      "carac1" | "carac2" | "carac3"
-    >;
-  }
-
-  /**
-   * Assign girls to a specific PoP
-   */
-  private _assignGirlsToPoP(popId: number) {
-    const popData = Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data).find(
-      (p) => p.id_places_of_power === popId,
-    );
-    if (!popData) return;
-
-    const criteria = popData.criteria;
-    const targetPower = popData.max_team_power;
-
-    const selectedGirls = this._selectOptimalGirls(popId, targetPower, criteria);
-    return selectedGirls;
-  }
-
-  /**
    * Select optimal girls for a PoP from scratch using pre-sorted lists
    */
-  private _selectOptimalGirls(
-    popId: number,
-    targetPower: number,
-    criteria: PlacesOfPowerData["criteria"],
-  ): number[] {
-    const criteriaKey = this._convertCriteriaKey(criteria);
+  private async _selectOptimalGirls(popId: number): Promise<{
+    selectedGirls: number[];
+    totalPower: number;
+    popData: UnsafeWindow_Activities["pop_data"][number] | undefined;
+  }> {
+    // 1. Fetch and parse data using clean async/await (no .then() nesting)
+    const response = await fetch(
+      shared.general.getDocumentHref(`/activities.html?tab=pop&pop_id=${popId}`),
+    );
+    const text = await response.text();
+    const match = text.match(
+      /var pop_data = \[\];\n\s+var current_pop_data =(.+);\n\s+var pop_can_auto_start =/,
+    );
 
-    const classNumber = this._criteriaToClassMap[criteria];
-
-    // Get pre-sorted list of girl IDs for this class (already sorted by power, descending)
-    const sortedGirlIds = this._sortedGirlsCache[classNumber];
-
-    if (sortedGirlIds.length === 0) {
-      console.error(`[PoP ${popId}] No girls available in storage!`);
-      return [];
+    if (!match || match.length < 2) {
+      return { selectedGirls: [], totalPower: 0, popData: undefined };
     }
 
-    // Get set of girls already assigned to other PoPs
-    const assignedGirls = new Set<number>();
-    for (const [otherPopId, girlIds] of Object.entries(this._currentPoPGirls)) {
-      if (parseInt(otherPopId) !== popId) {
-        girlIds.forEach((id) => assignedGirls.add(id));
-      }
-    }
+    const popData = JSON.parse(match[1].trim());
+    const criteriaKey = `carac_${popData.class}` as const;
 
-    const selectedGirls: number[] = [];
-    let remainingPower = targetPower;
+    const girls: any[] = popData.girls.filter((girl: any) => girl.assigned === -1);
 
-    // Iterate through pre-sorted girls (highest power first)
-    for (const girlId of sortedGirlIds) {
-      // Skip if girl is already assigned to another PoP
-      if (assignedGirls.has(girlId)) {
-        continue;
-      }
+    let remainingPower: number = popData.max_team_power;
 
-      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
-      if (!girl) continue;
+    const chosenGirls: number[] = [];
 
+    for (let i = 0; i < girls.length; i++) {
+      const girl = girls[i];
       const girlPower = girl[criteriaKey];
+      const girlId: number = girl.id_girl;
 
-      // If adding this girl keeps us at or below target, add her
       if (girlPower <= remainingPower) {
         remainingPower -= girlPower;
-        selectedGirls.push(girlId);
+        chosenGirls.push(girlId);
 
-        // If we've hit the target exactly, stop
-        if (remainingPower === 0) {
+        if (remainingPower <= 0) {
           break;
         }
-      }
-      // If we need to overshoot, find the best candidate (minimum overshoot)
-      else if (selectedGirls.length === 0 || remainingPower > 0) {
-        // Look ahead to find the girl with minimum overshoot
+      } else {
         let bestGirlId = girlId;
-        const currentIndex = sortedGirlIds.indexOf(girlId);
-        for (let i = currentIndex + 1; i < sortedGirlIds.length; i++) {
-          const nextGirlId = sortedGirlIds[i];
+        let bestGirlPower = girlPower;
 
-          // Skip if already assigned
-          if (assignedGirls.has(nextGirlId)) continue;
-
-          const nextGirl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[nextGirlId];
-          if (!nextGirl) continue;
-
+        for (let j = i + 1; j < girls.length; j++) {
+          const nextGirl = girls[j];
           const nextPower = nextGirl[criteriaKey];
 
-          // If we find one that fits perfectly or undershoots, use it immediately
           if (nextPower <= remainingPower) {
-            if (nextPower === remainingPower) {
-              bestGirlId = nextGirlId;
-            }
             break;
           }
-          bestGirlId = nextGirlId;
+          bestGirlId = nextGirl.id_girl;
+          bestGirlPower = nextGirl[criteriaKey];
         }
 
-        selectedGirls.push(bestGirlId);
+        chosenGirls.push(bestGirlId);
+        remainingPower -= bestGirlPower;
         break;
       }
     }
 
-    return selectedGirls;
-  }
+    console.log(chosenGirls, remainingPower, popData.max_team_power);
 
-  private _readdGirlsFromCurrentPoP(popKey: string) {
-    const popId = parseInt(popKey);
-    delete this._currentPoPGirls[popId];
+    return {
+      selectedGirls: chosenGirls,
+      totalPower: popData.max_team_power - remainingPower,
+      popData: popData,
+    };
   }
 
   private _selectNextPoPFromFill($currentPoPRecordSelected: JQuery<HTMLElement>) {
@@ -446,7 +378,6 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   private _sendClaimRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
     const popKeyInt = parseInt(popKey);
-    this._readdGirlsFromCurrentPoP(popKey);
     const currentPoPData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt];
     $(".claimPoPButton").prop("disabled", true);
     if (currentPoPData.ends_in === null || currentPoPData.ends_in !== 0) {
@@ -463,12 +394,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $currentPoPRecordSelected.remove();
     }
     const n = {
-      namespace: "h\\PlacesOfPower",
-      class: currentPoPData.type === "standard" ? "PlaceOfPower" : "TempPlaceOfPower",
-      action: "claim",
+      action: "claim_pop",
       id_place_of_power: currentPoPData.id_places_of_power,
     };
-    delete this._currentPoPGirls[currentPoPData.id_places_of_power];
     RequestQueueHandler.getInstance_().addAjaxRequest_(n, (response: any) => {
       if (this._hasPopupEnabled) {
         shared.reward_popup.Reward.handlePopup(response.rewards);
@@ -485,21 +413,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     });
   }
 
-  private _calculateTimeToFinishSeconds(
-    popData: PlacesOfPowerData,
-    selectedGirls: number[],
-  ): number {
-    const criteriaKey = this._convertCriteriaKey(popData.criteria);
-
-    // Calculate total power of selected girls
-    let totalPower = 0;
-    for (const girlId of selectedGirls) {
-      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
-      if (girl) {
-        totalPower += girl[criteriaKey];
-      }
-    }
-
+  private _calculateTimeToFinishSeconds(popData: PlacesOfPowerData, totalPower: number): number {
     // If total power exceeds max_team_power, it takes 6 hours
     if (totalPower >= popData.max_team_power) {
       return 6 * 60 * 60; // 6 hours in seconds
@@ -510,7 +424,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     return Math.floor(timeInMinutes * 60); // Convert minutes to seconds
   }
 
-  private _sendFillRequest(popKey: string) {
+  private async _sendFillRequest(popKey: string) {
     shared.animations.loadingAnimation.start();
     const popKeyInt = parseInt(popKey);
     const currentPoPData = (unsafeWindow as UnsafeWindow_Activities).pop_data[popKeyInt];
@@ -520,48 +434,39 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Build assignment for this specific PoP only
     console.log(`[PoP ${popId}] Building assignment for this PoP...`);
-    const selectedGirls = this._assignGirlsToPoP(popId) || [];
-    this._currentPoPGirls[popId] = selectedGirls;
+    const { selectedGirls, totalPower, popData } = (await this._selectOptimalGirls(popId)) || [];
+    console.log(selectedGirls);
+    if (!popData) {
+      alert("Failed to fetch PoP data. Please try again.");
+      shared.animations.loadingAnimation.stop();
+      return;
+    }
 
     if (selectedGirls.length === 0) {
       alert(
         `No ${GT.design.Girls} were assigned to this PoP. This might happen if all your ${GT.design.Girls} are already assigned to other PoPs.`,
       );
-      delete this._currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
       return;
     }
 
-    // Check if the team is maxed (capped)
-    const criteriaKey = this._convertCriteriaKey(currentPoPData.criteria);
-    let totalPower = 0;
-    for (const girlId of selectedGirls) {
-      const girl = (unsafeWindow as UnsafeWindow_Activities).pop_hero_girls[girlId];
-      if (girl) {
-        totalPower += girl[criteriaKey];
-      }
-    }
-
-    if (totalPower / currentPoPData.max_team_power < this._minPercentToStartPoP) {
+    if (totalPower / popData.max_team_power < this._minPercentToStartPoP) {
       alert("Not enough power to start this PoP.");
-      delete this._currentPoPGirls[popId];
       shared.animations.loadingAnimation.stop();
       return;
     }
 
-    const timeToFinishSeconds = this._calculateTimeToFinishSeconds(currentPoPData, selectedGirls);
-
+    const timeToFinishSeconds = this._calculateTimeToFinishSeconds(popData, totalPower);
     // If not capped, ask for confirmation
-    if (totalPower < currentPoPData.max_team_power) {
+    if (totalPower < popData.max_team_power) {
       const shouldContinue = confirm(
         `Warning: This PoP is not fully maxed!\n\n` +
           `Current Power: ${Math.floor(totalPower)}\n` +
-          `Max Power: ${currentPoPData.max_team_power}\n\n` +
+          `Max Power: ${popData.max_team_power}\n\n` +
           `This will take ${(timeToFinishSeconds / 60 / 60).toFixed(2)} hours to complete.` +
           `\nDo you want to continue?`,
       );
       if (!shouldContinue) {
-        delete this._currentPoPGirls[popId];
         // Revert UI changes
         $(".startPoPButton").css("display", "");
         $(".claimPoPButton").css("display", "none");
@@ -575,9 +480,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
 
     // Send the actual request to start the PoP with the selected girls
     const n = {
-      namespace: "h\\PlacesOfPower",
-      class: currentPoPData.type === "standard" ? "PlaceOfPower" : "TempPlaceOfPower",
-      action: "start",
+      action: "start_pop",
       id_place_of_power: popId,
       selected_girls: selectedGirls,
     };
@@ -632,7 +535,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       '<div class="pop-navigation-buttons-original blue_button_L">Visit Original</div>',
     );
     $navigationButtons.on("click", () => {
-      shared.general.navigate("/activities.html?tab=pop&index=");
+      shared.general.navigate("/activities.html?tab=pop&pop_id=");
     });
     $popDetailsLeft.append($navigationButtons);
 
@@ -645,7 +548,7 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
         tooltip="Visit this PoP original page"
         class="pop-title"
         href="${shared.general.getDocumentHref(
-          "/activities.html?tab=pop&index=" + currentPoPData.id_places_of_power,
+          "/activities.html?tab=pop&pop_id=" + currentPoPData.id_places_of_power,
         )}"
         >${currentPoPData.title}</a
       >
@@ -802,35 +705,5 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
   private async _injectCustomStyles() {
     // Inject module-specific styling when the PoP UI is displayed
     GM_addStyle(placesOfPowerCss);
-  }
-
-  private async _girlsHandler() {
-    this._isLoadingGirls = true;
-
-    const byClass: { [k in 1 | 2 | 3]: { id: number; carac: number }[] } = {
-      1: [],
-      2: [],
-      3: [],
-    };
-
-    for (const g of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_hero_girls)) {
-      if (!g || g.id_girl == null) continue;
-      byClass[1].push({ id: g.id_girl, carac: g.carac1 });
-      byClass[2].push({ id: g.id_girl, carac: g.carac2 });
-      byClass[3].push({ id: g.id_girl, carac: g.carac3 });
-      if (g.id_places_of_power != null && g.id_places_of_power !== 0) {
-        if (!this._currentPoPGirls[g.id_places_of_power]) {
-          this._currentPoPGirls[g.id_places_of_power] = [];
-        }
-        this._currentPoPGirls[g.id_places_of_power].push(g.id_girl);
-      }
-    }
-
-    this._sortedGirlsCache[1] = byClass[1].sort((a, b) => b.carac - a.carac).map((x) => x.id);
-    this._sortedGirlsCache[2] = byClass[2].sort((a, b) => b.carac - a.carac).map((x) => x.id);
-    this._sortedGirlsCache[3] = byClass[3].sort((a, b) => b.carac - a.carac).map((x) => x.id);
-
-    this._isLoadingGirls = false;
-    $(document).trigger("HH_SQoL_PoP_GirlsLoaded");
   }
 }
