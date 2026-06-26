@@ -647,13 +647,13 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
           this._buildPopDetails(key);
         });
 
-        // Create icon (top left)
+        /*         // Create icon (top left)
         const icon = html`<img
           src="https://hh.hh-content.com/pictures/misc/items_icons/${popRecord.class}.png"
           class="pop-icon"
         />`;
 
-        $popRecord.append(icon);
+        $popRecord.append(icon); */
 
         const $lvl = $(html`<div class="pop-lvl">Lv. ${popRecord.level}</div>`);
         $popRecord.append($lvl);
