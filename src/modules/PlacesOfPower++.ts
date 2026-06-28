@@ -343,9 +343,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     if ($next.length) {
       $next.trigger("click");
     } else {
-      for (const popEntry of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)) {
+      for (const [str, popEntry] of Object.entries(
+        (unsafeWindow as UnsafeWindow_Activities).pop_data,
+      )) {
         if (!popEntry.locked && popEntry.status !== "in_progress") {
-          $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
+          $(`[data-pop-id='${str}']`).trigger("click");
           return;
         }
       }
@@ -365,9 +367,11 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
       $nextWithNotif.parent().trigger("click");
       return;
     } else {
-      for (const popEntry of Object.values((unsafeWindow as UnsafeWindow_Activities).pop_data)) {
+      for (const [str, popEntry] of Object.entries(
+        (unsafeWindow as UnsafeWindow_Activities).pop_data,
+      )) {
         if (!popEntry.locked && popEntry.status === "can_start") {
-          $(`[data-pop-id='${popEntry.id_places_of_power}']`).trigger("click");
+          $(`[data-pop-id='${str}']`).trigger("click");
           return;
         }
       }
