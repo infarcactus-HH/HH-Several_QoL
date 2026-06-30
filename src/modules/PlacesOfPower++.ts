@@ -441,8 +441,9 @@ export default class PlacesOfPowerPlusPlus extends HHModule {
     const { selectedGirls, totalPower, popData } = (await this._selectOptimalGirls(popId)) || [];
     console.log(selectedGirls);
     if (!popData) {
-      alert("Failed to fetch PoP data. Please try again.");
+      alert("Failed to fetch PoP data, this is normal if PoPs expired. Will reload the page...");
       shared.animations.loadingAnimation.stop();
+      location.reload();
       return;
     }
 
