@@ -36,6 +36,7 @@ export default class ShardTracker implements SubModule {
     "Orgy Days",
     "Love Raids",
     "Villain Girl",
+    "Anniversary"
   ];
 
   private static readonly TRACKED_BATTLE_ACTIONS = ["do_battles_trolls"];
