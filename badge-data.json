@@ -12,7 +12,10 @@
   "hentai": {
     "major-contributor": [{ "id": "583627", "name": "Arez" }],
     "small-contributor": [],
-    "patreon-gold": [{ "id": "124704", "name": "Darkyz" }],
+    "patreon-gold": [
+      { "id": "124704", "name": "Darkyz" },
+      {"id":"7616171","name":"Arush"}
+    ],
     "patreon-silver": [],
     "patreon-bronze": []
   },
